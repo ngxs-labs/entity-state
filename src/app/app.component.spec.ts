@@ -1,31 +1,321 @@
-import { TestBed, async } from '@angular/core/testing';
-import { AppComponent } from './app.component';
+import {ComponentFixture, ComponentFixtureAutoDetect, TestBed} from '@angular/core/testing';
+import {AppComponent} from './app.component';
+import {AppModule} from './app.module';
+import {Store} from '@ngxs/store';
+import {defaultEntityState} from 'entity-store';
 
 describe('AppComponent', () => {
-  beforeEach(async(() => {
+  let fixture: ComponentFixture<AppComponent>;
+  let component: AppComponent;
+
+  beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        AppComponent
-      ],
-    }).compileComponents();
-  }));
+      imports: [AppModule],
+      providers: [{provide: ComponentFixtureAutoDetect, useValue: true}]
+    });
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.debugElement.componentInstance;
-    expect(app).toBeTruthy();
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
+
+    // reset store because of storage plugin
+    const store = TestBed.get(Store);
+    store.reset({todo: defaultEntityState()});
   });
 
-  it(`should have as title 'entity-state-integration'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.debugElement.componentInstance;
-    expect(app.title).toEqual('entity-state-integration');
+  it('should add a todo', () => {
+    component.addToDo();
+
+    component.toDos$.subscribe(state => {
+      expect(state.length).toBe(1);
+    });
   });
 
-  it('should render title in a h1 tag', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('h1').textContent).toContain('Welcome to entity-state-integration!');
+  it('should update a todo', () => {
+    component.addToDo();
+    component.setDone({
+      title: 'NGXS Entity Store 1',
+      description: 'Doesn\'t matter. Just need title for ID',
+      done: false
+    });
+
+    component.toDos$.subscribe(([state]) => {
+      expect(state.title).toBe('NGXS Entity Store 1');
+      expect(state.done).toBeTruthy();
+    });
   });
+
+  it('should remove a todo', () => {
+    component.addToDo();
+    component.addToDo();
+    component.open('NGXS Entity Store 1');
+    component.removeToDo('NGXS Entity Store 1');
+
+    component.toDos$.subscribe(state => {
+      expect(state.length).toBe(1);
+      expect(state[0].title).toBe('NGXS Entity Store 2');
+    });
+
+    component.activeId$.subscribe(state => {
+      expect(state).toBeUndefined();
+    });
+  });
+
+  it('should add multiple todos', () => {
+    component.addMultiple();
+
+    component.toDos$.subscribe(state => {
+      expect(state.length).toBe(2);
+    });
+  });
+
+  it('should update multiple todos', () => {
+    component.addToDo();
+    component.addToDo();
+    component.addToDo();
+    component.updateMultiple(); // updates 1 and 2
+
+    component.toDos$.subscribe(([first, second, third]) => {
+      expect(first.title).toBe('NGXS Entity Store 1');
+      expect(first.done).toBeTruthy();
+      expect(second.title).toBe('NGXS Entity Store 2');
+      expect(second.done).toBeTruthy();
+      expect(third.title).toBe('NGXS Entity Store 3');
+      expect(third.done).toBeFalsy();
+    });
+  });
+
+  it('should update all todos', () => {
+    component.addToDo();
+    component.addToDo();
+    component.addToDo();
+    component.doneAll();
+
+    component.toDos$.subscribe(([first, second, third]) => {
+      expect(first.title).toBe('NGXS Entity Store 1');
+      expect(first.done).toBeTruthy();
+      expect(second.title).toBe('NGXS Entity Store 2');
+      expect(second.done).toBeTruthy();
+      expect(third.title).toBe('NGXS Entity Store 3');
+      expect(third.done).toBeTruthy();
+    });
+  });
+
+  it('should update multiple todos by selector fn', () => {
+    component.addToDo();
+    component.addToDo();
+    component.addToDo();
+
+    component.setOddDone();
+
+    component.toDos$.subscribe(([first, second, third]) => {
+      expect(first.title).toBe('NGXS Entity Store 1');
+      expect(first.done).toBeTruthy();
+      expect(second.title).toBe('NGXS Entity Store 2');
+      expect(second.done).toBeFalsy();
+      expect(third.title).toBe('NGXS Entity Store 3');
+      expect(third.done).toBeTruthy();
+    });
+  });
+
+  it('should update multiple todos with update fn', () => {
+    component.addToDo();
+    component.addToDo();
+    component.addToDo();
+
+    component.open('NGXS Entity Store 2');
+    component.setDoneActive();
+    component.updateDescription();
+
+    component.toDos$.subscribe(([first, second, third]) => {
+      expect(first.title).toBe('NGXS Entity Store 1');
+      expect(first.description.includes(' -- This is done!')).toBeFalsy();
+      expect(second.title).toBe('NGXS Entity Store 2');
+      expect(second.description.includes(' -- This is done!')).toBeTruthy();
+      expect(third.title).toBe('NGXS Entity Store 3');
+      expect(third.description.includes(' -- This is done!')).toBeFalsy();
+    });
+  });
+
+  it('should update active todo with update fn', () => {
+    component.addToDo();
+    component.addToDo();
+    component.addToDo();
+
+    component.open('NGXS Entity Store 2');
+    component.updateActiveWithFn();
+
+    component.toDos$.subscribe(([first, second, third]) => {
+      expect(first.title).toBe('NGXS Entity Store 1');
+      expect(first.description.includes(' -- Updated with Fn')).toBeFalsy();
+      expect(second.title).toBe('NGXS Entity Store 2');
+      expect(second.description.includes(' -- Updated with Fn')).toBeTruthy();
+      expect(third.title).toBe('NGXS Entity Store 3');
+      expect(third.description.includes(' -- Updated with Fn')).toBeFalsy();
+    });
+  });
+
+  it('should remove active', () => {
+    component.addToDo();
+    component.addToDo();
+    component.addToDo();
+
+    component.open('NGXS Entity Store 2');
+    component.removeActive();
+
+    component.toDos$.subscribe(([first, second]) => {
+      expect(first.title).toBe('NGXS Entity Store 1');
+      expect(second.title).toBe('NGXS Entity Store 3');
+    });
+
+    component.activeId$.subscribe(id => {
+      expect(id).toBeUndefined();
+    });
+  });
+
+  it('should remove multiple todos', () => {
+    component.addToDo();
+    component.open('NGXS Entity Store 1');
+    component.addToDo();
+    component.addToDo();
+    component.addToDo();
+    component.addToDo();
+    component.removeMultiple([
+      'NGXS Entity Store 1',
+      'NGXS Entity Store 2',
+      'NGXS Entity Store 3'
+    ]);
+
+    component.toDos$.subscribe(([first]) => {
+      expect(first.title).toBe('NGXS Entity Store 4');
+    });
+
+    component.activeId$.subscribe(state => {
+      expect(state).toBeUndefined();
+    });
+  });
+
+  it('should remove multiple todos by function', () => {
+    component.addToDo();
+    component.open('NGXS Entity Store 1');
+    component.setDoneActive();
+
+    component.addToDo();
+
+    component.addToDo();
+    component.open('NGXS Entity Store 3');
+    component.setDoneActive();
+
+    component.addToDo();
+    component.addToDo();
+    component.removeAllDones();
+
+    component.toDos$.subscribe(([first]) => {
+      expect(first.title).toBe('NGXS Entity Store 2');
+    });
+
+    component.count$.subscribe(count => {
+      expect(count).toBe(3);
+    });
+  });
+
+  it('should toggle loading', () => {
+    component.toggleLoading();
+
+    component.loading$.subscribe(state => {
+      expect(state).toBeTruthy();
+    });
+  });
+
+  it('should toggle error', () => {
+    component.toggleError();
+
+    component.error$.subscribe(state => {
+      expect(state instanceof Error).toBeTruthy();
+    });
+  });
+
+  it('should set active entity', () => {
+    component.addToDo();
+    component.open('NGXS Entity Store 1');
+
+    component.active$.subscribe(state => {
+      expect(state).toBeTruthy();
+    });
+  });
+
+  it('should update active entity', () => {
+    component.addToDo();
+    component.addToDo();
+    component.addToDo();
+    component.open('NGXS Entity Store 2');
+    component.setDoneActive();
+
+    component.active$.subscribe(state => {
+      expect(state.title).toBe('NGXS Entity Store 2');
+      expect(state.done).toBeTruthy();
+    });
+  });
+
+  it('should clear active entity', () => {
+    component.addToDo();
+    component.open('NGXS Entity Store 1');
+    component.closeDetails();
+
+    component.active$.subscribe(state => {
+      expect(state).toBeUndefined();
+    });
+  });
+
+  it('should remove all entities', () => {
+    component.addToDo();
+    component.addToDo();
+    component.open('NGXS Entity Store 2');
+    component.addToDo();
+    component.toggleLoading();
+    component.toggleError();
+    component.clearEntities();
+
+    component.toDos$.subscribe(state => {
+      expect(state.length).toBe(0);
+    });
+
+    component.activeId$.subscribe(state => {
+      expect(state).toBeUndefined();
+    });
+
+    component.error$.subscribe(state => {
+      expect(state instanceof Error).toBeTruthy();
+    });
+
+    component.loading$.subscribe(state => {
+      expect(state).toBeTruthy();
+    });
+  });
+
+  it('should completely reset store', () => {
+    component.addToDo();
+    component.addToDo();
+    component.open('NGXS Entity Store 2');
+    component.addToDo();
+    component.toggleLoading();
+    component.toggleError();
+    component.resetState();
+
+    component.toDos$.subscribe(state => {
+      expect(state.length).toBe(0);
+    });
+
+    component.activeId$.subscribe(state => {
+      expect(state).toBeUndefined();
+    });
+
+    component.error$.subscribe(state => {
+      expect(state).toBeUndefined();
+    });
+
+    component.loading$.subscribe(state => {
+      expect(state).toBeFalsy();
+    });
+  });
+
 });
