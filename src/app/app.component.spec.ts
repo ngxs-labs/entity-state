@@ -2,7 +2,7 @@ import {ComponentFixture, ComponentFixtureAutoDetect, TestBed} from '@angular/co
 import {AppComponent} from './app.component';
 import {AppModule} from './app.module';
 import {Store} from '@ngxs/store';
-import {defaultEntityState} from 'entity-store';
+import {defaultEntityState} from 'entity-state';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;

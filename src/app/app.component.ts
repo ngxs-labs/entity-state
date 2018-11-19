@@ -1,13 +1,13 @@
 import {Component} from '@angular/core';
 import {Select, Store} from '@ngxs/store';
-import {AddOrReplace, ClearActive, Remove, RemoveActive, Reset, SetActive, SetError, SetLoading, Update, UpdateActive} from 'entity-store';
+import {AddOrReplace, ClearActive, Remove, RemoveActive, Reset, SetActive, SetError, SetLoading, Update, UpdateActive} from 'entity-state';
 import {ToDo, TodoState} from './store/todo';
 import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
 
