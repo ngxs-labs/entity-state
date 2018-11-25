@@ -1,11 +1,19 @@
 import {generateActionObject} from '../internal';
-import {ExtendsEntityStore} from '../entity-store';
+import {EntityState} from '../entity-state';
+import {Type} from '@angular/core';
 
 
 export interface EntitySetLoadingAction {
   payload: boolean;
 }
 
-export function SetLoading(store: ExtendsEntityStore<any>, loading: boolean): EntitySetLoadingAction {
-  return generateActionObject("setLoading", store, loading);
+export class SetLoading {
+  /**
+   * Generates an action that will set the loading state for the given state.
+   * @param target The targeted state class
+   * @param loading The loading state
+   */
+  constructor(target: Type<EntityState<any>>, loading: boolean) {
+    return generateActionObject('setLoading', target, loading);
+  }
 }

@@ -3,6 +3,7 @@ import {AppComponent} from './app.component';
 import {AppModule} from './app.module';
 import {Store} from '@ngxs/store';
 import {defaultEntityState} from 'entity-state';
+import {NoActiveEntityError} from '../../projects/entity-state/src/lib/errors';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -17,7 +18,6 @@ describe('AppComponent', () => {
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
 
-    // reset store because of storage plugin
     const store = TestBed.get(Store);
     store.reset({todo: defaultEntityState()});
   });
@@ -133,6 +133,18 @@ describe('AppComponent', () => {
       expect(second.description.includes(' -- This is done!')).toBeTruthy();
       expect(third.title).toBe('NGXS Entity Store 3');
       expect(third.description.includes(' -- This is done!')).toBeFalsy();
+    });
+  });
+
+  it('should throw an error if invalid active id', () => {
+    component.addToDo();
+    component.addToDo();
+    component.addToDo();
+
+    component.open('NGXS Entity Store 5');
+
+    component.updateActiveWithFn().subscribe({
+      error: e => expect(e.message).toBe(new NoActiveEntityError().message)
     });
   });
 

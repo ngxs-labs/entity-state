@@ -1,19 +1,21 @@
-import {EntityStateModel, ExtendsEntityStore} from './entity-store';
+import {EntityState, EntityStateModel} from './entity-state';
+import {Type} from '@angular/core';
 
-/*export interface ExtendsEntityStore<T> {
-  new(...args: any[]): EntityStore<T>;
-}*/
-
-export interface Newable<T, P = any[]> {
-  new(args?: P): T;
-}
-
+/**
+ * type alias for javascript object literal
+ */
 export interface HashMap<T> {
   [id: string]: T;
 }
 
-export function generateActionObject<T>(fn: string, store: ExtendsEntityStore<T>, payload?: any) {
-  const name = store["NGXS_META"].path;
+/**
+ * This function generates a new object for the ngxs Action with the given fn name
+ * @param fn The name of the Action to simulate, e.g. "Remove" or "Update"
+ * @param store The class of the targeted entity state, e.g. ZooState
+ * @param payload The payload for the created action object
+ */
+export function generateActionObject<T>(fn: string, store: Type<EntityState<T>>, payload?: any) {
+  const name = store['NGXS_META'].path;
   const ReflectedAction = function (data: T) {
     this.payload = data;
   };
@@ -22,6 +24,10 @@ export function generateActionObject<T>(fn: string, store: ExtendsEntityStore<T>
   return obj;
 }
 
+/**
+ * Utility function that returns the active entity of the given state
+ * @param state the state of an entity state
+ */
 export function getActive<T>(state: EntityStateModel<T>): T {
   return state.entities[state.active];
 }

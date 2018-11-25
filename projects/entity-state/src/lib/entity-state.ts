@@ -1,8 +1,7 @@
-import {getActive, HashMap, Newable} from './internal';
+import {getActive, HashMap} from './internal';
 import {
   EntityAddAction,
   EntityRemoveAction,
-  EntitySelector,
   EntitySetActiveAction,
   EntitySetErrorAction,
   EntitySetLoadingAction,
@@ -10,7 +9,13 @@ import {
   EntityUpdateActiveAction
 } from './actions';
 import {StateContext} from '@ngxs/store';
+import {Type} from '@angular/core';
+import {InvalidIdError, NoActiveEntityError, NoSuchEntityError} from './errors';
 
+/**
+ * Interface for an EntityState.
+ * Includes the entities in an object literal, the loading and error state and the ID of the active selected entity.
+ */
 export interface EntityStateModel<T> {
   entities: HashMap<T>;
   loading: boolean;
@@ -18,6 +23,10 @@ export interface EntityStateModel<T> {
   active: string | undefined;
 }
 
+/**
+ * Returns a new object which serves as the default state.
+ * No entities, loading is false, error is undefined, active is undefined.
+ */
 export function defaultEntityState(): EntityStateModel<any> {
   return {
     entities: {},
@@ -27,14 +36,15 @@ export function defaultEntityState(): EntityStateModel<any> {
   };
 }
 
-export type ExtendsEntityStore<T> = Newable<EntityStore<T>>;
+export type StateSelector<T = any> = (state: EntityStateModel<any>) => T;
 
 // @dynamic
-export abstract class EntityStore<T> {
-  protected readonly idKey: string;
-  protected readonly storePath: string;
+export abstract class EntityState<T> {
 
-  protected constructor(storeClass: ExtendsEntityStore<T>, _idKey: keyof T) {
+  private readonly idKey: string;
+  private readonly storePath: string;
+
+  protected constructor(storeClass: Type<EntityState<T>>, _idKey: keyof T) {
     this.idKey = _idKey as string;
     this.storePath = storeClass['NGXS_META'].path;
     this.setup(storeClass,
@@ -46,17 +56,30 @@ export abstract class EntityStore<T> {
       'reset');
   }
 
-  static get staticStorePath(): string {
+  private static get staticStorePath(): string {
     const that = this;
     return that['NGXS_META'].path;
   }
 
-  abstract onUpdate(current: T, updated: Partial<T>): T;
-
+  /**
+   * This function is called every time an entity is updated.
+   * It receives the current entity and a partial entity that was either passed directly or generated with a function
+   * @see Updater
+   * @param current The current entity, readonly
+   * @param updated The new data as a partial entity
+   * @example
+   *onUpdate(current: ToDo, updated: Partial<ToDo>): ToDo {
+  return {...current, ...updated};
+}
+   */
+  abstract onUpdate(current: Readonly<T>, updated: Partial<T>): T;
 
   // ------------------- SELECTORS -------------------
 
-  static get activeId() {
+  /**
+   * Returns a selector for the activeId
+   */
+  static get activeId(): StateSelector<string> {
     const that = this;
     return (state) => {
       const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
@@ -64,7 +87,10 @@ export abstract class EntityStore<T> {
     };
   }
 
-  static get active() {
+  /**
+   * Returns a selector for the active entity
+   */
+  static get active(): StateSelector {
     const that = this;
     return (state) => {
       const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
@@ -72,7 +98,10 @@ export abstract class EntityStore<T> {
     };
   }
 
-  static get keys() {
+  /**
+   * Returns a selector for the keys of all entities
+   */
+  static get keys(): StateSelector<string[]> {
     const that = this;
     return (state) => {
       const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
@@ -80,7 +109,10 @@ export abstract class EntityStore<T> {
     };
   }
 
-  static get entities() {
+  /**
+   * Returns a selector for all entities
+   */
+  static get entities(): StateSelector<any[]> {
     const that = this;
     return (state) => {
       const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
@@ -88,7 +120,10 @@ export abstract class EntityStore<T> {
     };
   }
 
-  static get entitiesMap() {
+  /**
+   * Returns a selector for the map of entities
+   */
+  static get entitiesMap(): StateSelector<HashMap<any>> {
     const that = this;
     return (state) => {
       const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
@@ -96,7 +131,10 @@ export abstract class EntityStore<T> {
     };
   }
 
-  static get size() {
+  /**
+   * Returns a selector for the size of the entity map
+   */
+  static get size(): StateSelector<number> {
     const that = this;
     return (state) => {
       const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
@@ -104,7 +142,10 @@ export abstract class EntityStore<T> {
     };
   }
 
-  static get error() {
+  /**
+   * Returns a selector for the error
+   */
+  static get error(): StateSelector<Error | undefined> {
     const that = this;
     return (state) => {
       const name = that.staticStorePath;
@@ -112,25 +153,15 @@ export abstract class EntityStore<T> {
     };
   }
 
-  static get loading() {
+  /**
+   * Returns a selector for the loading state
+   */
+  static get loading(): StateSelector<boolean> {
     const that = this;
     return (state) => {
       const name = that.staticStorePath;
       return elvis(state, name).loading;
     };
-  }
-
-  // Example implemenation of static action getters to allow the following syntax
-  // --> this.store.dispatch(new TodoState.remove(e => e.done));
-  // !!!!!!!!!!!!!!
-  // As you can see as these are static you can't access <T> and lose every type information
-  static get remove(): Newable<any, EntitySelector<any>> {
-    const name = this['NGXS_META'].path;
-    const ReflectedAction = function (data: EntitySelector<any>) {
-      this.payload = data;
-    };
-    ReflectedAction.prototype.constructor.type = `[${name}] remove`;
-    return ReflectedAction as any;
   }
 
   // ------------------- ACTION HANDLERS -------------------
@@ -147,7 +178,7 @@ export abstract class EntityStore<T> {
   }
 
   update({getState, patchState}: StateContext<EntityStateModel<T>>, {payload}: EntityUpdateAction<T>) {
-    let {entities} = getState();
+    let entities = {...getState().entities}; // create copy
 
     let affected: T[];
 
@@ -162,11 +193,11 @@ export abstract class EntityStore<T> {
 
     if (typeof payload.data === 'function') {
       affected.forEach(e => {
-        entities = {...this._update(entities, (<Function>payload.data)(e), this.idOf(e))};
+        entities = this._update(entities, (<Function>payload.data)(e), this.idOf(e));
       });
     } else {
       affected.forEach(e => {
-        entities = {...this._update(entities, payload.data as Partial<T>, this.idOf(e))};
+        entities = this._update(entities, payload.data as Partial<T>, this.idOf(e));
       });
     }
 
@@ -175,8 +206,7 @@ export abstract class EntityStore<T> {
 
   updateActive({getState, patchState}: StateContext<EntityStateModel<T>>, {payload}: EntityUpdateActiveAction<T>) {
     const state = getState();
-    const active = getActive(state);
-    const id = this.idOf(active);
+    const {id, active} = mustGetActive(state);
     const {entities} = state;
 
     if (typeof payload === 'function') {
@@ -235,16 +265,18 @@ export abstract class EntityStore<T> {
 
   private _update(entities: HashMap<T>, entity: Partial<T>, _id?: string): HashMap<T> {
     const id = _id || this.idOf(entity);
-    assertValidId(id);
+    if (id === undefined) {
+      throw new InvalidIdError(_id, this.idOf(entity));
+    }
     const current = entities[id];
-    // TODO: enforce Immutable Entities ?
-    // typeof current === "object" && current !== updated
+    if (current === undefined) {
+      throw new NoSuchEntityError(`ID: ${id}`);
+    }
     entities[id] = this.onUpdate(current, entity);
     return entities;
   }
 
-  // TODO: private?
-  protected setup(storeClass: ExtendsEntityStore<T>, ...actions: string[]) {
+  private setup(storeClass: Type<EntityState<T>>, ...actions: string[]) {
     actions.forEach(fn => {
       const actionName = `[${this.storePath}] ${fn}`;
       storeClass['NGXS_META'].actions[actionName] = [
@@ -264,10 +296,12 @@ export abstract class EntityStore<T> {
 
 }
 
-function assertValidId(id: string) {
-  if (id === undefined) {
-    throw new Error('Invalid ID for update action. Result of getID wasn\'t a valid ID.');
+function mustGetActive<T>(state: EntityStateModel<T>): { id: string, active: T} {
+  const active = getActive(state);
+  if (active === undefined) {
+    throw new NoActiveEntityError();
   }
+  return { id: state.active, active };
 }
 
 function elvis(object: any, path: string) {

@@ -1,17 +1,27 @@
 import {generateActionObject} from '../internal';
 import {EntitySelector, Updater} from './type-alias';
-import {ExtendsEntityStore} from '../entity-store';
+import {EntityState} from '../entity-state';
+import {Type} from '@angular/core';
 
 
 export interface EntityUpdateAction<T> {
   payload: {
-    id: EntitySelector<T>; // string | string[] | ((entity: T) => boolean) | undefined;
-    data: Updater<T>; // Partial<T> | ((entity: T) => Partial<T>);
+    id: EntitySelector<T>;
+    data: Updater<T>;
   };
 }
 
-export function Update<T>(store: ExtendsEntityStore<T>,
-                          id: EntitySelector<T>, // string | string[] | ((entity: T) => boolean) | undefined,
-                          data: Updater<T>): EntityUpdateAction<T> {
-  return generateActionObject('update', store, {id, data});
+export class Update<T> {
+  /**
+   * Generates an action that will update the current active entity.
+   * If no entity is active a runtime error will be thrown.
+   * @param target The targeted state class
+   * @param id An EntitySelector that determines the entities to update
+   * @param data An Updater that will be applied to the selected entities
+   * @see EntitySelector
+   * @see Updater
+   */
+  constructor(target: Type<EntityState<T>>, id: EntitySelector<T>, data: Updater<T>) {
+    return generateActionObject('update', target, {id, data});
+  }
 }

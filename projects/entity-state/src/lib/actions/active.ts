@@ -1,31 +1,55 @@
 import {generateActionObject} from '../internal';
 import {Payload, Updater} from './type-alias';
-import {ExtendsEntityStore} from '../entity-store';
+import {EntityState} from '../entity-state';
+import {Type} from '@angular/core';
 
-/*export interface EntitySetActiveAction {
-  payload: string;
-}
-
-export interface EntityUpdateActiveAction<T> {
-  payload: Partial<T> | ((entity: T) => Partial<T>);
-}*/
 
 export type EntitySetActiveAction = Payload<string>;
 export type EntityUpdateActiveAction<T> = Payload<Updater<T>>;
 
-export function SetActive(store: ExtendsEntityStore<any>, id: string): EntitySetActiveAction {
-  return generateActionObject('setActive', store, id);
+
+export class SetActive {
+  /**
+   * Generates an action that sets an ID that identifies the active entity
+   * @param target The targeted state class
+   * @param id The ID that identifies the active entity
+   */
+  constructor(target: Type<EntityState<any>>, id: string) {
+    return generateActionObject('setActive', target, id);
+  }
 }
 
-export function ClearActive(store: ExtendsEntityStore<any>): {} {
-  return generateActionObject('clearActive', store);
+export class ClearActive {
+  /**
+   * Generates an action that clears the active entity in the given state
+   * @param target The targeted state class
+   */
+  constructor(target: Type<EntityState<any>>) {
+    return generateActionObject('clearActive', target);
+  }
 }
 
-export function RemoveActive(store: ExtendsEntityStore<any>): {} {
-  return generateActionObject('removeActive', store);
+export class RemoveActive {
+  /**
+   * Generates an action that removes the active entity from the state and clears the active ID.
+   * @param target The targeted state class
+   */
+  constructor(target: Type<EntityState<any>>) {
+    return generateActionObject('removeActive', target);
+  }
 }
 
-export function UpdateActive<T>(store: ExtendsEntityStore<T>,
-                                payload: Updater<T>): EntityUpdateActiveAction<T> {
-  return generateActionObject('updateActive', store, payload);
+
+// TODO: Confirm behaviour
+export class UpdateActive<T> {
+  /**
+   * Generates an action that will update the current active entity.
+   * If no entity is active a runtime error will be thrown.
+   * @param target The targeted state class
+   * @param payload An Updater payload
+   * @see Updater
+   */
+  constructor(target: Type<EntityState<T>>, payload: Updater<T>) {
+    return generateActionObject('updateActive', target, payload);
+  }
 }

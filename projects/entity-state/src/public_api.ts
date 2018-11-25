@@ -3,4 +3,5 @@
  */
 
 export * from './lib/actions';
-export * from './lib/entity-store';
+export * from './lib/entity-state';
+export * from './lib/errors';

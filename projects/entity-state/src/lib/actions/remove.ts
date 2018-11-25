@@ -1,12 +1,19 @@
 import {generateActionObject} from '../internal';
 import {EntitySelector, Payload} from './type-alias';
-import {ExtendsEntityStore} from '../entity-store';
+import {EntityState} from '../entity-state';
+import {Type} from '@angular/core';
 
-/*export interface EntityRemoveAction<T> {
-  payload: EntitySelector<T>;
-}*/
 export type EntityRemoveAction<T> = Payload<EntitySelector<T>>;
 
-export function Remove<T>(store: ExtendsEntityStore<T>, payload: EntitySelector<T>): EntityRemoveAction<T> {
-  return generateActionObject('remove', store, payload);
+export class Remove<T> {
+  /**
+   * Generates an action that will remove the given entities from the state.
+   * Put null if all entities should be removed.
+   * @param target The targeted state class
+   * @param payload An EntitySelector payload
+   * @see EntitySelector
+   */
+  constructor(target: Type<EntityState<T>>, payload: EntitySelector<T>) {
+    return generateActionObject('remove', target, payload);
+  }
 }
