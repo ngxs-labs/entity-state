@@ -6,8 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "build:prod": "npm run build -- --ts-config tsconfig.prod.json",
-    "test": "ng test",
-    "test:prod": "npm run test -- --ts-config tsconfig.prod.json",
+    "test": "ng test entity-state-integration",
+    "test:prod": "npm run test entity-state-integration -- --ts-config tsconfig.prod.json",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "lib": "ng build entity-state"
