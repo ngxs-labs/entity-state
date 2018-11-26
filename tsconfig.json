@@ -19,10 +19,10 @@
     ],
     "paths": {
       "entity-state": [
-        "projects/entity-state/src"
+        "dist/entity-state"
       ],
       "entity-state/*": [
-        "projects/entity-state/src/*"
+        "dist/entity-state/*"
       ]
     }
   }
