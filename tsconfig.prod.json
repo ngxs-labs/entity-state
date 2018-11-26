@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "entity-state": [
+        "dist/entity-state"
+      ],
+      "entity-state/*": [
+        "dist/entity-state/*"
+      ]
+    }
+  }
+}
