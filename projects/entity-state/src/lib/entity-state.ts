@@ -195,7 +195,7 @@ export abstract class EntityState<T> {
     const {entities, ids} = getState();
     if (Array.isArray(payload)) {
       payload.forEach(e => entities[this.idOf(e)] = e);
-      ids.push(...payload.map(e => this.idOf(e)));
+      ids.push(...payload.map(e => this.idOf(e)).filter(id => !ids.includes(id)));
     } else {
       const id = this.idOf(payload);
       entities[id] = payload;
