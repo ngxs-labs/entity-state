@@ -2,8 +2,7 @@ import {ComponentFixture, ComponentFixtureAutoDetect, TestBed} from '@angular/co
 import {AppComponent} from './app.component';
 import {AppModule} from './app.module';
 import {Store} from '@ngxs/store';
-import {defaultEntityState} from 'entity-state';
-import {NoActiveEntityError} from '../../projects/entity-state/src/lib/errors';
+import {defaultEntityState, NoActiveEntityError} from 'entity-state';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -27,6 +26,12 @@ describe('AppComponent', () => {
 
     component.toDos$.subscribe(state => {
       expect(state.length).toBe(1);
+    });
+    component.latestId$.subscribe(state => {
+      expect(state).toBe('NGXS Entity Store 1');
+    });
+    component.latest$.subscribe(state => {
+      expect(state.description).toBe('Some Descr1');
     });
   });
 
@@ -58,13 +63,20 @@ describe('AppComponent', () => {
     component.activeId$.subscribe(state => {
       expect(state).toBeUndefined();
     });
+
+    component.latestId$.subscribe(state => {
+      expect(state).toBe('NGXS Entity Store 2');
+    });
   });
 
   it('should add multiple todos', () => {
-    component.addMultiple();
+    component.addMultiple(); // adds 'NGXS Entity Store 1' and 'NGXS Entity Store 2'
 
     component.toDos$.subscribe(state => {
       expect(state.length).toBe(2);
+    });
+    component.latestId$.subscribe(state => {
+      expect(state).toBe('NGXS Entity Store 2');
     });
   });
 
@@ -185,12 +197,12 @@ describe('AppComponent', () => {
   });
 
   it('should remove multiple todos', () => {
-    component.addToDo();
+    component.addToDo(); // NGXS Entity Store 1
     component.open('NGXS Entity Store 1');
-    component.addToDo();
-    component.addToDo();
-    component.addToDo();
-    component.addToDo();
+    component.addToDo(); // NGXS Entity Store 2
+    component.addToDo(); // NGXS Entity Store 3
+    component.addToDo(); // NGXS Entity Store 4
+    component.addToDo(); // NGXS Entity Store 5
     component.removeMultiple([
       'NGXS Entity Store 1',
       'NGXS Entity Store 2',
@@ -203,6 +215,9 @@ describe('AppComponent', () => {
 
     component.activeId$.subscribe(state => {
       expect(state).toBeUndefined();
+    });
+    component.latestId$.subscribe(state => {
+      expect(state).toBe('NGXS Entity Store 5');
     });
   });
 
@@ -302,6 +317,10 @@ describe('AppComponent', () => {
     component.loading$.subscribe(state => {
       expect(state).toBeTruthy();
     });
+
+    component.latestId$.subscribe(state => {
+      expect(state).toBeUndefined();
+    });
   });
 
   it('should completely reset store', () => {
@@ -327,6 +346,10 @@ describe('AppComponent', () => {
 
     component.loading$.subscribe(state => {
       expect(state).toBeFalsy();
+    });
+
+    component.latestId$.subscribe(state => {
+      expect(state).toBeUndefined();
     });
   });
 

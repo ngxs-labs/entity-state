@@ -21,6 +21,7 @@ export interface EntityStateModel<T> {
   loading: boolean;
   error: Error | undefined;
   active: string | undefined;
+  ids: string[];
 }
 
 /**
@@ -30,13 +31,14 @@ export interface EntityStateModel<T> {
 export function defaultEntityState(): EntityStateModel<any> {
   return {
     entities: {},
+    ids: [],
     loading: false,
     error: undefined,
     active: undefined
   };
 }
 
-export type StateSelector<T = any> = (state: EntityStateModel<any>) => T;
+export type StateSelector<T> = (state: EntityStateModel<any>) => T;
 
 // @dynamic
 export abstract class EntityState<T> {
@@ -90,7 +92,7 @@ export abstract class EntityState<T> {
   /**
    * Returns a selector for the active entity
    */
-  static get active(): StateSelector {
+  static get active(): StateSelector<any> {
     const that = this;
     return (state) => {
       const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
@@ -110,13 +112,13 @@ export abstract class EntityState<T> {
   }
 
   /**
-   * Returns a selector for all entities
+   * Returns a selector for all entities, sorted by insertion order
    */
   static get entities(): StateSelector<any[]> {
     const that = this;
     return (state) => {
       const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
-      return Object.values(subState.entities);
+      return subState.ids.map(id => subState.entities[id]);
     };
   }
 
@@ -164,17 +166,48 @@ export abstract class EntityState<T> {
     };
   }
 
+  /**
+   * Returns a selector for the latest added entity
+   */
+  static get latest(): StateSelector<any> {
+    const that = this;
+    return (state) => {
+      const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
+      const latestId = subState.ids[subState.ids.length - 1];
+      return subState.entities[latestId];
+    };
+  }
+
+  /**
+   * Returns a selector for the latest added entity id
+   */
+  static get latestId(): StateSelector<string | undefined> {
+    const that = this;
+    return (state) => {
+      const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
+      return subState.ids[subState.ids.length - 1];
+    };
+  }
+
   // ------------------- ACTION HANDLERS -------------------
 
   add({getState, patchState}: StateContext<EntityStateModel<T>>, {payload}: EntityAddAction<T>) {
-    const {entities} = getState();
+    const {entities, ids} = getState();
     if (Array.isArray(payload)) {
-      (payload as T[]).forEach(e => entities[this.idOf(e)] = e);
+      payload.forEach(e => entities[this.idOf(e)] = e);
+      ids.push(...payload.map(e => this.idOf(e)));
     } else {
-      entities[this.idOf(payload)] = payload;
+      const id = this.idOf(payload);
+      entities[id] = payload;
+      if (!ids.includes(id)) {
+        ids.push(id);
+      }
     }
 
-    patchState({entities: {...entities}});
+    patchState({
+      entities: {...entities},
+      ids: [...ids]
+    });
   }
 
   update({getState, patchState}: StateContext<EntityStateModel<T>>, {payload}: EntityUpdateAction<T>) {
@@ -217,16 +250,24 @@ export abstract class EntityState<T> {
   }
 
   removeActive({getState, patchState}: StateContext<EntityStateModel<T>>) {
-    const {entities, active} = getState();
+    const {entities, ids, active} = getState();
     delete entities[active];
-    patchState({entities: {...entities}, active: undefined});
+    patchState({
+      entities: {...entities},
+      ids: ids.filter(id => id !== active),
+      active: undefined
+    });
   }
 
   remove({getState, patchState}: StateContext<EntityStateModel<T>>, {payload}: EntityRemoveAction<T>) {
-    const {entities, active} = getState();
+    const {entities, ids, active} = getState();
 
     if (payload === null) {
-      patchState({entities: {}, active: undefined});
+      patchState({
+        entities: {},
+        ids: [],
+        active: undefined
+      });
     } else {
       const deleteIds: string[] = typeof payload === 'function' ?
         Object.values(entities).filter(e => payload(e)).map(e => this.idOf(e)) :
@@ -236,6 +277,7 @@ export abstract class EntityState<T> {
       deleteIds.forEach(id => delete entities[id]);
       patchState({
         entities: {...entities},
+        ids: ids.filter(id => !deleteIds.includes(id)),
         active: wasActive ? undefined : active
       });
     }

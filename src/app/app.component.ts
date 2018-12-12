@@ -18,6 +18,8 @@ export class AppComponent {
   @Select(TodoState.keys) keys$: Observable<string[]>;
   @Select(TodoState.loading) loading$: Observable<boolean>;
   @Select(TodoState.error) error$: Observable<Error | undefined>;
+  @Select(TodoState.latestId) latestId$: Observable<string>;
+  @Select(TodoState.latest) latest$: Observable<ToDo>;
 
   private counter = 0;
   private loading = false;
