@@ -1,7 +1,7 @@
-import {generateActionObject} from '../internal';
-import {Payload} from './type-alias';
-import {EntityState} from '../entity-state';
-import {Type} from '@angular/core';
+import { generateActionObject } from '../internal';
+import { Payload } from './type-alias';
+import { EntityState } from '../entity-state';
+import { Type } from '@angular/core';
 
 export type EntityAddAction<T> = Payload<T | T[]>;
 

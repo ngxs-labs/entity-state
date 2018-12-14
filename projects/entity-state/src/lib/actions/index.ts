@@ -6,5 +6,3 @@ export * from './active';
 export * from './error';
 export * from './reset';
 export * from './type-alias';
-
-
