@@ -5,14 +5,14 @@ export class EntityStateError extends Error {
 }
 
 export class NoActiveEntityError extends EntityStateError {
-  constructor(additionalInformation: string = "") {
-    super(("No active entity to affect. " + additionalInformation).trim());
+  constructor(additionalInformation: string = '') {
+    super(('No active entity to affect. ' + additionalInformation).trim());
   }
 }
 
 export class NoSuchEntityError extends EntityStateError {
-  constructor(additionalInformation: string = "") {
-    super(("No such entity found. " + additionalInformation).trim());
+  constructor(additionalInformation: string = '') {
+    super(('No such entity found. ' + additionalInformation).trim());
   }
 }
 

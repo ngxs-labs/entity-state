@@ -1,7 +1,7 @@
-import {generateActionObject} from '../internal';
-import {EntitySelector, Payload} from './type-alias';
-import {EntityState} from '../entity-state';
-import {Type} from '@angular/core';
+import { generateActionObject } from '../internal';
+import { EntitySelector, Payload } from './type-alias';
+import { EntityState } from '../entity-state';
+import { Type } from '@angular/core';
 
 export type EntityRemoveAction<T> = Payload<EntitySelector<T>>;
 

@@ -1,5 +1,5 @@
-import {EntityState, EntityStateModel} from './entity-state';
-import {Type} from '@angular/core';
+import { EntityState, EntityStateModel } from './entity-state';
+import { Type } from '@angular/core';
 
 /**
  * type alias for javascript object literal
@@ -16,7 +16,7 @@ export interface HashMap<T> {
  */
 export function generateActionObject<T>(fn: string, store: Type<EntityState<T>>, payload?: any) {
   const name = store['NGXS_META'].path;
-  const ReflectedAction = function (data: T) {
+  const ReflectedAction = function(data: T) {
     this.payload = data;
   };
   const obj = new ReflectedAction(payload);

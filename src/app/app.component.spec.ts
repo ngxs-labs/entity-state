@@ -1,8 +1,8 @@
-import {ComponentFixture, ComponentFixtureAutoDetect, TestBed} from '@angular/core/testing';
-import {AppComponent} from './app.component';
-import {AppModule} from './app.module';
-import {Store} from '@ngxs/store';
-import {defaultEntityState, NoActiveEntityError} from 'entity-state';
+import { ComponentFixture, ComponentFixtureAutoDetect, TestBed } from '@angular/core/testing';
+import { AppComponent } from './app.component';
+import { AppModule } from './app.module';
+import { Store } from '@ngxs/store';
+import { defaultEntityState, NoActiveEntityError } from 'entity-state';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -11,14 +11,14 @@ describe('AppComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [AppModule],
-      providers: [{provide: ComponentFixtureAutoDetect, useValue: true}]
+      providers: [{ provide: ComponentFixtureAutoDetect, useValue: true }]
     });
 
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
 
     const store = TestBed.get(Store);
-    store.reset({todo: defaultEntityState()});
+    store.reset({ todo: defaultEntityState() });
   });
 
   it('should add a todo', () => {
@@ -39,7 +39,7 @@ describe('AppComponent', () => {
     component.addToDo();
     component.setDone({
       title: 'NGXS Entity Store 1',
-      description: 'Doesn\'t matter. Just need title for ID',
+      description: "Doesn't matter. Just need title for ID",
       done: false
     });
 
@@ -203,11 +203,7 @@ describe('AppComponent', () => {
     component.addToDo(); // NGXS Entity Store 3
     component.addToDo(); // NGXS Entity Store 4
     component.addToDo(); // NGXS Entity Store 5
-    component.removeMultiple([
-      'NGXS Entity Store 1',
-      'NGXS Entity Store 2',
-      'NGXS Entity Store 3'
-    ]);
+    component.removeMultiple(['NGXS Entity Store 1', 'NGXS Entity Store 2', 'NGXS Entity Store 3']);
 
     component.toDos$.subscribe(([first]) => {
       expect(first.title).toBe('NGXS Entity Store 4');
@@ -352,5 +348,4 @@ describe('AppComponent', () => {
       expect(state).toBeUndefined();
     });
   });
-
 });
