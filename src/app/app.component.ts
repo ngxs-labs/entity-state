@@ -1,8 +1,20 @@
-import {Component} from '@angular/core';
-import {Select, Store} from '@ngxs/store';
-import {AddOrReplace, ClearActive, Remove, RemoveActive, Reset, SetActive, SetError, SetLoading, Update, UpdateActive} from 'entity-state';
-import {ToDo, TodoState} from './store/todo';
-import {Observable} from 'rxjs';
+import { Component } from '@angular/core';
+import { Select, Store } from '@ngxs/store';
+import {
+  Add,
+  ClearActive,
+  CreateOrReplace,
+  Remove,
+  RemoveActive,
+  Reset,
+  SetActive,
+  SetError,
+  SetLoading,
+  Update,
+  UpdateActive
+} from 'entity-state';
+import { Observable } from 'rxjs';
+import { ToDo, TodoState } from './store/todo';
 
 @Component({
   selector: 'app-root',
@@ -97,7 +109,7 @@ export class AppComponent {
   }
 
   addToDo() {
-    this.store.dispatch(new AddOrReplace(TodoState, {
+    this.store.dispatch(new Add(TodoState, {
       title: 'NGXS Entity Store ' + (++this.counter),
       description: 'Some Descr' + this.counter,
       done: false
@@ -114,6 +126,14 @@ export class AppComponent {
 
   // --------- for tests ---------
 
+  createOrReplace(title: string) {
+    this.store.dispatch(new CreateOrReplace(TodoState, {
+      title,
+      description: 'Some Descr' + title,
+      done: false
+    }));
+  }
+
   resetState() {
     this.store.dispatch(new Reset(TodoState));
   }
@@ -126,7 +146,7 @@ export class AppComponent {
   }
 
   addMultiple() {
-    this.store.dispatch(new AddOrReplace(TodoState,
+    this.store.dispatch(new Add(TodoState,
       [
         {
           title: 'NGXS Entity Store 1',

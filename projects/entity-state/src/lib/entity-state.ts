@@ -1,6 +1,8 @@
-import {getActive, HashMap} from './internal';
+import {Type} from '@angular/core';
+import {StateContext} from '@ngxs/store';
 import {
   EntityAddAction,
+  EntityCreateOrReplaceAction,
   EntityRemoveAction,
   EntitySetActiveAction,
   EntitySetErrorAction,
@@ -8,9 +10,10 @@ import {
   EntityUpdateAction,
   EntityUpdateActiveAction
 } from './actions';
-import {StateContext} from '@ngxs/store';
-import {Type} from '@angular/core';
 import {InvalidIdError, NoActiveEntityError, NoSuchEntityError} from './errors';
+import {IdStrategy} from './id-strategy';
+import {getActive, HashMap} from './internal';
+import IdGenerator = IdStrategy.IdGenerator;
 
 /**
  * Interface for an EntityState.
@@ -45,12 +48,15 @@ export abstract class EntityState<T> {
 
   private readonly idKey: string;
   private readonly storePath: string;
+  protected readonly idGenerator: IdGenerator<T>;
 
-  protected constructor(storeClass: Type<EntityState<T>>, _idKey: keyof T) {
+  protected constructor(storeClass: Type<EntityState<T>>, _idKey: keyof T, idStrategy: Type<IdGenerator<T>>) {
     this.idKey = _idKey as string;
     this.storePath = storeClass['NGXS_META'].path;
+    this.idGenerator = new idStrategy(_idKey);
+
     this.setup(storeClass,
-      'add',
+      'add', 'createOrReplace',
       'update', 'updateActive',
       'remove', 'removeActive',
       'setLoading', 'setError',
@@ -191,23 +197,25 @@ export abstract class EntityState<T> {
 
   // ------------------- ACTION HANDLERS -------------------
 
+  // a new entity (unless there was an error) will be added
+  // if the entity provides an existing ID, an error will be thrown
+  // In all cases it will do entity[idKey] = id;
   add({getState, patchState}: StateContext<EntityStateModel<T>>, {payload}: EntityAddAction<T>) {
-    const {entities, ids} = getState();
-    if (Array.isArray(payload)) {
-      payload.forEach(e => entities[this.idOf(e)] = e);
-      ids.push(...payload.map(e => this.idOf(e)).filter(id => !ids.includes(id)));
-    } else {
-      const id = this.idOf(payload);
-      entities[id] = payload;
-      if (!ids.includes(id)) {
-        ids.push(id);
-      }
-    }
+    const updated = this._upsert(getState(), payload,
+      // for automated ID strategies this won't throw an error
+      // for IdStrategy.FROM_ENTITY it will throw an error if no ID is present
+      (p, state) => this.idGenerator.generateId(p, state)
+    );
+    patchState({...updated});
+  }
 
-    patchState({
-      entities: {...entities},
-      ids: [...ids]
-    });
+  // TODO: payload type, add actions
+  // if a valid ID is present or can be generated it will use that and create/replace without error
+  createOrReplace({getState, patchState}: StateContext<EntityStateModel<T>>, {payload}: EntityCreateOrReplaceAction<T>) {
+    const updated = this._upsert(getState(), payload,
+      (p, state) => this.idGenerator.getPresentIdOrGenerate(p, state)
+    );
+    patchState({...updated});
   }
 
   update({getState, patchState}: StateContext<EntityStateModel<T>>, {payload}: EntityUpdateAction<T>) {
@@ -305,6 +313,25 @@ export abstract class EntityState<T> {
 
   // ------------------- UTILITY -------------------
 
+  private _upsert(state: EntityStateModel<T>,
+                  payload: Partial<T> | Partial<T>[],
+                  generateId: (payload: Partial<T>, state: EntityStateModel<T>) => string): Partial<EntityStateModel<T>> {
+    const {entities, ids} = state;
+    asArray(payload).forEach(entity => {
+      const id = generateId(entity, state);
+      entity[this.idKey] = id;
+      entities[id] = entity as T; // TODO: check implementation if partial or not is needed
+      if (!ids.includes(id)) {
+        ids.push(id);
+      }
+    });
+
+    return {
+      entities: {...entities},
+      ids: [...ids]
+    };
+  }
+
   private _update(entities: HashMap<T>, entity: Partial<T>, _id?: string): HashMap<T> {
     const id = _id || this.idOf(entity);
     if (id === undefined) {
@@ -338,16 +365,20 @@ export abstract class EntityState<T> {
 
 }
 
-function mustGetActive<T>(state: EntityStateModel<T>): { id: string, active: T} {
+function mustGetActive<T>(state: EntityStateModel<T>): { id: string, active: T } {
   const active = getActive(state);
   if (active === undefined) {
     throw new NoActiveEntityError();
   }
-  return { id: state.active, active };
+  return {id: state.active, active};
 }
 
 function elvis(object: any, path: string) {
   return path ? path.split('.').reduce(function (value, key) {
     return value && value[key];
   }, object) : object;
+}
+
+function asArray<T>(input: T | T[]): T[] {
+  return Array.isArray(input) ? input : [input];
 }

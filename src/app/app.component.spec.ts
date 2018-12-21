@@ -1,8 +1,8 @@
 import {ComponentFixture, ComponentFixtureAutoDetect, TestBed} from '@angular/core/testing';
-import {AppComponent} from './app.component';
-import {AppModule} from './app.module';
 import {Store} from '@ngxs/store';
 import {defaultEntityState, NoActiveEntityError} from 'entity-state';
+import {AppComponent} from './app.component';
+import {AppModule} from './app.module';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -32,6 +32,23 @@ describe('AppComponent', () => {
     });
     component.latest$.subscribe(state => {
       expect(state.description).toBe('Some Descr1');
+    });
+  });
+
+  it('should createOrReplace a todo', () => {
+    component.createOrReplace('1');
+    component.createOrReplace('1');
+    component.createOrReplace('2');
+    component.createOrReplace('1');
+
+    component.toDos$.subscribe(state => {
+      expect(state.length).toBe(2);
+    });
+    component.latestId$.subscribe(state => {
+      expect(state).toBe('2');
+    });
+    component.latest$.subscribe(state => {
+      expect(state.description).toBe('Some Descr2');
     });
   });
 
@@ -203,11 +220,7 @@ describe('AppComponent', () => {
     component.addToDo(); // NGXS Entity Store 3
     component.addToDo(); // NGXS Entity Store 4
     component.addToDo(); // NGXS Entity Store 5
-    component.removeMultiple([
-      'NGXS Entity Store 1',
-      'NGXS Entity Store 2',
-      'NGXS Entity Store 3'
-    ]);
+    component.removeMultiple(['NGXS Entity Store 1', 'NGXS Entity Store 2', 'NGXS Entity Store 3']);
 
     component.toDos$.subscribe(([first]) => {
       expect(first.title).toBe('NGXS Entity Store 4');
