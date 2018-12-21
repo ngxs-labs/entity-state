@@ -129,6 +129,31 @@ export abstract class EntityState<T> {
   }
 
   /**
+   * Returns a selector for the nth entity, sorted by insertion order
+   */
+  static nthEntity(index: number): StateSelector<any> { // tslint:disable-line:member-ordering
+    const that = this;
+    return (state) => {
+      const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
+      const id = subState.ids[index];
+      return subState.entities[id];
+    };
+  }
+
+  /**
+   * Returns a selector for paginated entities, sorted by insertion order
+   */
+  static paginatedEntities(size: number, page: number): StateSelector<any[]> { // tslint:disable-line:member-ordering
+    const that = this;
+    return (state) => {
+      const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
+      return subState.ids
+        .slice(page * size, (page + 1) * size)
+        .map(id => subState.entities[id]);
+    };
+  }
+
+  /**
    * Returns a selector for the map of entities
    */
   static get entitiesMap(): StateSelector<HashMap<any>> {

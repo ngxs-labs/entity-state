@@ -172,4 +172,11 @@ export class AppComponent {
     this.store.dispatch(new RemoveActive(TodoState));
   }
 
+  getPaginatedEntities(size: number, page: number): ToDo[] {
+    return this.store.selectSnapshot(TodoState.paginatedEntities(size, page));
+  }
+
+  getNthEntity(index: number): ToDo {
+    return this.store.selectSnapshot(TodoState.nthEntity(index));
+  }
 }

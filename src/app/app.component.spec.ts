@@ -366,4 +366,44 @@ describe('AppComponent', () => {
     });
   });
 
+  it('should paginate entities', () => {
+    const generateTitles = (from: number, to: number): string[] => {
+      const arr = [];
+      for (; from <= to; from++) {
+        arr.push('NGXS Entity Store ' + from);
+      }
+      return arr;
+    };
+
+    for (let i = 0; i < 13; i++) {
+      component.addToDo();
+    }
+
+    const firstPage = component.getPaginatedEntities(5, 0).map(t => t.title);
+    const secondPage = component.getPaginatedEntities(5, 1).map(t => t.title);
+    const lastPage = component.getPaginatedEntities(5, 2).map(t => t.title);
+
+    expect(firstPage.length).toBe(5);
+    expect(firstPage).toEqual(generateTitles(1, 5));
+
+    expect(secondPage.length).toBe(5);
+    expect(secondPage).toEqual(generateTitles(6, 10));
+
+    expect(lastPage.length).toBe(3);
+    expect(lastPage).toEqual(generateTitles(11, 13));
+  });
+
+  it('should select nth entities', () => {
+
+    const count = 10;
+    for (let i = 0; i < count; i++) {
+      component.addToDo();
+    }
+
+    for (let i = 0; i < count; i++) {
+      const toDo = component.getNthEntity(i);
+      expect(toDo.title).toEqual('NGXS Entity Store ' + (i + 1));
+    }
+  });
+
 });
