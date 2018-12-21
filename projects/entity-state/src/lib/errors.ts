@@ -21,3 +21,21 @@ export class InvalidIdError extends EntityStateError {
     super(`Unable to use passed or calculated ID. Passed: ${passedId}, idOf(entity): ${calculatedId}`);
   }
 }
+
+export class InvalidIdOfError extends EntityStateError {
+  constructor() {
+    super(`idOf returned undefined`);
+  }
+}
+
+export class ProvidedIdAlreadyExistsError extends Error {
+  constructor(providedId: string) {
+    super(`The provided ID already exists: ${providedId}`);
+  }
+}
+
+export class UnreachableCaseError extends Error {
+  constructor(val: never) {
+    super(`Unreachable case: ${val}`);
+  }
+}
