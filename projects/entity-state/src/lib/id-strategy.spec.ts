@@ -1,4 +1,4 @@
-import {EntityIdGenerator, IdGenerator, IncrementingIdGenerator, UUIDGenerator} from './id-generator';
+import {EntityIdGenerator, IdGenerator, IncrementingIdGenerator, UUIDGenerator} from './id-strategy';
 import {EntityStateModel} from './entity-state';
 import {InvalidIdOfError} from './errors';
 
