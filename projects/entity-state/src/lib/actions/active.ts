@@ -1,12 +1,10 @@
-import {generateActionObject} from '../internal';
-import {Payload, Updater} from './type-alias';
-import {EntityState} from '../entity-state';
-import {Type} from '@angular/core';
-
+import { generateActionObject } from '../internal';
+import { Payload, Updater } from './type-alias';
+import { EntityState } from '../entity-state';
+import { Type } from '@angular/core';
 
 export type EntitySetActiveAction = Payload<string>;
 export type EntityUpdateActiveAction<T> = Payload<Updater<T>>;
-
 
 export class SetActive {
   /**
@@ -38,7 +36,6 @@ export class RemoveActive {
     return generateActionObject('removeActive', target);
   }
 }
-
 
 // TODO: Confirm behaviour
 export class UpdateActive<T> {

@@ -1,8 +1,9 @@
 {
   "rulesDirectory": [
-    "node_modules/codelyzer"
+    "codelyzer"
   ],
   "rules": {
+    "arrow-parens": false,
     "arrow-return-shorthand": true,
     "callable-types": true,
     "class-name": true,
@@ -85,7 +86,7 @@
     ],
     "prefer-const": true,
     "quotemark": [
-      false,
+      true,
       "single"
     ],
     "radix": true,
