@@ -1,5 +1,5 @@
-import {Type} from '@angular/core';
-import {StateContext} from '@ngxs/store';
+import { Type } from '@angular/core';
+import { StateContext } from '@ngxs/store';
 import {
   EntityAddAction,
   EntityCreateOrReplaceAction,
@@ -10,9 +10,9 @@ import {
   EntityUpdateAction,
   EntityUpdateActiveAction
 } from './actions';
-import {InvalidIdError, NoActiveEntityError, NoSuchEntityError} from './errors';
-import {IdStrategy} from './id-strategy';
-import {getActive, HashMap} from './internal';
+import { InvalidIdError, NoActiveEntityError, NoSuchEntityError } from './errors';
+import { IdStrategy } from './id-strategy';
+import { getActive, HashMap } from './internal';
 import IdGenerator = IdStrategy.IdGenerator;
 
 /**
@@ -45,23 +45,33 @@ export type StateSelector<T> = (state: EntityStateModel<any>) => T;
 
 // @dynamic
 export abstract class EntityState<T> {
-
   private readonly idKey: string;
   private readonly storePath: string;
   protected readonly idGenerator: IdGenerator<T>;
 
-  protected constructor(storeClass: Type<EntityState<T>>, _idKey: keyof T, idStrategy: Type<IdGenerator<T>>) {
+  protected constructor(
+    storeClass: Type<EntityState<T>>,
+    _idKey: keyof T,
+    idStrategy: Type<IdGenerator<T>>
+  ) {
     this.idKey = _idKey as string;
     this.storePath = storeClass['NGXS_META'].path;
     this.idGenerator = new idStrategy(_idKey);
 
-    this.setup(storeClass,
-      'add', 'createOrReplace',
-      'update', 'updateActive',
-      'remove', 'removeActive',
-      'setLoading', 'setError',
-      'setActive', 'clearActive',
-      'reset');
+    this.setup(
+      storeClass,
+      'add',
+      'createOrReplace',
+      'update',
+      'updateActive',
+      'remove',
+      'removeActive',
+      'setLoading',
+      'setError',
+      'setActive',
+      'clearActive',
+      'reset'
+    );
   }
 
   private static get staticStorePath(): string {
@@ -89,7 +99,7 @@ export abstract class EntityState<T> {
    */
   static get activeId(): StateSelector<string> {
     const that = this;
-    return (state) => {
+    return state => {
       const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
       return subState.active;
     };
@@ -100,7 +110,7 @@ export abstract class EntityState<T> {
    */
   static get active(): StateSelector<any> {
     const that = this;
-    return (state) => {
+    return state => {
       const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
       return getActive(subState);
     };
@@ -111,7 +121,7 @@ export abstract class EntityState<T> {
    */
   static get keys(): StateSelector<string[]> {
     const that = this;
-    return (state) => {
+    return state => {
       const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
       return Object.keys(subState.entities);
     };
@@ -122,7 +132,7 @@ export abstract class EntityState<T> {
    */
   static get entities(): StateSelector<any[]> {
     const that = this;
-    return (state) => {
+    return state => {
       const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
       return subState.ids.map(id => subState.entities[id]);
     };
@@ -131,9 +141,10 @@ export abstract class EntityState<T> {
   /**
    * Returns a selector for the nth entity, sorted by insertion order
    */
-  static nthEntity(index: number): StateSelector<any> { // tslint:disable-line:member-ordering
+  static nthEntity(index: number): StateSelector<any> {
+    // tslint:disable-line:member-ordering
     const that = this;
-    return (state) => {
+    return state => {
       const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
       const id = subState.ids[index];
       return subState.entities[id];
@@ -143,9 +154,10 @@ export abstract class EntityState<T> {
   /**
    * Returns a selector for paginated entities, sorted by insertion order
    */
-  static paginatedEntities(size: number, page: number): StateSelector<any[]> { // tslint:disable-line:member-ordering
+  static paginatedEntities(size: number, page: number): StateSelector<any[]> {
+    // tslint:disable-line:member-ordering
     const that = this;
-    return (state) => {
+    return state => {
       const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
       return subState.ids
         .slice(page * size, (page + 1) * size)
@@ -158,7 +170,7 @@ export abstract class EntityState<T> {
    */
   static get entitiesMap(): StateSelector<HashMap<any>> {
     const that = this;
-    return (state) => {
+    return state => {
       const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
       return subState.entities;
     };
@@ -169,7 +181,7 @@ export abstract class EntityState<T> {
    */
   static get size(): StateSelector<number> {
     const that = this;
-    return (state) => {
+    return state => {
       const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
       return Object.keys(subState.entities).length;
     };
@@ -180,7 +192,7 @@ export abstract class EntityState<T> {
    */
   static get error(): StateSelector<Error | undefined> {
     const that = this;
-    return (state) => {
+    return state => {
       const name = that.staticStorePath;
       return elvis(state, name).error;
     };
@@ -191,7 +203,7 @@ export abstract class EntityState<T> {
    */
   static get loading(): StateSelector<boolean> {
     const that = this;
-    return (state) => {
+    return state => {
       const name = that.staticStorePath;
       return elvis(state, name).loading;
     };
@@ -202,7 +214,7 @@ export abstract class EntityState<T> {
    */
   static get latest(): StateSelector<any> {
     const that = this;
-    return (state) => {
+    return state => {
       const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
       const latestId = subState.ids[subState.ids.length - 1];
       return subState.entities[latestId];
@@ -214,7 +226,7 @@ export abstract class EntityState<T> {
    */
   static get latestId(): StateSelector<string | undefined> {
     const that = this;
-    return (state) => {
+    return state => {
       const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
       return subState.ids[subState.ids.length - 1];
     };
@@ -225,26 +237,37 @@ export abstract class EntityState<T> {
   // a new entity (unless there was an error) will be added
   // if the entity provides an existing ID, an error will be thrown
   // In all cases it will do entity[idKey] = id;
-  add({getState, patchState}: StateContext<EntityStateModel<T>>, {payload}: EntityAddAction<T>) {
-    const updated = this._upsert(getState(), payload,
+  add(
+    { getState, patchState }: StateContext<EntityStateModel<T>>,
+    { payload }: EntityAddAction<T>
+  ) {
+    const updated = this._upsert(
+      getState(),
+      payload,
       // for automated ID strategies this won't throw an error
       // for IdStrategy.FROM_ENTITY it will throw an error if no ID is present
       (p, state) => this.idGenerator.generateId(p, state)
     );
-    patchState({...updated});
+    patchState({ ...updated });
   }
 
   // TODO: payload type, add actions
   // if a valid ID is present or can be generated it will use that and create/replace without error
-  createOrReplace({getState, patchState}: StateContext<EntityStateModel<T>>, {payload}: EntityCreateOrReplaceAction<T>) {
-    const updated = this._upsert(getState(), payload,
-      (p, state) => this.idGenerator.getPresentIdOrGenerate(p, state)
+  createOrReplace(
+    { getState, patchState }: StateContext<EntityStateModel<T>>,
+    { payload }: EntityCreateOrReplaceAction<T>
+  ) {
+    const updated = this._upsert(getState(), payload, (p, state) =>
+      this.idGenerator.getPresentIdOrGenerate(p, state)
     );
-    patchState({...updated});
+    patchState({ ...updated });
   }
 
-  update({getState, patchState}: StateContext<EntityStateModel<T>>, {payload}: EntityUpdateAction<T>) {
-    let entities = {...getState().entities}; // create copy
+  update(
+    { getState, patchState }: StateContext<EntityStateModel<T>>,
+    { payload }: EntityUpdateAction<T>
+  ) {
+    let entities = { ...getState().entities }; // create copy
 
     let affected: T[];
 
@@ -267,33 +290,39 @@ export abstract class EntityState<T> {
       });
     }
 
-    patchState({entities});
+    patchState({ entities });
   }
 
-  updateActive({getState, patchState}: StateContext<EntityStateModel<T>>, {payload}: EntityUpdateActiveAction<T>) {
+  updateActive(
+    { getState, patchState }: StateContext<EntityStateModel<T>>,
+    { payload }: EntityUpdateActiveAction<T>
+  ) {
     const state = getState();
-    const {id, active} = mustGetActive(state);
-    const {entities} = state;
+    const { id, active } = mustGetActive(state);
+    const { entities } = state;
 
     if (typeof payload === 'function') {
-      patchState({entities: {...this._update(entities, payload(active), id)}});
+      patchState({ entities: { ...this._update(entities, payload(active), id) } });
     } else {
-      patchState({entities: {...this._update(entities, payload, id)}});
+      patchState({ entities: { ...this._update(entities, payload, id) } });
     }
   }
 
-  removeActive({getState, patchState}: StateContext<EntityStateModel<T>>) {
-    const {entities, ids, active} = getState();
+  removeActive({ getState, patchState }: StateContext<EntityStateModel<T>>) {
+    const { entities, ids, active } = getState();
     delete entities[active];
     patchState({
-      entities: {...entities},
+      entities: { ...entities },
       ids: ids.filter(id => id !== active),
       active: undefined
     });
   }
 
-  remove({getState, patchState}: StateContext<EntityStateModel<T>>, {payload}: EntityRemoveAction<T>) {
-    const {entities, ids, active} = getState();
+  remove(
+    { getState, patchState }: StateContext<EntityStateModel<T>>,
+    { payload }: EntityRemoveAction<T>
+  ) {
+    const { entities, ids, active } = getState();
 
     if (payload === null) {
       patchState({
@@ -302,46 +331,62 @@ export abstract class EntityState<T> {
         active: undefined
       });
     } else {
-      const deleteIds: string[] = typeof payload === 'function' ?
-        Object.values(entities).filter(e => payload(e)).map(e => this.idOf(e)) :
-        Array.isArray(payload) ? payload as string[] : [payload] as string[];
+      const deleteIds: string[] =
+        typeof payload === 'function'
+          ? Object.values(entities)
+              .filter(e => payload(e))
+              .map(e => this.idOf(e))
+          : Array.isArray(payload)
+          ? (payload as string[])
+          : ([payload] as string[]);
 
       const wasActive = deleteIds.includes(active);
       deleteIds.forEach(id => delete entities[id]);
       patchState({
-        entities: {...entities},
+        entities: { ...entities },
         ids: ids.filter(id => !deleteIds.includes(id)),
         active: wasActive ? undefined : active
       });
     }
   }
 
-  reset({setState}: StateContext<EntityStateModel<T>>) {
+  reset({ setState }: StateContext<EntityStateModel<T>>) {
     setState(defaultEntityState());
   }
 
-  setLoading({patchState}: StateContext<EntityStateModel<T>>, {payload}: EntitySetLoadingAction) {
-    patchState({loading: payload});
+  setLoading(
+    { patchState }: StateContext<EntityStateModel<T>>,
+    { payload }: EntitySetLoadingAction
+  ) {
+    patchState({ loading: payload });
   }
 
-  setActive({patchState}: StateContext<EntityStateModel<T>>, {payload}: EntitySetActiveAction) {
-    patchState({active: payload});
+  setActive(
+    { patchState }: StateContext<EntityStateModel<T>>,
+    { payload }: EntitySetActiveAction
+  ) {
+    patchState({ active: payload });
   }
 
-  clearActive({patchState}: StateContext<EntityStateModel<T>>) {
-    patchState({active: undefined});
+  clearActive({ patchState }: StateContext<EntityStateModel<T>>) {
+    patchState({ active: undefined });
   }
 
-  setError({patchState}: StateContext<EntityStateModel<T>>, {payload}: EntitySetErrorAction) {
-    patchState({error: payload});
+  setError(
+    { patchState }: StateContext<EntityStateModel<T>>,
+    { payload }: EntitySetErrorAction
+  ) {
+    patchState({ error: payload });
   }
 
   // ------------------- UTILITY -------------------
 
-  private _upsert(state: EntityStateModel<T>,
-                  payload: Partial<T> | Partial<T>[],
-                  generateId: (payload: Partial<T>, state: EntityStateModel<T>) => string): Partial<EntityStateModel<T>> {
-    const {entities, ids} = state;
+  private _upsert(
+    state: EntityStateModel<T>,
+    payload: Partial<T> | Partial<T>[],
+    generateId: (payload: Partial<T>, state: EntityStateModel<T>) => string
+  ): Partial<EntityStateModel<T>> {
+    const { entities, ids } = state;
     asArray(payload).forEach(entity => {
       const id = generateId(entity, state);
       entity[this.idKey] = id;
@@ -352,7 +397,7 @@ export abstract class EntityState<T> {
     });
 
     return {
-      entities: {...entities},
+      entities: { ...entities },
       ids: [...ids]
     };
   }
@@ -387,21 +432,22 @@ export abstract class EntityState<T> {
     // TODO: assertValidId here every time?
     return data[this.idKey];
   }
-
 }
 
-function mustGetActive<T>(state: EntityStateModel<T>): { id: string, active: T } {
+function mustGetActive<T>(state: EntityStateModel<T>): { id: string; active: T } {
   const active = getActive(state);
   if (active === undefined) {
     throw new NoActiveEntityError();
   }
-  return {id: state.active, active};
+  return { id: state.active, active };
 }
 
 function elvis(object: any, path: string) {
-  return path ? path.split('.').reduce(function (value, key) {
-    return value && value[key];
-  }, object) : object;
+  return path
+    ? path.split('.').reduce(function(value, key) {
+        return value && value[key];
+      }, object)
+    : object;
 }
 
 function asArray<T>(input: T | T[]): T[] {

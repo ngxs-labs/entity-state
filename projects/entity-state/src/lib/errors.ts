@@ -18,7 +18,9 @@ export class NoSuchEntityError extends EntityStateError {
 
 export class InvalidIdError extends EntityStateError {
   constructor(passedId: string, calculatedId: string) {
-    super(`Unable to use passed or calculated ID. Passed: ${passedId}, idOf(entity): ${calculatedId}`);
+    super(
+      `Unable to use passed or calculated ID. Passed: ${passedId}, idOf(entity): ${calculatedId}`
+    );
   }
 }
 

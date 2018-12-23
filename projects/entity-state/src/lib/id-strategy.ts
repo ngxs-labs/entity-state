@@ -1,10 +1,9 @@
-import {EntityStateModel} from './entity-state';
-import {InvalidIdOfError, ProvidedIdAlreadyExistsError} from './errors';
+import { EntityStateModel } from './entity-state';
+import { InvalidIdOfError, ProvidedIdAlreadyExistsError } from './errors';
 
 export namespace IdStrategy {
   export abstract class IdGenerator<T> {
-    protected constructor(protected readonly idKey: keyof T) {
-    }
+    protected constructor(protected readonly idKey: keyof T) {}
 
     abstract generateId(entity: Partial<T>, state: EntityStateModel<any>): string;
 
@@ -14,9 +13,7 @@ export namespace IdStrategy {
 
     getPresentIdOrGenerate(entity: Partial<T>, state: EntityStateModel<any>): string {
       const presentId = this.getIdOf(entity);
-      return presentId === undefined ?
-        this.generateId(entity, state) :
-        presentId;
+      return presentId === undefined ? this.generateId(entity, state) : presentId;
     }
 
     mustGetIdOf(entity: any): string {
@@ -56,10 +53,11 @@ export namespace IdStrategy {
       return nextId;
     }
 
-    private uuidv4(): string { // https://stackoverflow.com/a/2117523
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        const r = Math.random() * 16 | 0; // tslint:disable-line
-        const v = c === 'x' ? r : (r & 0x3 | 0x8); // tslint:disable-line
+    private uuidv4(): string {
+      // https://stackoverflow.com/a/2117523
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = (Math.random() * 16) | 0; // tslint:disable-line
+        const v = c === 'x' ? r : (r & 0x3) | 0x8; // tslint:disable-line
         return v.toString(16);
       });
     }
@@ -78,5 +76,4 @@ export namespace IdStrategy {
       return id;
     }
   }
-
 }

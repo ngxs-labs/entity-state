@@ -22,7 +22,6 @@ import { ToDo, TodoState } from './store/todo';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-
   @Select(TodoState.size) count$: Observable<number>;
   @Select(TodoState.entities) toDos$: Observable<ToDo[]>;
   @Select(TodoState.active) active$: Observable<ToDo>;
@@ -37,8 +36,7 @@ export class AppComponent {
   private loading = false;
   private error = false;
 
-  constructor(private store: Store) {
-  }
+  constructor(private store: Store) {}
 
   toggleLoading() {
     this.loading = !this.loading;
@@ -54,25 +52,34 @@ export class AppComponent {
   }
 
   setDone(toDo: ToDo) {
-    this.store.dispatch(new Update(TodoState, toDo.title, {
-      done: true
-    }));
+    this.store.dispatch(
+      new Update(TodoState, toDo.title, {
+        done: true
+      })
+    );
   }
 
   setOddDone() {
-    this.store.dispatch(new Update(TodoState,
-      (e => parseInt(e.title.substring(18), 10) % 2 === 1), // select all ToDos with odd suffix
-      {done: true} // set them done
-    ));
+    this.store.dispatch(
+      new Update(
+        TodoState,
+        e => parseInt(e.title.substring(18), 10) % 2 === 1, // select all ToDos with odd suffix
+        { done: true } // set them done
+      )
+    );
   }
 
   updateDescription() {
-    this.store.dispatch(new Update(TodoState,
-      (e => e.done), // select all done ToDos
-      (e => { // custom update function: Update their description
-        return { ...e, description: e.description + ' -- This is done!'};
-      })
-    ));
+    this.store.dispatch(
+      new Update(
+        TodoState,
+        e => e.done, // select all done ToDos
+        e => {
+          // custom update function: Update their description
+          return { ...e, description: e.description + ' -- This is done!' };
+        }
+      )
+    );
   }
 
   closeDetails() {
@@ -81,13 +88,17 @@ export class AppComponent {
 
   toggleError() {
     this.error = !this.error;
-    this.store.dispatch(new SetError(TodoState, this.error ? new Error('Example error') : undefined));
+    this.store.dispatch(
+      new SetError(TodoState, this.error ? new Error('Example error') : undefined)
+    );
   }
 
   setDoneActive() {
-    this.store.dispatch(new UpdateActive(TodoState, {
-      done: true
-    }));
+    this.store.dispatch(
+      new UpdateActive(TodoState, {
+        done: true
+      })
+    );
   }
 
   open(title: string) {
@@ -109,29 +120,35 @@ export class AppComponent {
   }
 
   addToDo() {
-    this.store.dispatch(new Add(TodoState, {
-      title: 'NGXS Entity Store ' + (++this.counter),
-      description: 'Some Descr' + this.counter,
-      done: false
-    }));
+    this.store.dispatch(
+      new Add(TodoState, {
+        title: 'NGXS Entity Store ' + ++this.counter,
+        description: 'Some Descr' + this.counter,
+        done: false
+      })
+    );
   }
 
   doneAll() {
-    this.store.dispatch(new Update(
-      TodoState,
-      null, // select all -- TODO: add alias?
-      {done: true}
-    ));
+    this.store.dispatch(
+      new Update(
+        TodoState,
+        null, // select all -- TODO: add alias?
+        { done: true }
+      )
+    );
   }
 
   // --------- for tests ---------
 
   createOrReplace(title: string) {
-    this.store.dispatch(new CreateOrReplace(TodoState, {
-      title,
-      description: 'Some Descr' + title,
-      done: false
-    }));
+    this.store.dispatch(
+      new CreateOrReplace(TodoState, {
+        title,
+        description: 'Some Descr' + title,
+        done: false
+      })
+    );
   }
 
   resetState() {
@@ -139,15 +156,14 @@ export class AppComponent {
   }
 
   updateMultiple() {
-    this.store.dispatch(new Update(TodoState,
-      ['NGXS Entity Store 1', 'NGXS Entity Store 2'],
-      {done: true}
-    ));
+    this.store.dispatch(
+      new Update(TodoState, ['NGXS Entity Store 1', 'NGXS Entity Store 2'], { done: true })
+    );
   }
 
   addMultiple() {
-    this.store.dispatch(new Add(TodoState,
-      [
+    this.store.dispatch(
+      new Add(TodoState, [
         {
           title: 'NGXS Entity Store 1',
           description: 'Some Descr 1',
@@ -158,14 +174,17 @@ export class AppComponent {
           description: 'Some Descr 2',
           done: false
         }
-      ]
-    ));
+      ])
+    );
   }
 
   updateActiveWithFn(): Observable<any> {
-    return this.store.dispatch(new UpdateActive(TodoState,
-      (e => ({ ...e, description: e.description + ' -- Updated with Fn'}))
-    ));
+    return this.store.dispatch(
+      new UpdateActive(TodoState, e => ({
+        ...e,
+        description: e.description + ' -- Updated with Fn'
+      }))
+    );
   }
 
   removeActive() {
