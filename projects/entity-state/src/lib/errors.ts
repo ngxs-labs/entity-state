@@ -36,6 +36,12 @@ export class ProvidedIdAlreadyExistsError extends Error {
   }
 }
 
+export class UnableToGenerateIdError extends Error {
+  constructor(cause: Error) {
+    super(`Unable to generate an ID.\n\tCause: ${cause}`);
+  }
+}
+
 export class UnreachableCaseError extends Error {
   constructor(val: never) {
     super(`Unreachable case: ${val}`);

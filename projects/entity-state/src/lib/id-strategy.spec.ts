@@ -1,11 +1,10 @@
-import {
-  EntityIdGenerator,
-  IdGenerator,
-  IncrementingIdGenerator,
-  UUIDGenerator
-} from './id-strategy';
 import { EntityStateModel } from './entity-state';
 import { InvalidIdOfError } from './errors';
+import { IdStrategy } from './id-strategy';
+import IdGenerator = IdStrategy.IdGenerator;
+import IncrementingIdGenerator = IdStrategy.IncrementingIdGenerator;
+import UUIDGenerator = IdStrategy.UUIDGenerator;
+import EntityIdGenerator = IdStrategy.EntityIdGenerator;
 
 describe('ID generator', () => {
   function getImplementations(): IdGenerator<Todo>[] {
