@@ -1,14 +1,19 @@
 <!--The content below is only a placeholder and can be replaced.-->
 <div style="text-align:center">
-  <h1>Welcome to ngxs-entity-store! <ng-container *ngIf="(loading$ | async)">loading ...</ng-container></h1>
+  <h1>
+    Welcome to ngxs-entity-store!
+    <ng-container *ngIf="(loading$ | async)">loading ...</ng-container>
+  </h1>
 </div>
 
-<button (click)="toggleLoading()">Toggle Loading</button> <button (click)="addToDo()">Add ToDo</button>
+<button (click)="toggleLoading()">Toggle Loading</button>
+<button (click)="addToDo()">Add ToDo</button>
 <h2>Your ToDos (total: {{ count$ | async }})</h2>
 <ng-container *ngIf="(toDos$ | async) as toDos">
   <ul>
     <li *ngFor="let toDo of toDos">
-      {{ toDo.title }} ({{ toDo.done ? '' : 'not ' }}done) <button (click)="open(toDo.title)">Open</button>
+      {{ toDo.title }} ({{ toDo.done ? '' : 'not ' }}done)
+      <button (click)="open(toDo.title)">Open</button>
       <button *ngIf="!toDo.done" (click)="setDone(toDo)">Done</button>
       <button (click)="removeToDo(toDo.title)">Remove</button>
     </li>
@@ -17,13 +22,18 @@
   <button (click)="removeFirstThree(toDos)">Remove first three</button>
   <button (click)="setOddDone()">Set odd done</button>
   <button (click)="updateDescription()">Update finished descriptions with "Done"</button>
-  <button (click)="removeAllDones()">Remove all dones</button> <button (click)="clearEntities()">Remove all</button>
+  <button (click)="removeAllDones()">Remove all dones</button>
+  <button (click)="clearEntities()">Remove all</button>
 </ng-container>
 
-<div *ngIf="(active$ | async) as active" style="margin: 16px; border: 1px solid; border-radius: 3px; padding: 16px;">
+<div
+  *ngIf="(active$ | async) as active"
+  style="margin: 16px; border: 1px solid; border-radius: 3px; padding: 16px;"
+>
   <h3>{{ active.title }} ({{ active.done ? '' : 'not ' }}done)</h3>
   <p>{{ active.description }}</p>
-  <button (click)="setDoneActive()">Done</button> <button (click)="closeDetails()">Close</button>
+  <button (click)="setDoneActive()">Done</button>
+  <button (click)="closeDetails()">Close</button>
 </div>
 <br /><br />
 <code>Active: {{ active$ | async | json }}</code

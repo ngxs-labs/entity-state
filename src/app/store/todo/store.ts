@@ -1,5 +1,5 @@
-import {State} from '@ngxs/store';
-import {defaultEntityState, EntityStateModel, EntityState, IdStrategy} from 'entity-state';
+import { State } from '@ngxs/store';
+import { defaultEntityState, EntityStateModel, EntityState, IdStrategy } from 'entity-state';
 
 export interface ToDo {
   title: string;
@@ -12,13 +12,11 @@ export interface ToDo {
   defaults: defaultEntityState()
 })
 export class TodoState extends EntityState<ToDo> {
-
   constructor() {
-    super(TodoState, "title", IdStrategy.EntityIdGenerator);
+    super(TodoState, 'title', IdStrategy.EntityIdGenerator);
   }
 
   onUpdate(current: Readonly<ToDo>, updated: Partial<ToDo>): ToDo {
-    return {...current, ...updated};
+    return { ...current, ...updated };
   }
-
 }

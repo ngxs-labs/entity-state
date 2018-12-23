@@ -11,7 +11,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "lib": "ng build entity-state",
-    "format": "prettier --write {src,projects}/**/*.{ts,js,html,scss}"
+    "format": "prettier --write \"{src,projects}/**/*.{ts,js,html,scss}\""
   },
   "private": true,
   "dependencies": {

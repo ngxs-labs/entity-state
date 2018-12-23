@@ -14,7 +14,11 @@ export interface HashMap<T> {
  * @param store The class of the targeted entity state, e.g. ZooState
  * @param payload The payload for the created action object
  */
-export function generateActionObject<T>(fn: string, store: Type<EntityState<T>>, payload?: any) {
+export function generateActionObject<T>(
+  fn: string,
+  store: Type<EntityState<T>>,
+  payload?: any
+) {
   const name = store['NGXS_META'].path;
   const ReflectedAction = function(data: T) {
     this.payload = data;
