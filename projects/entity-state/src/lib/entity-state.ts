@@ -234,9 +234,11 @@ export abstract class EntityState<T> {
 
   // ------------------- ACTION HANDLERS -------------------
 
-  // a new entity (unless there was an error) will be added
-  // if the entity provides an existing ID, an error will be thrown
-  // In all cases it will do entity[idKey] = id;
+  /**
+   * The entities given by the payload will be added.
+   * For certain ID strategies this might fail, if it provides an existing ID.
+   * In all cases it will overwrite the ID value in the entity with the calculated ID.
+   */
   add(
     { getState, patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntityAddAction<T>
@@ -244,15 +246,19 @@ export abstract class EntityState<T> {
     const updated = this._upsert(
       getState(),
       payload,
-      // for automated ID strategies this won't throw an error
-      // for IdStrategy.FROM_ENTITY it will throw an error if no ID is present
+      // for automated ID strategies this mostly shouldn't throw an UnableToGenerateIdError error
+      // for EntityIdGenerator it will throw an error if no ID is present
       (p, state) => this.idGenerator.generateId(p, state)
     );
     patchState({ ...updated });
   }
 
-  // TODO: payload type, add actions
-  // if a valid ID is present or can be generated it will use that and create/replace without error
+  /**
+   * The entities given by the payload will be added.
+   * It first checks if the ID provided by each entity does exist.
+   * If it does the current entity will be replaced.
+   * In all cases it will overwrite the ID value in the entity with the calculated ID.
+   */
   createOrReplace(
     { getState, patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntityCreateOrReplaceAction<T>
@@ -381,6 +387,16 @@ export abstract class EntityState<T> {
 
   // ------------------- UTILITY -------------------
 
+  /**
+   * A utility function to update the given state with the given entities.
+   * It returns a state model with the new entities map and IDs.
+   * For each given entity an ID will be generated. The generated ID will overwrite the current value:
+   * <code>entity[this.idKey] = generatedId(entity, state);</code>
+   * If the ID wasn't present, it will be added to the state's IDs array.
+   * @param state The current state to act on
+   * @param payload One or multiple partial entities
+   * @param generateId A function to generate an ID for each given entity
+   */
   private _upsert(
     state: EntityStateModel<T>,
     payload: Partial<T> | Partial<T>[],
@@ -402,6 +418,13 @@ export abstract class EntityState<T> {
     };
   }
 
+  /**
+   * A utility function to update the given entities map with the provided partial entity.
+   * After checking if an entity with the given ID is present, the #onUpdate method is called.
+   * @param entities The current entity map
+   * @param entity The partial entity to update with
+   * @param _id The ID to find the entity in the map
+   */
   private _update(entities: HashMap<T>, entity: Partial<T>, _id?: string): HashMap<T> {
     const id = _id || this.idOf(entity);
     if (id === undefined) {
@@ -434,6 +457,10 @@ export abstract class EntityState<T> {
   }
 }
 
+/**
+ * Returns the active entity. If none is present an error will be thrown.
+ * @param state The state to act on
+ */
 function mustGetActive<T>(state: EntityStateModel<T>): { id: string; active: T } {
   const active = getActive(state);
   if (active === undefined) {
@@ -442,14 +469,19 @@ function mustGetActive<T>(state: EntityStateModel<T>): { id: string; active: T }
   return { id: state.active, active };
 }
 
-function elvis(object: any, path: string) {
-  return path
-    ? path.split('.').reduce(function(value, key) {
-        return value && value[key];
-      }, object)
-    : object;
+/**
+ * Undefined-safe function to access the property given by path parameter
+ * @param object The object to read from
+ * @param path The path to the property
+ */
+function elvis(object: any, path: string): any | undefined {
+  return path ? path.split('.').reduce((value, key) => value && value[key], object) : object;
 }
 
+/**
+ * Returns input as an array if it isn't one already
+ * @param input The input to make an array if necessary
+ */
 function asArray<T>(input: T | T[]): T[] {
   return Array.isArray(input) ? input : [input];
 }
