@@ -243,7 +243,7 @@ export abstract class EntityState<T> {
     { getState, patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntityAddAction<T>
   ) {
-    const updated = this._upsert(
+    const updated = this._addOrReplace(
       getState(),
       payload,
       // for automated ID strategies this mostly shouldn't throw an UnableToGenerateIdError error
@@ -263,7 +263,7 @@ export abstract class EntityState<T> {
     { getState, patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntityCreateOrReplaceAction<T>
   ) {
-    const updated = this._upsert(getState(), payload, (p, state) =>
+    const updated = this._addOrReplace(getState(), payload, (p, state) =>
       this.idGenerator.getPresentIdOrGenerate(p, state)
     );
     patchState({ ...updated });
@@ -282,7 +282,7 @@ export abstract class EntityState<T> {
     } else if (typeof payload.id === 'function') {
       affected = Object.values(entities).filter(e => (<Function>payload.id)(e));
     } else {
-      const ids = Array.isArray(payload.id) ? payload.id : [payload.id];
+      const ids = asArray(payload.id);
       affected = Object.values(entities).filter(e => ids.includes(this.idOf(e)));
     }
 
@@ -342,9 +342,7 @@ export abstract class EntityState<T> {
           ? Object.values(entities)
               .filter(e => payload(e))
               .map(e => this.idOf(e))
-          : Array.isArray(payload)
-          ? (payload as string[])
-          : ([payload] as string[]);
+          : asArray(payload);
 
       const wasActive = deleteIds.includes(active);
       deleteIds.forEach(id => delete entities[id]);
@@ -397,16 +395,16 @@ export abstract class EntityState<T> {
    * @param payload One or multiple partial entities
    * @param generateId A function to generate an ID for each given entity
    */
-  private _upsert(
+  private _addOrReplace(
     state: EntityStateModel<T>,
-    payload: Partial<T> | Partial<T>[],
+    payload: T | T[],
     generateId: (payload: Partial<T>, state: EntityStateModel<T>) => string
-  ): Partial<EntityStateModel<T>> {
+  ): { entities: HashMap<T>; ids: string[] } {
     const { entities, ids } = state;
     asArray(payload).forEach(entity => {
       const id = generateId(entity, state);
       entity[this.idKey] = id;
-      entities[id] = entity as T; // TODO: check implementation if partial or not is needed
+      entities[id] = entity;
       if (!ids.includes(id)) {
         ids.push(id);
       }
