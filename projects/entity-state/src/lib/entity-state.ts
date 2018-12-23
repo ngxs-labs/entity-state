@@ -10,7 +10,12 @@ import {
   EntityUpdateAction,
   EntityUpdateActiveAction
 } from './actions';
-import { InvalidIdError, NoActiveEntityError, NoSuchEntityError } from './errors';
+import {
+  InvalidIdError,
+  NoActiveEntityError,
+  NoSuchEntityError,
+  UpdateFailedError
+} from './errors';
 import { IdStrategy } from './id-strategy';
 import { getActive, HashMap } from './internal';
 import IdGenerator = IdStrategy.IdGenerator;
@@ -421,16 +426,19 @@ export abstract class EntityState<T> {
    * After checking if an entity with the given ID is present, the #onUpdate method is called.
    * @param entities The current entity map
    * @param entity The partial entity to update with
-   * @param _id The ID to find the entity in the map
+   * @param id The ID to find the current entity in the map
    */
-  private _update(entities: HashMap<T>, entity: Partial<T>, _id?: string): HashMap<T> {
-    const id = _id || this.idOf(entity);
+  private _update(
+    entities: HashMap<T>,
+    entity: Partial<T>,
+    id: string = this.idOf(entity)
+  ): HashMap<T> {
     if (id === undefined) {
-      throw new InvalidIdError(_id, this.idOf(entity));
+      throw new UpdateFailedError(new InvalidIdError(id));
     }
     const current = entities[id];
     if (current === undefined) {
-      throw new NoSuchEntityError(`ID: ${id}`);
+      throw new UpdateFailedError(new NoSuchEntityError(id));
     }
     entities[id] = this.onUpdate(current, entity);
     return entities;
