@@ -1,5 +1,9 @@
 import { EntityStateModel } from './entity-state';
-import { InvalidIdOfError, ProvidedIdAlreadyExistsError } from './errors';
+import {
+  InvalidIdOfError,
+  ProvidedIdAlreadyExistsError,
+  UnableToGenerateIdError
+} from './errors';
 
 export namespace IdStrategy {
   export abstract class IdGenerator<T> {
@@ -103,7 +107,7 @@ export namespace IdStrategy {
     generateId(entity: Partial<T>, state: EntityStateModel<any>): string {
       const id = this.mustGetIdOf(entity);
       if (this.isIdInState(id, state)) {
-        throw new ProvidedIdAlreadyExistsError(id);
+        throw new UnableToGenerateIdError(new ProvidedIdAlreadyExistsError(id));
       }
       return id;
     }
