@@ -11,16 +11,14 @@ export class NoActiveEntityError extends EntityStateError {
 }
 
 export class NoSuchEntityError extends EntityStateError {
-  constructor(additionalInformation: string = '') {
-    super(('No such entity found. ' + additionalInformation).trim());
+  constructor(id: string) {
+    super(`No entity for ID ${id}`);
   }
 }
 
 export class InvalidIdError extends EntityStateError {
-  constructor(passedId: string, calculatedId: string) {
-    super(
-      `Unable to use passed or calculated ID. Passed: ${passedId}, idOf(entity): ${calculatedId}`
-    );
+  constructor(id: string | undefined) {
+    super(`Invalid ID: ${id}`);
   }
 }
 
@@ -30,20 +28,14 @@ export class InvalidIdOfError extends EntityStateError {
   }
 }
 
-export class ProvidedIdAlreadyExistsError extends Error {
-  constructor(providedId: string) {
-    super(`The provided ID already exists: ${providedId}`);
-  }
-}
-
-export class UnableToGenerateIdError extends Error {
+export class UpdateFailedError extends EntityStateError {
   constructor(cause: Error) {
-    super(`Unable to generate an ID.\n\tCause: ${cause}`);
+    super(`Updating entity failed.\n\tCause: ${cause}`);
   }
 }
 
-export class UnreachableCaseError extends Error {
-  constructor(val: never) {
-    super(`Unreachable case: ${val}`);
+export class UnableToGenerateIdError extends EntityStateError {
+  constructor(cause: string | Error) {
+    super(`Unable to generate an ID.\n\tCause: ${cause}`);
   }
 }
