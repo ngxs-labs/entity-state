@@ -1,6 +1,8 @@
 // Karma configuration file, see link for more information
 // https://karma-runner.github.io/1.0/config/configuration-file.html
 
+const CI = process.env['CI'] === 'true';
+
 module.exports = function(config) {
   config.set({
     basePath: '',
@@ -20,12 +22,20 @@ module.exports = function(config) {
       reports: ['html', 'lcovonly'],
       fixWebpackSourcePaths: true
     },
+    angularCli: {
+      environment: 'production'
+    },
     reporters: ['progress', 'kjhtml'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    autoWatch: true,
+    browserConsoleLogOptions: {
+      level: CI ? 'error' : 'debug',
+      format: '%b %T: %m',
+      terminal: true
+    },
+    autoWatch: !CI,
     browsers: ['Chrome'],
-    singleRun: false
+    singleRun: CI
   });
 };
