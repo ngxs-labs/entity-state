@@ -19,11 +19,11 @@
       "dom"
     ],
     "paths": {
-      "entity-state": [
-        "dist/entity-state"
+      "@ngxs-labs/entity-state": [
+        "src"
       ],
-      "entity-state/*": [
-        "dist/entity-state/*"
+      "@ngxs-labs/entity-state/*": [
+        "src/*"
       ]
     }
   }

@@ -1,5 +1,10 @@
 import { State } from '@ngxs/store';
-import { defaultEntityState, EntityStateModel, EntityState, IdStrategy } from 'entity-state';
+import {
+  defaultEntityState,
+  EntityStateModel,
+  EntityState,
+  IdStrategy
+} from '@ngxs-labs/entity-state';
 
 export interface ToDo {
   title: string;

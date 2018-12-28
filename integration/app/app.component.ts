@@ -12,7 +12,7 @@ import {
   SetLoading,
   Update,
   UpdateActive
-} from 'entity-state';
+} from '@ngxs-labs/entity-state';
 import { Observable } from 'rxjs';
 import { ToDo, TodoState } from './store/todo';
 
