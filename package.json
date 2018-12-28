@@ -1,6 +1,22 @@
 {
-  "name": "entity-state-integration",
+  "name": "entity-state",
   "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ngxs-labs/entity-state.git"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/ngxs-labs/entity-state#readme",
+  "bugs": {
+    "url": "https://github.com/ngxs-labs/entity-state/issues"
+  },
+  "keywords": [
+    "ngxs",
+    "redux",
+    "store",
+    "entity",
+    "state"
+  ],
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

@@ -6,11 +6,12 @@
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
-    "module": "es2015",
+    "module": "commonjs",
+    "target": "es5",
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "es5",
+    "resolveJsonModule": true,
     "typeRoots": [
       "node_modules/@types"
     ],
