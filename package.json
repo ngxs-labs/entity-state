@@ -25,7 +25,7 @@
     "build:integration": "ng build integration",
     "test": "ng test entity-state",
     "test:integration": "ng test integration",
-    "format": "prettier --write \"{src,projects}/**/*.{ts,js,html,scss}\"",
+    "format": "prettier --write \"{src,integration}/**/*.{ts,js,html,scss}\"",
     "// - CI": "CI pipelines",
     "entity:sonar": "yarn sonar",
     "entity:lint": "yarn lint",
