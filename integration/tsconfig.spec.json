@@ -4,7 +4,15 @@
     "types": [
       "jasmine",
       "node"
-    ]
+    ],
+    "paths": {
+      "@ngxs-labs/entity-state": [
+        "src"
+      ],
+      "@ngxs-labs/entity-state/*": [
+        "src/*"
+      ]
+    }
   },
   "files": [
     "test.ts",
