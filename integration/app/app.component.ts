@@ -4,12 +4,14 @@ import {
   Add,
   ClearActive,
   CreateOrReplace,
+  GoToPage,
   Remove,
   RemoveActive,
   Reset,
   SetActive,
   SetError,
   SetLoading,
+  SetPageSize,
   Update,
   UpdateActive
 } from '@ngxs-labs/entity-state';
@@ -192,7 +194,11 @@ export class AppComponent {
   }
 
   getPaginatedEntities(size: number, page: number): ToDo[] {
-    return this.store.selectSnapshot(TodoState.paginatedEntities(size, page));
+    this.store.dispatch([
+      new SetPageSize(TodoState, size),
+      new GoToPage(TodoState, { page: page })
+    ]);
+    return this.store.selectSnapshot(TodoState.paginatedEntities);
   }
 
   getNthEntity(index: number): ToDo {

@@ -379,22 +379,22 @@ describe('AppComponent', () => {
       return arr;
     };
 
-    for (let i = 0; i < 13; i++) {
+    for (let i = 0; i < 23; i++) {
       component.addToDo();
     }
 
-    const firstPage = component.getPaginatedEntities(5, 0).map(t => t.title);
-    const secondPage = component.getPaginatedEntities(5, 1).map(t => t.title);
-    const lastPage = component.getPaginatedEntities(5, 2).map(t => t.title);
+    const firstPage = component.getPaginatedEntities(10, 0).map(t => t.title);
+    const secondPage = component.getPaginatedEntities(10, 1).map(t => t.title);
+    const lastPage = component.getPaginatedEntities(10, 2).map(t => t.title);
 
-    expect(firstPage.length).toBe(5);
-    expect(firstPage).toEqual(generateTitles(1, 5));
+    expect(firstPage.length).toBe(10);
+    expect(firstPage).toEqual(generateTitles(1, 10));
 
-    expect(secondPage.length).toBe(5);
-    expect(secondPage).toEqual(generateTitles(6, 10));
+    expect(secondPage.length).toBe(10);
+    expect(secondPage).toEqual(generateTitles(11, 20));
 
     expect(lastPage.length).toBe(3);
-    expect(lastPage).toEqual(generateTitles(11, 13));
+    expect(lastPage).toEqual(generateTitles(21, 23));
   });
 
   it('should select nth entities', () => {
