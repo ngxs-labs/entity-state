@@ -1,6 +1,6 @@
 import { ComponentFixture, ComponentFixtureAutoDetect, TestBed } from '@angular/core/testing';
 import { Store } from '@ngxs/store';
-import { defaultEntityState, NoActiveEntityError } from 'entity-state';
+import { defaultEntityState, NoActiveEntityError } from '@ngxs-labs/entity-state';
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
 
@@ -56,7 +56,7 @@ describe('AppComponent', () => {
     component.addToDo();
     component.setDone({
       title: 'NGXS Entity Store 1',
-      description: "Doesn't matter. Just need title for ID",
+      description: `Doesn't matter. Just need title for ID`,
       done: false
     });
 

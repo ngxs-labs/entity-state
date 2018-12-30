@@ -1,0 +1,36 @@
+{
+  "$schema": "../node_modules/ng-packagr/package.schema.json",
+  "name": "@ngxs-labs/entity-state",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ngxs-labs/entity-state.git"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/ngxs-labs/entity-state#readme",
+  "bugs": {
+    "url": "https://github.com/ngxs-labs/entity-state/issues"
+  },
+  "keywords": [
+    "ngxs",
+    "redux",
+    "store",
+    "entity",
+    "state"
+  ],
+  "sideEffects": true,
+  "peerDependencies": {
+    "@angular/core": "^6.0.0 || ^7.0.0",
+    "@ngxs/store": ">=3.3.4"
+  },
+  "ngPackage": {
+    "lib": {
+      "flatModuleFile": "ngxs-labs-entity-state",
+      "entryFile": "index.ts",
+      "umdModuleIds": {
+        "@ngxs/store": "ngxs-store"
+      }
+    },
+    "dest": "../dist/entity-state"
+  }
+}

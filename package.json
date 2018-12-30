@@ -1,17 +1,44 @@
 {
-  "name": "entity-state-integration",
+  "name": "entity-state",
   "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ngxs-labs/entity-state.git"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/ngxs-labs/entity-state#readme",
+  "bugs": {
+    "url": "https://github.com/ngxs-labs/entity-state/issues"
+  },
+  "keywords": [
+    "ngxs",
+    "redux",
+    "store",
+    "entity",
+    "state"
+  ],
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "build:prod": "yarn build --ts-config tsconfig.prod.json",
-    "test": "ng test entity-state-integration",
-    "test:prod": "yarn test --ts-config tsconfig.prod.json",
     "lint": "ng lint",
-    "e2e": "ng e2e",
-    "lib": "ng build entity-state",
-    "format": "prettier --write \"{src,projects}/**/*.{ts,js,html,scss}\""
+    "serve": "ng serve integration",
+    "build": "ts-node ./tools/build",
+    "build:integration": "ng build integration",
+    "test": "ng test entity-state",
+    "test:integration": "ng test integration",
+    "format": "prettier --write \"{src,integration}/**/*.{ts,js,html,scss}\"",
+    "// - CI": "CI pipelines",
+    "entity:sonar": "yarn sonar",
+    "entity:lint": "yarn lint",
+    "entity:test": "yarn test",
+    "entity:integration": "yarn test:integration && yarn build:integration --prod",
+    "entity:build": "yarn build && yarn readme",
+    "entity:rollup": "yarn rollup",
+    "ci:pipelines": "cross-env CI=true npm-run-all entity:*",
+    "// - Utils": "Utilities",
+    "sonar": "ts-node ./tools/sonar",
+    "readme": "ts-node ./tools/copy-readme",
+    "rollup": "rollup -c rollup.config.js",
+    "bump": "ts-node ./tools/bump"
   },
   "private": true,
   "dependencies": {
@@ -42,6 +69,7 @@
     "@types/jasminewd2": "~2.0.6",
     "@types/node": "~10.12.18",
     "codelyzer": "~4.5.0",
+    "cross-env": "^5.2.0",
     "husky": "^1.2.1",
     "jasmine-core": "~3.3.0",
     "jasmine-spec-reporter": "~4.2.1",
@@ -52,8 +80,10 @@
     "karma-jasmine-html-reporter": "^1.4.0",
     "lint-staged": "^8.1.0",
     "ng-packagr": "^4.4.5",
+    "npm-run-all": "^4.1.5",
     "prettier": "^1.15.3",
     "protractor": "~5.4.2",
+    "sonarjs": "^1.0.0",
     "ts-node": "~7.0.1",
     "tsickle": ">=0.34.0",
     "tslib": "^1.9.3",

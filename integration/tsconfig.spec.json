@@ -1,14 +1,22 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "module": "commonjs",
     "types": [
       "jasmine",
       "node"
-    ]
+    ],
+    "paths": {
+      "@ngxs-labs/entity-state": [
+        "src"
+      ],
+      "@ngxs-labs/entity-state/*": [
+        "src/*"
+      ]
+    }
   },
   "files": [
-    "test.ts"
+    "test.ts",
+    "polyfills.ts"
   ],
   "include": [
     "**/*.spec.ts",
