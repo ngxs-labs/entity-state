@@ -409,8 +409,8 @@ export abstract class EntityState<T> {
       return;
     }
 
-    const { entities, pageSize, pageIndex } = getState();
-    const totalSize = Object.keys(entities).length;
+    const { pageSize, pageIndex, ids } = getState();
+    const totalSize = ids.length;
     const maxIndex = Math.floor(totalSize / pageSize);
 
     if ('last' in payload) {
