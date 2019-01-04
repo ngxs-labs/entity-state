@@ -17,6 +17,7 @@ import {
 } from '@ngxs-labs/entity-state';
 import { Observable } from 'rxjs';
 import { ToDo, TodoState } from './store/todo';
+import { mergeMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -193,12 +194,10 @@ export class AppComponent {
     this.store.dispatch(new RemoveActive(TodoState));
   }
 
-  getPaginatedEntities(size: number, page: number): ToDo[] {
-    this.store.dispatch([
-      new SetPageSize(TodoState, size),
-      new GoToPage(TodoState, { page: page })
-    ]);
-    return this.store.selectSnapshot(TodoState.paginatedEntities);
+  getPaginatedEntities(size: number, page: number): Observable<ToDo[]> {
+    return this.store
+      .dispatch([new SetPageSize(TodoState, size), new GoToPage(TodoState, { page })])
+      .pipe(mergeMap(() => this.store.selectOnce(TodoState.paginatedEntities)));
   }
 
   getNthEntity(index: number): ToDo {
