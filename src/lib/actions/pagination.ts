@@ -9,7 +9,7 @@ export type GoToPagePayload =
   | { prev: true; wrap?: boolean }
   | { last: true }
   | { first: true };
-export type GoToPageAction = Payload<GoToPagePayload & { wrap: boolean }>;
+export type EntityGoToPageAction = Payload<GoToPagePayload & { wrap: boolean }>;
 
 export class GoToPage {
   /**
@@ -23,7 +23,7 @@ export class GoToPage {
   }
 }
 
-export type SetPageSizeAction = Payload<number>;
+export type EntitySetPageSizeAction = Payload<number>;
 
 export class SetPageSize {
   /**

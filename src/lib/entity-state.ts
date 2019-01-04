@@ -3,10 +3,12 @@ import { StateContext } from '@ngxs/store';
 import {
   EntityAddAction,
   EntityCreateOrReplaceAction,
+  EntityGoToPageAction,
   EntityRemoveAction,
   EntitySetActiveAction,
   EntitySetErrorAction,
   EntitySetLoadingAction,
+  EntitySetPageSizeAction,
   EntityUpdateAction,
   EntityUpdateActiveAction
 } from './actions';
@@ -19,7 +21,6 @@ import {
 import { IdStrategy } from './id-strategy';
 import { getActive, HashMap } from './internal';
 import IdGenerator = IdStrategy.IdGenerator;
-import { GoToPageAction, SetPageSizeAction } from './actions/pagination';
 
 /**
  * Interface for an EntityState.
@@ -398,7 +399,7 @@ export abstract class EntityState<T> {
 
   goToPage(
     { getState, patchState }: StateContext<EntityStateModel<T>>,
-    { payload }: GoToPageAction
+    { payload }: EntityGoToPageAction
   ) {
     if ('page' in payload) {
       patchState({ pageIndex: payload.page });
@@ -424,7 +425,7 @@ export abstract class EntityState<T> {
 
   setPageSize(
     { getState, patchState }: StateContext<EntityStateModel<T>>,
-    { payload }: SetPageSizeAction
+    { payload }: EntitySetPageSizeAction
   ) {
     patchState({ pageSize: payload });
   }
