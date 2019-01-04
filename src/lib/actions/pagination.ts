@@ -13,7 +13,8 @@ export type GoToPageAction = Payload<GoToPagePayload & { wrap: boolean }>;
 
 export class GoToPage {
   /**
-   * Generates an action that changes the page index for pagination
+   * Generates an action that changes the page index for pagination.
+   * Page index starts at 0.
    * @param target The targeted state class
    * @param payload Payload to change the page index
    */
