@@ -19,7 +19,7 @@ import {
   UpdateFailedError
 } from './errors';
 import { IdStrategy } from './id-strategy';
-import { getActive, HashMap } from './internal';
+import { ActionNames, getActive, HashMap } from './internal';
 import IdGenerator = IdStrategy.IdGenerator;
 
 /**
@@ -69,22 +69,7 @@ export abstract class EntityState<T> {
     this.storePath = storeClass['NGXS_META'].path;
     this.idGenerator = new idStrategy(_idKey);
 
-    this.setup(
-      storeClass,
-      'add',
-      'createOrReplace',
-      'update',
-      'updateActive',
-      'remove',
-      'removeActive',
-      'setLoading',
-      'setError',
-      'setActive',
-      'clearActive',
-      'reset',
-      'goToPage',
-      'setPageSize'
-    );
+    this.setup(storeClass, Object.values(ActionNames));
   }
 
   private static get staticStorePath(): string {
@@ -486,7 +471,7 @@ export abstract class EntityState<T> {
     return entities;
   }
 
-  private setup(storeClass: Type<EntityState<T>>, ...actions: string[]) {
+  private setup(storeClass: Type<EntityState<T>>, actions: string[]) {
     actions.forEach(fn => {
       const actionName = `[${this.storePath}] ${fn}`;
       storeClass['NGXS_META'].actions[actionName] = [
