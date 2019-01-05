@@ -1,4 +1,4 @@
-import { ActionNames, generateActionObject } from '../internal';
+import { EntityActionType, generateActionObject } from '../internal';
 import { EntityState } from '../entity-state';
 import { Type } from '@angular/core';
 
@@ -9,6 +9,6 @@ export class Reset {
    * @see defaultEntityState
    */
   constructor(target: Type<EntityState<any>>) {
-    return generateActionObject(ActionNames.reset, target);
+    return generateActionObject(EntityActionType.reset, target);
   }
 }

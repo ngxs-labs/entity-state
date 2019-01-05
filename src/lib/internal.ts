@@ -40,7 +40,7 @@ export function getActive<T>(state: EntityStateModel<T>): T {
 /**
  * Enum that contains all existing Actions for the Entity State adapter.
  */
-export enum ActionNames {
+export enum EntityActionType {
   add = 'add',
   createOrReplace = 'createOrReplace',
   update = 'update',
@@ -57,15 +57,15 @@ export enum ActionNames {
 }
 
 /**
- * An optional annotation to verify that the annotated function has a matching action in ActionNames enum
- * @see ActionNames
+ * An optional annotation to verify that the annotated function has a matching action in EntityActionType enum
+ * @see EntityActionType
  */
 export function EntityActionHandler(
   target: Object, // The prototype of the class
   propertyKey: string, // The name of the method
   descriptor: TypedPropertyDescriptor<any>
 ) {
-  if (!Object.values(ActionNames).includes(propertyKey)) {
+  if (!Object.values(EntityActionType).includes(propertyKey)) {
     throw new NoSuchActionInEnumError(propertyKey);
   }
 }

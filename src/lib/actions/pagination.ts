@@ -1,7 +1,7 @@
 import { Payload } from './type-alias';
 import { Type } from '@angular/core';
 import { EntityState } from '../entity-state';
-import { ActionNames, generateActionObject } from '../internal';
+import { EntityActionType, generateActionObject } from '../internal';
 
 export type GoToPagePayload =
   | { page: number }
@@ -19,7 +19,10 @@ export class GoToPage {
    * @param payload Payload to change the page index
    */
   constructor(target: Type<EntityState<any>>, payload: GoToPagePayload) {
-    return generateActionObject(ActionNames.goToPage, target, { wrap: false, ...payload });
+    return generateActionObject(EntityActionType.goToPage, target, {
+      wrap: false,
+      ...payload
+    });
   }
 }
 
@@ -32,6 +35,6 @@ export class SetPageSize {
    * @param payload The page size
    */
   constructor(target: Type<EntityState<any>>, payload: number) {
-    return generateActionObject(ActionNames.setPageSize, target, payload);
+    return generateActionObject(EntityActionType.setPageSize, target, payload);
   }
 }

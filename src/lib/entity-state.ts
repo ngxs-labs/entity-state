@@ -20,7 +20,7 @@ import {
   UpdateFailedError
 } from './errors';
 import { IdStrategy } from './id-strategy';
-import { ActionNames, EntityActionHandler, getActive, HashMap } from './internal';
+import { EntityActionType, EntityActionHandler, getActive, HashMap } from './internal';
 import IdGenerator = IdStrategy.IdGenerator;
 
 /**
@@ -70,7 +70,7 @@ export abstract class EntityState<T> {
     this.storePath = storeClass['NGXS_META'].path;
     this.idGenerator = new idStrategy(_idKey);
 
-    this.setup(storeClass, Object.values(ActionNames));
+    this.setup(storeClass, Object.values(EntityActionType));
   }
 
   private static get staticStorePath(): string {
