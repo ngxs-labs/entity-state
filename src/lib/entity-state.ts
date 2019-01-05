@@ -53,6 +53,7 @@ export function defaultEntityState(): EntityStateModel<any> {
   };
 }
 
+export const NGXS_META_KEY = 'NGXS_META';
 export type StateSelector<T> = (state: EntityStateModel<any>) => T;
 
 // @dynamic
@@ -67,7 +68,7 @@ export abstract class EntityState<T> {
     idStrategy: Type<IdGenerator<T>>
   ) {
     this.idKey = _idKey as string;
-    this.storePath = storeClass['NGXS_META'].path;
+    this.storePath = storeClass[NGXS_META_KEY].path;
     this.idGenerator = new idStrategy(_idKey);
 
     this.setup(storeClass, Object.values(EntityActionType));
@@ -75,7 +76,7 @@ export abstract class EntityState<T> {
 
   private static get staticStorePath(): string {
     const that = this;
-    return that['NGXS_META'].path;
+    return that[NGXS_META_KEY].path;
   }
 
   /**
@@ -494,7 +495,7 @@ export abstract class EntityState<T> {
 
     actions.forEach(fn => {
       const actionName = `[${this.storePath}] ${fn}`;
-      storeClass['NGXS_META'].actions[actionName] = [
+      storeClass[NGXS_META_KEY].actions[actionName] = [
         {
           fn: fn,
           options: {},
