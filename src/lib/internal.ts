@@ -1,6 +1,6 @@
 import { EntityState, EntityStateModel } from './entity-state';
 import { Type } from '@angular/core';
-import { NoSuchActionInEnum } from './errors';
+import { NoSuchActionInEnumError } from './errors';
 
 /**
  * type alias for javascript object literal
@@ -66,6 +66,6 @@ export function EntityActionHandler(
   descriptor: TypedPropertyDescriptor<any>
 ) {
   if (!Object.values(ActionNames).includes(propertyKey)) {
-    throw new NoSuchActionInEnum(propertyKey);
+    throw new NoSuchActionInEnumError(propertyKey);
   }
 }

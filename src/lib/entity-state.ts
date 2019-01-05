@@ -15,7 +15,7 @@ import {
 import {
   InvalidIdError,
   NoActiveEntityError,
-  NoMatchingActionHandler,
+  NoMatchingActionHandlerError,
   NoSuchEntityError,
   UpdateFailedError
 } from './errors';
@@ -489,7 +489,7 @@ export abstract class EntityState<T> {
     const baseProto = Object.getPrototypeOf(storeClass.prototype);
     const notPresent = actions.filter(action => !(action in baseProto));
     notPresent.forEach(action => {
-      throw new NoMatchingActionHandler(action);
+      throw new NoMatchingActionHandlerError(action);
     });
 
     actions.forEach(fn => {
