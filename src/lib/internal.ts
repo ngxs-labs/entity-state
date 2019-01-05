@@ -65,7 +65,7 @@ export function EntityActionHandler(
   propertyKey: string, // The name of the method
   descriptor: TypedPropertyDescriptor<any>
 ) {
-  if (!Object.values(EntityActionType).includes(propertyKey)) {
+  if (!EntityActionType.hasOwnProperty(propertyKey)) {
     throw new NoSuchActionInEnumError(propertyKey);
   }
 }
