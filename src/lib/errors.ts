@@ -45,3 +45,9 @@ export class NoMatchingActionHandler extends EntityStateError {
     super(`No matching handler for action '${action}' from ActionNames enum.`);
   }
 }
+
+export class NoSuchActionInEnum extends EntityStateError {
+  constructor(action: string) {
+    super(`No such action '${action}' in ActionNames enum.`);
+  }
+}

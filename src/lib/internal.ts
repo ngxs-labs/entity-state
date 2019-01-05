@@ -1,5 +1,6 @@
 import { EntityState, EntityStateModel } from './entity-state';
 import { Type } from '@angular/core';
+import { NoSuchActionInEnum } from './errors';
 
 /**
  * type alias for javascript object literal
@@ -53,4 +54,18 @@ export enum ActionNames {
   reset = 'reset',
   goToPage = 'goToPage',
   setPageSize = 'setPageSize'
+}
+
+/**
+ * An optional annotation to verify that the annotated function has a matching action in ActionNames enum
+ * @see ActionNames
+ */
+export function EntityActionHandler(
+  target: Object, // The prototype of the class
+  propertyKey: string, // The name of the method
+  descriptor: TypedPropertyDescriptor<any>
+) {
+  if (!Object.values(ActionNames).includes(propertyKey)) {
+    throw new NoSuchActionInEnum(propertyKey);
+  }
 }
