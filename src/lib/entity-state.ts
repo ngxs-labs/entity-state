@@ -3,10 +3,12 @@ import { StateContext } from '@ngxs/store';
 import {
   EntityAddAction,
   EntityCreateOrReplaceAction,
+  EntityGoToPageAction,
   EntityRemoveAction,
   EntitySetActiveAction,
   EntitySetErrorAction,
   EntitySetLoadingAction,
+  EntitySetPageSizeAction,
   EntityUpdateAction,
   EntityUpdateActiveAction
 } from './actions';
@@ -30,6 +32,8 @@ export interface EntityStateModel<T> {
   error: Error | undefined;
   active: string | undefined;
   ids: string[];
+  pageSize: number;
+  pageIndex: number;
 }
 
 /**
@@ -42,7 +46,9 @@ export function defaultEntityState(): EntityStateModel<any> {
     ids: [],
     loading: false,
     error: undefined,
-    active: undefined
+    active: undefined,
+    pageSize: 10,
+    pageIndex: 0
   };
 }
 
@@ -75,7 +81,9 @@ export abstract class EntityState<T> {
       'setError',
       'setActive',
       'clearActive',
-      'reset'
+      'reset',
+      'goToPage',
+      'setPageSize'
     );
   }
 
@@ -159,13 +167,14 @@ export abstract class EntityState<T> {
   /**
    * Returns a selector for paginated entities, sorted by insertion order
    */
-  static paginatedEntities(size: number, page: number): StateSelector<any[]> {
+  static get paginatedEntities(): StateSelector<any[]> {
     // tslint:disable-line:member-ordering
     const that = this;
     return state => {
       const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
-      return subState.ids
-        .slice(page * size, (page + 1) * size)
+      const { ids, pageIndex, pageSize } = subState;
+      return ids
+        .slice(pageIndex * pageSize, (pageIndex + 1) * pageSize)
         .map(id => subState.entities[id]);
     };
   }
@@ -388,6 +397,39 @@ export abstract class EntityState<T> {
     patchState({ error: payload });
   }
 
+  goToPage(
+    { getState, patchState }: StateContext<EntityStateModel<T>>,
+    { payload }: EntityGoToPageAction
+  ) {
+    if ('page' in payload) {
+      patchState({ pageIndex: payload.page });
+      return;
+    } else if (payload['first']) {
+      patchState({ pageIndex: 0 });
+      return;
+    }
+
+    const { pageSize, pageIndex, ids } = getState();
+    const totalSize = ids.length;
+    const maxIndex = Math.floor(totalSize / pageSize);
+
+    if ('last' in payload) {
+      patchState({ pageIndex: maxIndex });
+    } else {
+      const step = payload['prev'] ? -1 : 1;
+      let index = pageIndex + step;
+      index = wrapOrClamp(payload.wrap, index, 0, maxIndex);
+      patchState({ pageIndex: index });
+    }
+  }
+
+  setPageSize(
+    { patchState }: StateContext<EntityStateModel<T>>,
+    { payload }: EntitySetPageSizeAction
+  ) {
+    patchState({ pageSize: payload });
+  }
+
   // ------------------- UTILITY -------------------
 
   /**
@@ -490,4 +532,34 @@ function elvis(object: any, path: string): any | undefined {
  */
 function asArray<T>(input: T | T[]): T[] {
   return Array.isArray(input) ? input : [input];
+}
+
+/**
+ * Limits a number to the given boundaries
+ * @param value The input value
+ * @param min The minimum value
+ * @param max The maximum value
+ */
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
+}
+
+/**
+ * Uses the clamp function is wrap is false.
+ * Else it wrap to the max or min value respectively.
+ * @param wrap Flag to indicate if value should be wrapped
+ * @param value The input value
+ * @param min The minimum value
+ * @param max The maximum value
+ */
+function wrapOrClamp(wrap: boolean, value: number, min: number, max: number): number {
+  if (!wrap) {
+    return clamp(value, min, max);
+  } else if (value < min) {
+    return max;
+  } else if (value > max) {
+    return min;
+  } else {
+    return value;
+  }
 }

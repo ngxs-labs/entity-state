@@ -20,6 +20,8 @@ describe('ID generator', () => {
       active: undefined,
       error: undefined,
       loading: false,
+      pageIndex: 0,
+      pageSize: 10,
       ids: ['0', '1', '2', '3'],
       entities: {
         '0': {

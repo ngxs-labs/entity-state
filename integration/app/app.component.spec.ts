@@ -1,8 +1,14 @@
-import { ComponentFixture, ComponentFixtureAutoDetect, TestBed } from '@angular/core/testing';
+import {
+  async,
+  ComponentFixture,
+  ComponentFixtureAutoDetect,
+  TestBed
+} from '@angular/core/testing';
 import { Store } from '@ngxs/store';
 import { defaultEntityState, NoActiveEntityError } from '@ngxs-labs/entity-state';
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
+import { map } from 'rxjs/operators';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -370,7 +376,7 @@ describe('AppComponent', () => {
     });
   });
 
-  it('should paginate entities', () => {
+  it('should paginate entities', async(() => {
     const generateTitles = (from: number, to: number): string[] => {
       const arr = [];
       for (; from <= to; from++) {
@@ -379,23 +385,34 @@ describe('AppComponent', () => {
       return arr;
     };
 
-    for (let i = 0; i < 13; i++) {
+    for (let i = 0; i < 23; i++) {
       component.addToDo();
     }
 
-    const firstPage = component.getPaginatedEntities(5, 0).map(t => t.title);
-    const secondPage = component.getPaginatedEntities(5, 1).map(t => t.title);
-    const lastPage = component.getPaginatedEntities(5, 2).map(t => t.title);
+    component
+      .getPaginatedEntities(10, 0)
+      .pipe(map(todos => todos.map(t => t.title)))
+      .subscribe(first => {
+        expect(first.length).toBe(10);
+        expect(first).toEqual(generateTitles(1, 10));
+      });
 
-    expect(firstPage.length).toBe(5);
-    expect(firstPage).toEqual(generateTitles(1, 5));
+    component
+      .getPaginatedEntities(10, 1)
+      .pipe(map(todos => todos.map(t => t.title)))
+      .subscribe(second => {
+        expect(second.length).toBe(10);
+        expect(second).toEqual(generateTitles(11, 20));
+      });
 
-    expect(secondPage.length).toBe(5);
-    expect(secondPage).toEqual(generateTitles(6, 10));
-
-    expect(lastPage.length).toBe(3);
-    expect(lastPage).toEqual(generateTitles(11, 13));
-  });
+    component
+      .getPaginatedEntities(10, 2)
+      .pipe(map(todos => todos.map(t => t.title)))
+      .subscribe(last => {
+        expect(last.length).toBe(3);
+        expect(last).toEqual(generateTitles(21, 23));
+      });
+  }));
 
   it('should select nth entities', () => {
     const count = 10;
