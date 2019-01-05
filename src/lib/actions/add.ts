@@ -1,4 +1,4 @@
-import { generateActionObject } from '../internal';
+import { ActionNames, generateActionObject } from '../internal';
 import { Payload } from './type-alias';
 import { EntityState } from '../entity-state';
 import { Type } from '@angular/core';
@@ -16,6 +16,6 @@ export class Add<T> {
    * @see CreateOrReplace#constructor
    */
   constructor(target: Type<EntityState<T>>, payload: T | T[]) {
-    return generateActionObject('add', target, payload);
+    return generateActionObject(ActionNames.add, target, payload);
   }
 }

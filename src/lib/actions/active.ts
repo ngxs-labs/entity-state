@@ -1,4 +1,4 @@
-import { generateActionObject } from '../internal';
+import { ActionNames, generateActionObject } from '../internal';
 import { Payload, Updater } from './type-alias';
 import { EntityState } from '../entity-state';
 import { Type } from '@angular/core';
@@ -13,7 +13,7 @@ export class SetActive {
    * @param id The ID that identifies the active entity
    */
   constructor(target: Type<EntityState<any>>, id: string) {
-    return generateActionObject('setActive', target, id);
+    return generateActionObject(ActionNames.setActive, target, id);
   }
 }
 
@@ -23,7 +23,7 @@ export class ClearActive {
    * @param target The targeted state class
    */
   constructor(target: Type<EntityState<any>>) {
-    return generateActionObject('clearActive', target);
+    return generateActionObject(ActionNames.clearActive, target);
   }
 }
 
@@ -33,7 +33,7 @@ export class RemoveActive {
    * @param target The targeted state class
    */
   constructor(target: Type<EntityState<any>>) {
-    return generateActionObject('removeActive', target);
+    return generateActionObject(ActionNames.removeActive, target);
   }
 }
 
@@ -47,6 +47,6 @@ export class UpdateActive<T> {
    * @see Updater
    */
   constructor(target: Type<EntityState<T>>, payload: Updater<T>) {
-    return generateActionObject('updateActive', target, payload);
+    return generateActionObject(ActionNames.updateActive, target, payload);
   }
 }
