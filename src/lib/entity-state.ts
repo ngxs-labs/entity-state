@@ -15,6 +15,7 @@ import {
 import {
   InvalidIdError,
   NoActiveEntityError,
+  NoMatchingActionHandler,
   NoSuchEntityError,
   UpdateFailedError
 } from './errors';
@@ -472,6 +473,12 @@ export abstract class EntityState<T> {
   }
 
   private setup(storeClass: Type<EntityState<T>>, actions: string[]) {
+    const baseProto = Object.getPrototypeOf(storeClass.prototype);
+    const notPresent = actions.filter(action => !(action in baseProto));
+    notPresent.forEach(action => {
+      throw new NoMatchingActionHandler(action);
+    });
+
     actions.forEach(fn => {
       const actionName = `[${this.storePath}] ${fn}`;
       storeClass['NGXS_META'].actions[actionName] = [
