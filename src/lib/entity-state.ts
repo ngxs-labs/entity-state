@@ -424,7 +424,7 @@ export abstract class EntityState<T> {
   }
 
   setPageSize(
-    { getState, patchState }: StateContext<EntityStateModel<T>>,
+    { patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntitySetPageSizeAction
   ) {
     patchState({ pageSize: payload });
