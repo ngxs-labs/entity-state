@@ -487,7 +487,7 @@ export abstract class EntityState<T> {
   }
 
   private setup(storeClass: Type<EntityState<T>>, actions: string[]) {
-    const baseProto = Object.getPrototypeOf(storeClass.prototype);
+    const baseProto = Reflect.getPrototypeOf(storeClass.prototype);
 
     // throw error if any action from enum does not have matching handler function
     const notPresent = actions.find(action => !(action in baseProto));

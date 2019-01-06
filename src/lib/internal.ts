@@ -25,7 +25,7 @@ export function generateActionObject<T>(
     this.payload = data;
   };
   const obj = new ReflectedAction(payload);
-  obj.__proto__.constructor.type = `[${name}] ${fn}`;
+  Reflect.getPrototypeOf(obj).constructor['type'] = `[${name}] ${fn}`;
   return obj;
 }
 
