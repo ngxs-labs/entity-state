@@ -9,6 +9,8 @@ export interface HashMap<T> {
   [id: string]: T;
 }
 
+export const NGXS_META_KEY = 'NGXS_META';
+
 /**
  * This function generates a new object for the ngxs Action with the given fn name
  * @param fn The name of the Action to simulate, e.g. "Remove" or "Update"
@@ -71,5 +73,3 @@ export function EntityActionHandler(
     throw new NoSuchActionInEnumError(propertyKey);
   }
 }
-
-export const NGXS_META_KEY = 'NGXS_META';
