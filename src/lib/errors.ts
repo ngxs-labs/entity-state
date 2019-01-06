@@ -42,12 +42,12 @@ export class UnableToGenerateIdError extends EntityStateError {
 
 export class NoMatchingActionHandlerError extends EntityStateError {
   constructor(action: string) {
-    super(`No matching handler for action '${action}' from ActionNames enum.`);
+    super(`No matching handler for action '${action}' from EntityActionType enum.`);
   }
 }
 
 export class NoSuchActionInEnumError extends EntityStateError {
   constructor(action: string) {
-    super(`No such action '${action}' in ActionNames enum.`);
+    super(`No such action '${action}' in EntityActionType enum.`);
   }
 }
