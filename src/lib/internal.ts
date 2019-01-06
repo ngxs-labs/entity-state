@@ -56,6 +56,8 @@ export enum EntityActionType {
   setPageSize = 'setPageSize'
 }
 
+const entityActionTypeValues = Object.values(EntityActionType);
+
 /**
  * An optional annotation to verify that the annotated function has a matching action in EntityActionType enum
  * @see EntityActionType
@@ -65,7 +67,7 @@ export function EntityActionHandler(
   propertyKey: string, // The name of the method
   descriptor: TypedPropertyDescriptor<any>
 ) {
-  if (!EntityActionType.hasOwnProperty(propertyKey)) {
+  if (!entityActionTypeValues.includes(propertyKey)) {
     throw new NoSuchActionInEnumError(propertyKey);
   }
 }
