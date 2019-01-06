@@ -13,7 +13,7 @@ export class SetActive {
    * @param id The ID that identifies the active entity
    */
   constructor(target: Type<EntityState<any>>, id: string) {
-    return generateActionObject(EntityActionType.setActive, target, id);
+    return generateActionObject(EntityActionType.SetActive, target, id);
   }
 }
 
@@ -23,7 +23,7 @@ export class ClearActive {
    * @param target The targeted state class
    */
   constructor(target: Type<EntityState<any>>) {
-    return generateActionObject(EntityActionType.clearActive, target);
+    return generateActionObject(EntityActionType.ClearActive, target);
   }
 }
 
@@ -33,7 +33,7 @@ export class RemoveActive {
    * @param target The targeted state class
    */
   constructor(target: Type<EntityState<any>>) {
-    return generateActionObject(EntityActionType.removeActive, target);
+    return generateActionObject(EntityActionType.RemoveActive, target);
   }
 }
 
@@ -47,6 +47,6 @@ export class UpdateActive<T> {
    * @see Updater
    */
   constructor(target: Type<EntityState<T>>, payload: Updater<T>) {
-    return generateActionObject(EntityActionType.updateActive, target, payload);
+    return generateActionObject(EntityActionType.UpdateActive, target, payload);
   }
 }

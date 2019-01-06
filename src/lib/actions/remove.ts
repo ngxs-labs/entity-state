@@ -14,6 +14,6 @@ export class Remove<T> {
    * @see EntitySelector
    */
   constructor(target: Type<EntityState<T>>, payload: EntitySelector<T>) {
-    return generateActionObject(EntityActionType.remove, target, payload);
+    return generateActionObject(EntityActionType.Remove, target, payload);
   }
 }

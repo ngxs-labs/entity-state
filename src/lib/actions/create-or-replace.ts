@@ -15,6 +15,6 @@ export class CreateOrReplace<T> {
    * @see Add#constructor
    */
   constructor(target: Type<EntityState<T>>, payload: T | T[]) {
-    return generateActionObject(EntityActionType.createOrReplace, target, payload);
+    return generateActionObject(EntityActionType.CreateOrReplace, target, payload);
   }
 }

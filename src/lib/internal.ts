@@ -41,19 +41,19 @@ export function getActive<T>(state: EntityStateModel<T>): T {
  * Enum that contains all existing Actions for the Entity State adapter.
  */
 export enum EntityActionType {
-  add = 'add',
-  createOrReplace = 'createOrReplace',
-  update = 'update',
-  updateActive = 'updateActive',
-  remove = 'remove',
-  removeActive = 'removeActive',
-  setLoading = 'setLoading',
-  setError = 'setError',
-  setActive = 'setActive',
-  clearActive = 'clearActive',
-  reset = 'reset',
-  goToPage = 'goToPage',
-  setPageSize = 'setPageSize'
+  Add = 'add',
+  CreateOrReplace = 'createOrReplace',
+  Update = 'update',
+  UpdateActive = 'updateActive',
+  Remove = 'remove',
+  RemoveActive = 'removeActive',
+  SetLoading = 'setLoading',
+  SetError = 'setError',
+  SetActive = 'setActive',
+  ClearActive = 'clearActive',
+  Reset = 'reset',
+  GoToPage = 'goToPage',
+  SetPageSize = 'setPageSize'
 }
 
 const entityActionTypeValues = Object.values(EntityActionType);

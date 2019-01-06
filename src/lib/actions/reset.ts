@@ -9,6 +9,6 @@ export class Reset {
    * @see defaultEntityState
    */
   constructor(target: Type<EntityState<any>>) {
-    return generateActionObject(EntityActionType.reset, target);
+    return generateActionObject(EntityActionType.Reset, target);
   }
 }

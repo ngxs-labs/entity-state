@@ -19,7 +19,7 @@ export class GoToPage {
    * @param payload Payload to change the page index
    */
   constructor(target: Type<EntityState<any>>, payload: GoToPagePayload) {
-    return generateActionObject(EntityActionType.goToPage, target, {
+    return generateActionObject(EntityActionType.GoToPage, target, {
       wrap: false,
       ...payload
     });
@@ -35,6 +35,6 @@ export class SetPageSize {
    * @param payload The page size
    */
   constructor(target: Type<EntityState<any>>, payload: number) {
-    return generateActionObject(EntityActionType.setPageSize, target, payload);
+    return generateActionObject(EntityActionType.SetPageSize, target, payload);
   }
 }

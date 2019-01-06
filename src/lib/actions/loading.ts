@@ -13,6 +13,6 @@ export class SetLoading {
    * @param loading The loading state
    */
   constructor(target: Type<EntityState<any>>, loading: boolean) {
-    return generateActionObject(EntityActionType.setLoading, target, loading);
+    return generateActionObject(EntityActionType.SetLoading, target, loading);
   }
 }

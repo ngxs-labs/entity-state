@@ -14,6 +14,6 @@ export class SetError {
    * @param error The error that describes the error state
    */
   constructor(target: Type<EntityState<any>>, error: Error | undefined) {
-    return generateActionObject(EntityActionType.setError, target, error);
+    return generateActionObject(EntityActionType.SetError, target, error);
   }
 }

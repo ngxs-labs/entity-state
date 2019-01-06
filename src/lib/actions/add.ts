@@ -16,6 +16,6 @@ export class Add<T> {
    * @see CreateOrReplace#constructor
    */
   constructor(target: Type<EntityState<T>>, payload: T | T[]) {
-    return generateActionObject(EntityActionType.add, target, payload);
+    return generateActionObject(EntityActionType.Add, target, payload);
   }
 }

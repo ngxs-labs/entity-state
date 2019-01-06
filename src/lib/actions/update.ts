@@ -21,6 +21,6 @@ export class Update<T> {
    * @see Updater
    */
   constructor(target: Type<EntityState<T>>, id: EntitySelector<T>, data: Updater<T>) {
-    return generateActionObject(EntityActionType.update, target, { id, data });
+    return generateActionObject(EntityActionType.Update, target, { id, data });
   }
 }
