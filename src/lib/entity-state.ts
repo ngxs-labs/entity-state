@@ -20,7 +20,7 @@ import {
   UpdateFailedError
 } from './errors';
 import { IdStrategy } from './id-strategy';
-import { EntityActionType, EntityActionHandler, getActive, HashMap } from './internal';
+import { EntityActionHandler, EntityActionType, getActive, HashMap } from './internal';
 import IdGenerator = IdStrategy.IdGenerator;
 
 /**
@@ -488,10 +488,12 @@ export abstract class EntityState<T> {
 
   private setup(storeClass: Type<EntityState<T>>, actions: string[]) {
     const baseProto = Object.getPrototypeOf(storeClass.prototype);
-    const notPresent = actions.filter(action => !(action in baseProto));
-    notPresent.forEach(action => {
-      throw new NoMatchingActionHandlerError(action);
-    });
+
+    // throw error if any action from enum does not have matching handler function
+    const notPresent = actions.find(action => !(action in baseProto));
+    if (notPresent !== undefined) {
+      throw new NoMatchingActionHandlerError(notPresent);
+    }
 
     actions.forEach(fn => {
       const actionName = `[${this.storePath}] ${fn}`;
