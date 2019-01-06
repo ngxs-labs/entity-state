@@ -20,7 +20,13 @@ import {
   UpdateFailedError
 } from './errors';
 import { IdStrategy } from './id-strategy';
-import { EntityActionHandler, EntityActionType, getActive, HashMap } from './internal';
+import {
+  EntityActionHandler,
+  EntityActionType,
+  getActive,
+  HashMap,
+  NGXS_META_KEY
+} from './internal';
 import IdGenerator = IdStrategy.IdGenerator;
 
 /**
@@ -53,7 +59,6 @@ export function defaultEntityState(): EntityStateModel<any> {
   };
 }
 
-export const NGXS_META_KEY = 'NGXS_META';
 export type StateSelector<T> = (state: EntityStateModel<any>) => T;
 
 // @dynamic

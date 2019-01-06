@@ -20,7 +20,7 @@ export function generateActionObject<T>(
   store: Type<EntityState<T>>,
   payload?: any
 ) {
-  const name = store['NGXS_META'].path;
+  const name = store[NGXS_META_KEY].path;
   const ReflectedAction = function(data: T) {
     this.payload = data;
   };
@@ -71,3 +71,5 @@ export function EntityActionHandler(
     throw new NoSuchActionInEnumError(propertyKey);
   }
 }
+
+export const NGXS_META_KEY = 'NGXS_META';
