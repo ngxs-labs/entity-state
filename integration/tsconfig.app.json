@@ -1,15 +1,5 @@
 {
   "extends": "../tsconfig.json",
-  "compilerOptions": {
-    "paths": {
-      "@ngxs-labs/entity-state": [
-        "src"
-      ],
-      "@ngxs-labs/entity-state/*": [
-        "src/*"
-      ]
-    }
-  },
   "exclude": [
     "test.ts",
     "**/*.spec.ts"
