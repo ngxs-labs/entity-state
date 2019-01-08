@@ -1,6 +1,6 @@
 import { Type } from '@angular/core';
 import { EntityState } from '../entity-state';
-import { generateActionObject } from '../internal';
+import { EntityActionType, generateActionObject } from '../internal';
 import { Payload } from './type-alias';
 
 export type EntityCreateOrReplaceAction<T> = Payload<T | T[]>;
@@ -15,6 +15,6 @@ export class CreateOrReplace<T> {
    * @see Add#constructor
    */
   constructor(target: Type<EntityState<T>>, payload: T | T[]) {
-    return generateActionObject('createOrReplace', target, payload);
+    return generateActionObject(EntityActionType.CreateOrReplace, target, payload);
   }
 }

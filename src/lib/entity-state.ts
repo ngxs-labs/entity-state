@@ -15,11 +15,18 @@ import {
 import {
   InvalidIdError,
   NoActiveEntityError,
+  NoMatchingActionHandlerError,
   NoSuchEntityError,
   UpdateFailedError
 } from './errors';
 import { IdStrategy } from './id-strategy';
-import { getActive, HashMap } from './internal';
+import {
+  EntityActionHandler,
+  EntityActionType,
+  getActive,
+  HashMap,
+  NGXS_META_KEY
+} from './internal';
 import IdGenerator = IdStrategy.IdGenerator;
 
 /**
@@ -66,30 +73,15 @@ export abstract class EntityState<T> {
     idStrategy: Type<IdGenerator<T>>
   ) {
     this.idKey = _idKey as string;
-    this.storePath = storeClass['NGXS_META'].path;
+    this.storePath = storeClass[NGXS_META_KEY].path;
     this.idGenerator = new idStrategy(_idKey);
 
-    this.setup(
-      storeClass,
-      'add',
-      'createOrReplace',
-      'update',
-      'updateActive',
-      'remove',
-      'removeActive',
-      'setLoading',
-      'setError',
-      'setActive',
-      'clearActive',
-      'reset',
-      'goToPage',
-      'setPageSize'
-    );
+    this.setup(storeClass, Object.values(EntityActionType));
   }
 
   private static get staticStorePath(): string {
     const that = this;
-    return that['NGXS_META'].path;
+    return that[NGXS_META_KEY].path;
   }
 
   /**
@@ -253,6 +245,7 @@ export abstract class EntityState<T> {
    * For certain ID strategies this might fail, if it provides an existing ID.
    * In all cases it will overwrite the ID value in the entity with the calculated ID.
    */
+  @EntityActionHandler
   add(
     { getState, patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntityAddAction<T>
@@ -273,6 +266,7 @@ export abstract class EntityState<T> {
    * If it does the current entity will be replaced.
    * In all cases it will overwrite the ID value in the entity with the calculated ID.
    */
+  @EntityActionHandler
   createOrReplace(
     { getState, patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntityCreateOrReplaceAction<T>
@@ -283,6 +277,7 @@ export abstract class EntityState<T> {
     patchState({ ...updated });
   }
 
+  @EntityActionHandler
   update(
     { getState, patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntityUpdateAction<T>
@@ -313,6 +308,7 @@ export abstract class EntityState<T> {
     patchState({ entities });
   }
 
+  @EntityActionHandler
   updateActive(
     { getState, patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntityUpdateActiveAction<T>
@@ -328,6 +324,7 @@ export abstract class EntityState<T> {
     }
   }
 
+  @EntityActionHandler
   removeActive({ getState, patchState }: StateContext<EntityStateModel<T>>) {
     const { entities, ids, active } = getState();
     delete entities[active];
@@ -338,6 +335,7 @@ export abstract class EntityState<T> {
     });
   }
 
+  @EntityActionHandler
   remove(
     { getState, patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntityRemoveAction<T>
@@ -368,10 +366,12 @@ export abstract class EntityState<T> {
     }
   }
 
+  @EntityActionHandler
   reset({ setState }: StateContext<EntityStateModel<T>>) {
     setState(defaultEntityState());
   }
 
+  @EntityActionHandler
   setLoading(
     { patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntitySetLoadingAction
@@ -379,6 +379,7 @@ export abstract class EntityState<T> {
     patchState({ loading: payload });
   }
 
+  @EntityActionHandler
   setActive(
     { patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntitySetActiveAction
@@ -386,10 +387,12 @@ export abstract class EntityState<T> {
     patchState({ active: payload });
   }
 
+  @EntityActionHandler
   clearActive({ patchState }: StateContext<EntityStateModel<T>>) {
     patchState({ active: undefined });
   }
 
+  @EntityActionHandler
   setError(
     { patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntitySetErrorAction
@@ -397,6 +400,7 @@ export abstract class EntityState<T> {
     patchState({ error: payload });
   }
 
+  @EntityActionHandler
   goToPage(
     { getState, patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntityGoToPageAction
@@ -423,6 +427,7 @@ export abstract class EntityState<T> {
     }
   }
 
+  @EntityActionHandler
   setPageSize(
     { patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntitySetPageSizeAction
@@ -486,10 +491,18 @@ export abstract class EntityState<T> {
     return entities;
   }
 
-  private setup(storeClass: Type<EntityState<T>>, ...actions: string[]) {
+  private setup(storeClass: Type<EntityState<T>>, actions: string[]) {
+    const baseProto = Reflect.getPrototypeOf(storeClass.prototype);
+
+    // throw error if any action from enum does not have matching handler function
+    const notPresent = actions.find(action => !(action in baseProto));
+    if (notPresent !== undefined) {
+      throw new NoMatchingActionHandlerError(notPresent);
+    }
+
     actions.forEach(fn => {
       const actionName = `[${this.storePath}] ${fn}`;
-      storeClass['NGXS_META'].actions[actionName] = [
+      storeClass[NGXS_META_KEY].actions[actionName] = [
         {
           fn: fn,
           options: {},

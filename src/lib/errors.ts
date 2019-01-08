@@ -39,3 +39,15 @@ export class UnableToGenerateIdError extends EntityStateError {
     super(`Unable to generate an ID.\n\tCause: ${cause}`);
   }
 }
+
+export class NoMatchingActionHandlerError extends EntityStateError {
+  constructor(action: string) {
+    super(`No matching handler for action '${action}' from EntityActionType enum.`);
+  }
+}
+
+export class NoSuchActionInEnumError extends EntityStateError {
+  constructor(action: string) {
+    super(`No such action '${action}' in EntityActionType enum.`);
+  }
+}

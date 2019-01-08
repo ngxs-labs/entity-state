@@ -1,4 +1,4 @@
-import { generateActionObject } from '../internal';
+import { EntityActionType, generateActionObject } from '../internal';
 import { EntityState } from '../entity-state';
 import { Type } from '@angular/core';
 
@@ -13,6 +13,6 @@ export class SetLoading {
    * @param loading The loading state
    */
   constructor(target: Type<EntityState<any>>, loading: boolean) {
-    return generateActionObject('setLoading', target, loading);
+    return generateActionObject(EntityActionType.SetLoading, target, loading);
   }
 }

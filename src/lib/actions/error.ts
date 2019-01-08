@@ -1,4 +1,4 @@
-import { generateActionObject } from '../internal';
+import { EntityActionType, generateActionObject } from '../internal';
 import { EntityState } from '../entity-state';
 import { Type } from '@angular/core';
 
@@ -14,6 +14,6 @@ export class SetError {
    * @param error The error that describes the error state
    */
   constructor(target: Type<EntityState<any>>, error: Error | undefined) {
-    return generateActionObject('setError', target, error);
+    return generateActionObject(EntityActionType.SetError, target, error);
   }
 }

@@ -1,4 +1,4 @@
-import { generateActionObject } from '../internal';
+import { EntityActionType, generateActionObject } from '../internal';
 import { EntitySelector, Updater } from './type-alias';
 import { EntityState } from '../entity-state';
 import { Type } from '@angular/core';
@@ -21,6 +21,6 @@ export class Update<T> {
    * @see Updater
    */
   constructor(target: Type<EntityState<T>>, id: EntitySelector<T>, data: Updater<T>) {
-    return generateActionObject('update', target, { id, data });
+    return generateActionObject(EntityActionType.Update, target, { id, data });
   }
 }

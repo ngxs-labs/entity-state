@@ -1,4 +1,4 @@
-import { generateActionObject } from '../internal';
+import { EntityActionType, generateActionObject } from '../internal';
 import { EntitySelector, Payload } from './type-alias';
 import { EntityState } from '../entity-state';
 import { Type } from '@angular/core';
@@ -14,6 +14,6 @@ export class Remove<T> {
    * @see EntitySelector
    */
   constructor(target: Type<EntityState<T>>, payload: EntitySelector<T>) {
-    return generateActionObject('remove', target, payload);
+    return generateActionObject(EntityActionType.Remove, target, payload);
   }
 }
