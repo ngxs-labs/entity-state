@@ -27,21 +27,8 @@ import {
   HashMap,
   NGXS_META_KEY
 } from './internal';
+import { EntityStateModel, StateSelector } from './models';
 import IdGenerator = IdStrategy.IdGenerator;
-
-/**
- * Interface for an EntityState.
- * Includes the entities in an object literal, the loading and error state and the ID of the active selected entity.
- */
-export interface EntityStateModel<T> {
-  entities: HashMap<T>;
-  loading: boolean;
-  error: Error | undefined;
-  active: string | undefined;
-  ids: string[];
-  pageSize: number;
-  pageIndex: number;
-}
 
 /**
  * Returns a new object which serves as the default state.
@@ -58,8 +45,6 @@ export function defaultEntityState(): EntityStateModel<any> {
     pageIndex: 0
   };
 }
-
-export type StateSelector<T> = (state: EntityStateModel<any>) => T;
 
 // @dynamic
 export abstract class EntityState<T> {

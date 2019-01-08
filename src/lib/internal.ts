@@ -1,6 +1,7 @@
-import { EntityState, EntityStateModel } from './entity-state';
+import { EntityState } from './entity-state';
 import { Type } from '@angular/core';
 import { NoSuchActionInEnumError } from './errors';
+import { EntityStateModel } from './models';
 
 /**
  * type alias for javascript object literal

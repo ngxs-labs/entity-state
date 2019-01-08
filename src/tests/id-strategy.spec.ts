@@ -1,4 +1,4 @@
-import { EntityStateModel } from '../lib/entity-state';
+import { EntityStateModel } from '../lib/models';
 import { InvalidIdOfError } from '../lib/errors';
 import { IdStrategy } from '../lib/id-strategy';
 import IdGenerator = IdStrategy.IdGenerator;
