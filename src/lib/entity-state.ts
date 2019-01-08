@@ -36,8 +36,11 @@ import IdGenerator = IdStrategy.IdGenerator;
 /**
  * Returns a new object which serves as the default state.
  * No entities, loading is false, error is undefined, active is undefined.
+ * pageSize is 10 and pageIndex is 0.
  */
-export function defaultEntityState(): EntityStateModel<any> {
+export function defaultEntityState<T>(
+  defaults: Partial<EntityStateModel<T>> = {}
+): EntityStateModel<T> {
   return {
     entities: {},
     ids: [],
@@ -45,7 +48,8 @@ export function defaultEntityState(): EntityStateModel<any> {
     error: undefined,
     active: undefined,
     pageSize: 10,
-    pageIndex: 0
+    pageIndex: 0,
+    ...defaults
   };
 }
 
