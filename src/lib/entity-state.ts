@@ -14,40 +14,33 @@ import {
 } from './actions';
 import {
   InvalidIdError,
-  NoActiveEntityError,
   NoMatchingActionHandlerError,
   NoSuchEntityError,
   UpdateFailedError
 } from './errors';
 import { IdStrategy } from './id-strategy';
 import {
+  asArray,
+  elvis,
   EntityActionHandler,
   EntityActionType,
   getActive,
   HashMap,
-  NGXS_META_KEY
+  mustGetActive,
+  NGXS_META_KEY,
+  wrapOrClamp
 } from './internal';
+import { EntityStateModel, StateSelector } from './models';
 import IdGenerator = IdStrategy.IdGenerator;
-
-/**
- * Interface for an EntityState.
- * Includes the entities in an object literal, the loading and error state and the ID of the active selected entity.
- */
-export interface EntityStateModel<T> {
-  entities: HashMap<T>;
-  loading: boolean;
-  error: Error | undefined;
-  active: string | undefined;
-  ids: string[];
-  pageSize: number;
-  pageIndex: number;
-}
 
 /**
  * Returns a new object which serves as the default state.
  * No entities, loading is false, error is undefined, active is undefined.
+ * pageSize is 10 and pageIndex is 0.
  */
-export function defaultEntityState(): EntityStateModel<any> {
+export function defaultEntityState<T>(
+  defaults: Partial<EntityStateModel<T>> = {}
+): EntityStateModel<T> {
   return {
     entities: {},
     ids: [],
@@ -55,11 +48,10 @@ export function defaultEntityState(): EntityStateModel<any> {
     error: undefined,
     active: undefined,
     pageSize: 10,
-    pageIndex: 0
+    pageIndex: 0,
+    ...defaults
   };
 }
-
-export type StateSelector<T> = (state: EntityStateModel<any>) => T;
 
 // @dynamic
 export abstract class EntityState<T> {
@@ -515,64 +507,5 @@ export abstract class EntityState<T> {
   protected idOf(data: Partial<T>): string {
     // TODO: assertValidId here every time?
     return data[this.idKey];
-  }
-}
-
-/**
- * Returns the active entity. If none is present an error will be thrown.
- * @param state The state to act on
- */
-function mustGetActive<T>(state: EntityStateModel<T>): { id: string; active: T } {
-  const active = getActive(state);
-  if (active === undefined) {
-    throw new NoActiveEntityError();
-  }
-  return { id: state.active, active };
-}
-
-/**
- * Undefined-safe function to access the property given by path parameter
- * @param object The object to read from
- * @param path The path to the property
- */
-function elvis(object: any, path: string): any | undefined {
-  return path ? path.split('.').reduce((value, key) => value && value[key], object) : object;
-}
-
-/**
- * Returns input as an array if it isn't one already
- * @param input The input to make an array if necessary
- */
-function asArray<T>(input: T | T[]): T[] {
-  return Array.isArray(input) ? input : [input];
-}
-
-/**
- * Limits a number to the given boundaries
- * @param value The input value
- * @param min The minimum value
- * @param max The maximum value
- */
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, value));
-}
-
-/**
- * Uses the clamp function is wrap is false.
- * Else it wrap to the max or min value respectively.
- * @param wrap Flag to indicate if value should be wrapped
- * @param value The input value
- * @param min The minimum value
- * @param max The maximum value
- */
-function wrapOrClamp(wrap: boolean, value: number, min: number, max: number): number {
-  if (!wrap) {
-    return clamp(value, min, max);
-  } else if (value < min) {
-    return max;
-  } else if (value > max) {
-    return min;
-  } else {
-    return value;
   }
 }

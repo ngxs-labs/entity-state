@@ -1,4 +1,4 @@
-import { EntityStateModel } from './entity-state';
+import { EntityStateModel } from './models';
 import { InvalidIdOfError, UnableToGenerateIdError } from './errors';
 
 export namespace IdStrategy {
