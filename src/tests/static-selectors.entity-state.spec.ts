@@ -8,6 +8,20 @@ interface ToDo {
   title: string;
 }
 
+@State<EntityStateModel<ToDo>>({
+  name: 'todo',
+  defaults: defaultEntityState()
+})
+class TestState extends EntityState<ToDo> {
+  constructor() {
+    super(TestState, 'title', IdStrategy.EntityIdGenerator);
+  }
+
+  onUpdate(current: Readonly<ToDo>, updated: Readonly<Partial<ToDo>>): ToDo {
+    return { ...current, ...updated };
+  }
+}
+
 describe('EntityState selectors', () => {
   let state: { todo: EntityStateModel<ToDo> };
 
@@ -131,17 +145,3 @@ describe('EntityState selectors', () => {
     expect(latestId).toBe('g');
   });
 });
-
-@State<EntityStateModel<ToDo>>({
-  name: 'todo',
-  defaults: defaultEntityState()
-})
-class TestState extends EntityState<ToDo> {
-  constructor() {
-    super(TestState, 'title', IdStrategy.EntityIdGenerator);
-  }
-
-  onUpdate(current: Readonly<ToDo>, updated: Readonly<Partial<ToDo>>): ToDo {
-    return { ...current, ...updated };
-  }
-}

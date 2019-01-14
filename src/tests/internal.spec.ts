@@ -16,6 +16,20 @@ interface ToDo {
   title: string;
 }
 
+@State<EntityStateModel<ToDo>>({
+  name: 'todo',
+  defaults: defaultEntityState()
+})
+class TestState extends EntityState<ToDo> {
+  constructor() {
+    super(TestState, 'title', IdStrategy.EntityIdGenerator);
+  }
+
+  onUpdate(current: Readonly<ToDo>, updated: Readonly<Partial<ToDo>>): ToDo {
+    return { ...current, ...updated };
+  }
+}
+
 describe('internal', () => {
   beforeAll(() => {
     TestState[NGXS_META_KEY].path = 'todo';
@@ -93,17 +107,3 @@ describe('internal', () => {
     });
   });
 });
-
-@State<EntityStateModel<ToDo>>({
-  name: 'todo',
-  defaults: defaultEntityState()
-})
-class TestState extends EntityState<ToDo> {
-  constructor() {
-    super(TestState, 'title', IdStrategy.EntityIdGenerator);
-  }
-
-  onUpdate(current: Readonly<ToDo>, updated: Readonly<Partial<ToDo>>): ToDo {
-    return { ...current, ...updated };
-  }
-}

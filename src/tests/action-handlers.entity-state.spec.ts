@@ -10,6 +10,20 @@ interface ToDo {
   test?: number;
 }
 
+@State<EntityStateModel<ToDo>>({
+  name: 'todo',
+  defaults: defaultEntityState()
+})
+class TestState extends EntityState<ToDo> {
+  constructor() {
+    super(TestState, 'title', IdStrategy.EntityIdGenerator);
+  }
+
+  onUpdate(current: Readonly<ToDo>, updated: Readonly<Partial<ToDo>>): ToDo {
+    return { ...current, ...updated };
+  }
+}
+
 describe('EntityState action handlers', () => {
   let state: { todo: EntityStateModel<ToDo> };
   let stateInstance: EntityState<ToDo>;
@@ -446,17 +460,3 @@ describe('EntityState action handlers', () => {
     });
   });
 });
-
-@State<EntityStateModel<ToDo>>({
-  name: 'todo',
-  defaults: defaultEntityState()
-})
-class TestState extends EntityState<ToDo> {
-  constructor() {
-    super(TestState, 'title', IdStrategy.EntityIdGenerator);
-  }
-
-  onUpdate(current: Readonly<ToDo>, updated: Readonly<Partial<ToDo>>): ToDo {
-    return { ...current, ...updated };
-  }
-}
