@@ -1,5 +1,51 @@
 {
-  "extends": [
-    "config:base"
+  "pinVersions": false,
+  "separateMajorMinor": false,
+  "prHourlyLimit": 2,
+  "timezone": "UTC",
+  "schedule": [
+    "after 10pm every weekday",
+    "before 5am every weekday",
+    "every weekend"
+  ],
+  "baseBranches": [
+    "master"
+  ],
+  "ignoreDeps": [
+    "@types/node"
+  ],
+  "packageFiles": [
+    "package.json"
+  ],
+  "major": {
+    "devDependencies": {
+      "enabled": false
+    }
+  },
+  "packageRules": [
+    {
+      "packagePatterns": [
+        "^@angular\/.*"
+      ],
+      "groupName": "angular"
+    },
+    {
+      "packageNames": [
+        "typescript"
+      ],
+      "updateTypes": "patch"
+    },
+    {
+      "packageNames": [
+        "^@ngxs\/.*"
+      ],
+      "groupName": "ngxs"
+    },
+    {
+      "packageNames": [
+        "^karma.*"
+      ],
+      "groupName": "karma"
+    }
   ]
 }
