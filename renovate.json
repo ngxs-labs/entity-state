@@ -24,10 +24,18 @@
   },
   "packageRules": [
     {
+      "depTypeList": ["dependencies"],
       "packagePatterns": [
         "^@angular\/.*"
       ],
-      "groupName": "angular"
+      "groupName": "@angular"
+    },
+    {
+      "depTypeList": ["devDependencies"],
+      "packagePatterns": [
+        "^@angular.*"
+      ],
+      "groupName": "@angular-dev"
     },
     {
       "packageNames": [
@@ -39,13 +47,25 @@
       "packageNames": [
         "^@ngxs\/.*"
       ],
-      "groupName": "ngxs"
+      "groupName": "@ngxs"
     },
     {
       "packageNames": [
         "^karma.*"
       ],
       "groupName": "karma"
+    },
+    {
+      "packageNames": [
+        "^@commitlint\/.*"
+      ],
+      "groupName": "@commitlint"
+    },
+    {
+      "packageNames": [
+        "^@types\/.*"
+      ],
+      "groupName": "@types"
     }
   ]
 }
