@@ -1,9 +1,9 @@
 import { State, StateContext } from '@ngxs/store';
-import { defaultEntityState, EntityState } from '../lib/entity-state';
-import { EntityStateModel } from '../lib/models';
-import { IdStrategy } from '../lib/id-strategy';
-import { NGXS_META_KEY } from '../lib/internal';
-import { UnableToGenerateIdError } from '../lib/errors';
+import { defaultEntityState, EntityState } from '../../lib/entity-state';
+import { EntityStateModel } from '../../lib/models';
+import { IdStrategy } from '../../lib/id-strategy';
+import { NGXS_META_KEY } from '../../lib/internal';
+import { UnableToGenerateIdError } from '../../lib/errors';
 
 interface ToDo {
   title: string;
