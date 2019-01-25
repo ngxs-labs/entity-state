@@ -1,7 +1,6 @@
 {
-  "pinVersions": false,
+  "rangeStrategy": "bump",
   "separateMajorMinor": false,
-  "prHourlyLimit": 2,
   "timezone": "UTC",
   "schedule": [
     "after 9pm on saturday"
