@@ -12,6 +12,7 @@ export interface EntityStateModel<T> {
   ids: string[];
   pageSize: number;
   pageIndex: number;
+  lastUpdated: number;
 }
 
 export type StateSelector<T> = (state: EntityStateModel<any>) => T;
