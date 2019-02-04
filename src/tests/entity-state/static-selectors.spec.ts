@@ -144,4 +144,20 @@ describe('EntityState selectors', () => {
     const latestId = selector(state);
     expect(latestId).toBe('g');
   });
+
+  it('should select lastUpdated', () => {
+    const now = Date.now();
+    state.todo.lastUpdated = now;
+    const selector = TestState.lastUpdated as any;
+    const lastUpdated = selector(state);
+    expect(lastUpdated.getTime()).toBe(now);
+  });
+
+  it('should select age', () => {
+    const now = Date.now();
+    state.todo.lastUpdated = now - 10_000;
+    const selector = TestState.age as any;
+    const age = selector(state);
+    expect(age).toBe(10_000);
+  });
 });

@@ -85,6 +85,13 @@ describe('EntityState action handlers', () => {
         );
       }
     });
+
+    it('should update lastUpdated', () => {
+      const context = mockStateContext(val => {
+        expect(val.lastUpdated).toBeCloseTo(Date.now(), -100); // within 100ms
+      });
+      stateInstance.add(context, { payload: { title: 'd' } });
+    });
   });
 
   describe('createOrReplace', () => {
@@ -112,6 +119,13 @@ describe('EntityState action handlers', () => {
       });
 
       stateInstance.createOrReplace(context, { payload: { title: 'a' } });
+    });
+
+    it('should update lastUpdated', () => {
+      const context = mockStateContext(val => {
+        expect(val.lastUpdated).toBeCloseTo(Date.now(), -100); // within 100ms
+      });
+      stateInstance.createOrReplace(context, { payload: { title: 'd' } });
     });
   });
 
@@ -179,6 +193,19 @@ describe('EntityState action handlers', () => {
             b: { title: 'b', test: 42 },
             c: { title: 'c', test: 42 }
           });
+        });
+
+        stateInstance.update(context, {
+          payload: {
+            id: null,
+            data: { test: 42 }
+          }
+        });
+      });
+
+      it('should update lastUpdated', () => {
+        const context = mockStateContext(val => {
+          expect(val.lastUpdated).toBeCloseTo(Date.now(), -100); // within 100ms
         });
 
         stateInstance.update(context, {
@@ -286,6 +313,14 @@ describe('EntityState action handlers', () => {
       });
       stateInstance.updateActive(context, { payload: () => ({ test: 42 } as any) });
     });
+
+    it('should update lastUpdated', () => {
+      const context = mockStateContext(val => {
+        expect(val.lastUpdated).toBeCloseTo(Date.now(), -100); // within 100ms
+      });
+
+      stateInstance.updateActive(context, { payload: () => ({ test: 42 } as any) });
+    });
   });
 
   describe('removeActive', () => {
@@ -299,6 +334,14 @@ describe('EntityState action handlers', () => {
         });
         expect(val.ids).toEqual(['b', 'c']);
       });
+      stateInstance.removeActive(context);
+    });
+
+    it('should update lastUpdated', () => {
+      const context = mockStateContext(val => {
+        expect(val.lastUpdated).toBeCloseTo(Date.now(), -100); // within 100ms
+      });
+
       stateInstance.removeActive(context);
     });
   });
@@ -348,6 +391,14 @@ describe('EntityState action handlers', () => {
       });
       stateInstance.remove(context, { payload: null });
     });
+
+    it('should update lastUpdated', () => {
+      const context = mockStateContext(val => {
+        expect(val.lastUpdated).toBeCloseTo(Date.now(), -100); // within 100ms
+      });
+
+      stateInstance.remove(context, { payload: null });
+    });
   });
 
   describe('reset', () => {
@@ -355,6 +406,14 @@ describe('EntityState action handlers', () => {
       const context = mockStateContext(undefined, val => {
         expect(val).toEqual(defaultEntityState());
       });
+      stateInstance.reset(context);
+    });
+
+    it('should update lastUpdated', () => {
+      const context = mockStateContext(undefined, val => {
+        expect(val.lastUpdated).toBeCloseTo(Date.now(), -100); // within 100ms
+      });
+
       stateInstance.reset(context);
     });
   });

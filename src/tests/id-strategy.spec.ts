@@ -22,6 +22,7 @@ describe('ID generator', () => {
       loading: false,
       pageIndex: 0,
       pageSize: 10,
+      lastUpdated: Date.now(),
       ids: ['0', '1', '2', '3'],
       entities: {
         '0': {

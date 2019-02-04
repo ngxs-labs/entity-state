@@ -49,6 +49,7 @@ export function defaultEntityState<T>(
     active: undefined,
     pageSize: 10,
     pageIndex: 0,
+    lastUpdated: Date.now(),
     ...defaults
   };
 }
@@ -230,6 +231,30 @@ export abstract class EntityState<T> {
     };
   }
 
+  /**
+   * Returns a selector for the update timestamp
+   */
+  static get lastUpdated(): StateSelector<Date> {
+    // tslint:disable-line:member-ordering
+    const that = this;
+    return state => {
+      const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
+      return new Date(subState.lastUpdated);
+    };
+  }
+
+  /**
+   * Returns a selector for age, based on the update timestamp
+   */
+  static get age(): StateSelector<number> {
+    // tslint:disable-line:member-ordering
+    const that = this;
+    return state => {
+      const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
+      return Date.now() - subState.lastUpdated;
+    };
+  }
+
   // ------------------- ACTION HANDLERS -------------------
 
   /**
@@ -249,7 +274,7 @@ export abstract class EntityState<T> {
       // for EntityIdGenerator it will throw an error if no ID is present
       (p, state) => this.idGenerator.generateId(p, state)
     );
-    patchState({ ...updated });
+    patchState({ ...updated, lastUpdated: Date.now() });
   }
 
   /**
@@ -266,7 +291,7 @@ export abstract class EntityState<T> {
     const updated = this._addOrReplace(getState(), payload, (p, state) =>
       this.idGenerator.getPresentIdOrGenerate(p, state)
     );
-    patchState({ ...updated });
+    patchState({ ...updated, lastUpdated: Date.now() });
   }
 
   @EntityActionHandler
@@ -297,7 +322,7 @@ export abstract class EntityState<T> {
       });
     }
 
-    patchState({ entities });
+    patchState({ entities, lastUpdated: Date.now() });
   }
 
   @EntityActionHandler
@@ -310,9 +335,15 @@ export abstract class EntityState<T> {
     const { entities } = state;
 
     if (typeof payload === 'function') {
-      patchState({ entities: { ...this._update(entities, payload(active), id) } });
+      patchState({
+        entities: { ...this._update(entities, payload(active), id) },
+        lastUpdated: Date.now()
+      });
     } else {
-      patchState({ entities: { ...this._update(entities, payload, id) } });
+      patchState({
+        entities: { ...this._update(entities, payload, id) },
+        lastUpdated: Date.now()
+      });
     }
   }
 
@@ -323,7 +354,8 @@ export abstract class EntityState<T> {
     patchState({
       entities: { ...entities },
       ids: ids.filter(id => id !== active),
-      active: undefined
+      active: undefined,
+      lastUpdated: Date.now()
     });
   }
 
@@ -338,7 +370,8 @@ export abstract class EntityState<T> {
       patchState({
         entities: {},
         ids: [],
-        active: undefined
+        active: undefined,
+        lastUpdated: Date.now()
       });
     } else {
       const deleteIds: string[] =
@@ -353,7 +386,8 @@ export abstract class EntityState<T> {
       patchState({
         entities: { ...entities },
         ids: ids.filter(id => !deleteIds.includes(id)),
-        active: wasActive ? undefined : active
+        active: wasActive ? undefined : active,
+        lastUpdated: Date.now()
       });
     }
   }
