@@ -1,6 +1,6 @@
 import { EntityState } from './entity-state';
 import { Type } from '@angular/core';
-import { NoActiveEntityError, NoSuchActionInEnumError } from './errors';
+import { NoActiveEntityError } from './errors';
 import { EntityStateModel } from './models';
 
 /**
@@ -57,22 +57,6 @@ export enum EntityActionType {
   Reset = 'reset',
   GoToPage = 'goToPage',
   SetPageSize = 'setPageSize'
-}
-
-const entityActionTypeValues = Object.values(EntityActionType);
-
-/**
- * An optional annotation to verify that the annotated function has a matching action in EntityActionType enum
- * @see EntityActionType
- */
-export function EntityActionHandler(
-  target: Object, // The prototype of the class
-  propertyKey: string, // The name of the method
-  descriptor: TypedPropertyDescriptor<any>
-) {
-  if (!entityActionTypeValues.includes(propertyKey)) {
-    throw new NoSuchActionInEnumError(propertyKey);
-  }
 }
 
 /**
