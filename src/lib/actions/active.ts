@@ -37,7 +37,6 @@ export class RemoveActive {
   }
 }
 
-// TODO: Confirm behaviour
 export class UpdateActive<T> {
   /**
    * Generates an action that will update the current active entity.

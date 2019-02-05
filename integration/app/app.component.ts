@@ -117,8 +117,6 @@ export class AppComponent {
   }
 
   clearEntities() {
-    // TODO: select all with null ?
-    // Akita does it this way. I like it because you have to explicitly say so
     this.store.dispatch(new Remove(TodoState, null));
   }
 
@@ -136,7 +134,7 @@ export class AppComponent {
     this.store.dispatch(
       new Update(
         TodoState,
-        null, // select all -- TODO: add alias?
+        null, // select all
         { done: true }
       )
     );
