@@ -1,27 +1,134 @@
-# EntityStateIntegration
+<p align="center">
+    <img src="https://raw.githubusercontent.com/ngxs-labs/emitter/master/docs/assets/logo.png">
+</p>
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.0.5.
+---
 
-## Development server
+[![Build Status](https://travis-ci.org/ngxs-labs/entity-state.svg?branch=master)](https://travis-ci.org/ngxs-labs/entity-state)
+[![NPM](https://badge.fury.io/js/%40ngxs-labs%2Fentity-state.svg)](https://www.npmjs.com/package/@ngxs-labs/entity-state)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/ngxs-labs/entity-state/blob/master/LICENSE)
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+# `entity-state`
 
-## Code scaffolding
+> Easy CRUD actions for your `ngxs` state
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### Setup
 
-## Build
+```bash
+npm i @ngxs-labs/entity-state
+```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+You do not have import any module, just extend your state class, implemented required methods and you are good to go!
+The first `super` parameter is always the state class itself.
+The second parameter is the key to identify your entities with.
+The third is an implementation of an `IdGenerator`. See [below](#IdStrategy).
 
-## Running unit tests
+#### Example state
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```typescript
+export interface ToDo {
+  title: string;
+  description: string;
+  done: boolean;
+}
 
-## Running end-to-end tests
+@State<EntityStateModel<ToDo>>({
+  name: 'todo',
+  defaults: defaultEntityState()
+})
+export class TodoState extends EntityState<ToDo> {
+  constructor() {
+    super(TodoState, 'title', IdStrategy.EntityIdGenerator);
+  }
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+  onUpdate(current: Readonly<ToDo>, updated: Partial<ToDo>): ToDo {
+    return { ...current, ...updated };
+  }
+}
+```
 
-## Further help
+>[Example in the integration app](https://github.com/ngxs-labs/entity-state/blob/master/integration/app/store/todo/store.ts#L19)!
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+
+### Actions
+
+There are ready to use Actions for entity-states. Just pass in the targeted state class as the first parameter and then your action's payload.
+
+```typescript
+this.store.dispatch(new SetLoading(TodoState, this.loading));
+this.store.dispatch(new UpdateActive(TodoState, { done: true }));
+```
+
+>[Example in the integration app](https://github.com/ngxs-labs/entity-state/blob/master/integration/app/app.component.ts#L46)
+
+| Action | Short description |
+|--|--|
+| `Add` | Adds a new entity and cannot replace existing entities |
+| `CreateOrReplace` | Gets the entity's ID and will replace entities with same id or else add a new one |
+| `Update` | Updates [one or more](#EntitySelector) entities by partial value or function |
+| `Remove` | Removes entities from the state |
+| ---------- | ---------- |
+| `SetActive` | Takes an ID and sets it as active |
+| `ClearActive` | Clears the active ID |
+| `UpdateActive` | Updates the currently active entity |
+| `RemoveActive` | Removes the active entity and clears the ID |
+| ---------- | ---------- |
+| `SetError` | Sets the error (`error instance/undefined`)|
+| `SetLoading` | Sets the loading state (`true/false`) |
+| `Reset` | Resets the state to default |
+| ---------- | ---------- |
+| `GoToPage` | Goes to specified page, via index, stepwise or first/last |
+| `SetPageSize` | Sets the page size |
+
+Action that change the entity map will update the internal timestamp `lastUpdated`. You can use one of the existing selectors to see the age of your data.
+
+### Selectors
+
+Use predefined Selectors just like you would normally!
+
+```typescript
+@Select(TodoState.entities) toDos$: Observable<ToDo[]>;
+@Select(TodoState.active) active$: Observable<ToDo>;
+```
+
+>[Example in the integration app](https://github.com/ngxs-labs/entity-state/blob/master/integration/app/app.component.ts#L28)
+
+| Selector | Short description |
+|--|--|
+| `entities` | All entities in an array |
+| `keys` | All entity keys in an array |
+| `entitiesMap` | All entities in a map |
+| `size` | Entity count |
+| `active ` | the active entity |
+| `activeId` | the active ID |
+| `paginatedEntities` | Entities in an array defined by pagination values |
+| `nthEntity` | the nthEntity by insertion order |
+| `latestId` | the ID of the latest entity |
+| `latest` | the latest entity |
+| `loading` | the loading state |
+| `error` | the current error |
+| `lastUpdated` | the `lastUpdated` timestamp as `Date` |
+| `age` | difference between `Date.now()` and `lastUpdated` in ms |
+
+### `IdStrategy`
+
+There are 3 different strategies in the `IdStrategy` namespace available:
+
+- `IncrementingIdGenerator` -> uses auto-incremeting IDs based on present entities
+- `UUIDGenerator` -> generates `UUID` for new entities
+- `EntityIdGenerator` -> takes the id from the provided entity
+
+The latter will cause errors if you try to `add` an entity with the same ID.
+The former can always generate a new ID.
+
+### `EntitySelector`
+
+The `EntitySelector` type is used in Actions such as `Update` or `Remove`.
+```typescript
+export type EntitySelector<T> = string | string[] | ((T) => boolean) | null;
+```
+
+- `string` -> one ID, selects one entity
+- `string[]` -> array of IDs, selects matching entities
+- `((T) => boolean)` -> predicate, selects entities that return true for this predicate
+- `null` -> all entities in the state
