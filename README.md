@@ -4,13 +4,13 @@
 
 ---
 
+> Easy CRUD actions for your `ngxs` state
+
 [![Build Status](https://travis-ci.org/ngxs-labs/entity-state.svg?branch=master)](https://travis-ci.org/ngxs-labs/entity-state)
 [![NPM](https://badge.fury.io/js/%40ngxs-labs%2Fentity-state.svg)](https://www.npmjs.com/package/@ngxs-labs/entity-state)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/ngxs-labs/entity-state/blob/master/LICENSE)
 
-# `entity-state`
-
-> Easy CRUD actions for your `ngxs` state
+This package is an entity adapter and simplifies CRUD behaviour with just two lines of setup per state class!
 
 ### Setup
 
@@ -21,7 +21,7 @@ npm i @ngxs-labs/entity-state
 You do not have import any module, just extend your state class, implemented required methods and you are good to go!
 The first `super` parameter is always the state class itself.
 The second parameter is the key to identify your entities with.
-The third is an implementation of an `IdGenerator`. See [below](#IdStrategy).
+The third is an implementation of an `IdGenerator` (see [below](#IdStrategy)).
 
 #### Example state
 
@@ -80,7 +80,7 @@ this.store.dispatch(new UpdateActive(TodoState, { done: true }));
 | `GoToPage` | Goes to specified page, via index, stepwise or first/last |
 | `SetPageSize` | Sets the page size |
 
-Action that change the entity map will update the internal timestamp `lastUpdated`. You can use one of the existing selectors to see the age of your data.
+Actions that change the entities will update the internal timestamp `lastUpdated`. You can use one of the existing selectors to see the age of your data.
 
 ### Selectors
 
@@ -119,7 +119,7 @@ There are 3 different strategies in the `IdStrategy` namespace available:
 - `EntityIdGenerator` -> takes the id from the provided entity
 
 The latter will cause errors if you try to `add` an entity with the same ID.
-The former can always generate a new ID.
+The former two can always generate a new ID.
 
 ### `EntitySelector`
 
