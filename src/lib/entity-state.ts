@@ -538,8 +538,13 @@ export abstract class EntityState<T> {
     });
   }
 
-  protected idOf(data: Partial<T>): string {
-    // TODO: assertValidId here every time?
+  /**
+   * Returns the id of the given entity, based on the defined idKey.
+   * This methods allows Partial entities and thus might return undefined.
+   * Other methods calling this one have to handle this case themselves.
+   * @param data a partial entity
+   */
+  protected idOf(data: Partial<T>): string | undefined {
     return data[this.idKey];
   }
 }
