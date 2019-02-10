@@ -49,7 +49,7 @@ export function defaultEntityState<T>(
 }
 
 // @dynamic
-export abstract class EntityState<T> {
+export abstract class EntityState<T extends {}> {
   private readonly idKey: string;
   private readonly storePath: string;
   protected readonly idGenerator: IdGenerator<T>;
@@ -73,16 +73,21 @@ export abstract class EntityState<T> {
 
   /**
    * This function is called every time an entity is updated.
-   * It receives the current entity and a partial entity that was either passed directly or generated with a function
+   * It receives the current entity and a partial entity that was either passed directly or generated with a function.
+   * The default implementation uses the spread operator to create a new entity.
+   * You must override this method if your entity type does not support the spread operator.
    * @see Updater
    * @param current The current entity, readonly
    * @param updated The new data as a partial entity
    * @example
-   *onUpdate(current: ToDo, updated: Partial<ToDo>): ToDo {
+   * // default behavior
+   * onUpdate(current: Readonly<T updated: Partial<T>): T {
   return {...current, ...updated};
-}
+ }
    */
-  abstract onUpdate(current: Readonly<T>, updated: Partial<T>): T;
+  onUpdate(current: Readonly<T>, updated: Partial<T>): T {
+    return { ...current, ...updated } as T;
+  }
 
   // ------------------- SELECTORS -------------------
 
