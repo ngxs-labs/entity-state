@@ -12,17 +12,11 @@ import {
   EntityUpdateAction,
   EntityUpdateActiveAction
 } from './actions';
-import {
-  InvalidIdError,
-  NoMatchingActionHandlerError,
-  NoSuchEntityError,
-  UpdateFailedError
-} from './errors';
+import { InvalidIdError, NoSuchEntityError, UpdateFailedError } from './errors';
 import { IdStrategy } from './id-strategy';
 import {
   asArray,
   elvis,
-  EntityActionHandler,
   EntityActionType,
   getActive,
   HashMap,
@@ -55,7 +49,7 @@ export function defaultEntityState<T>(
 }
 
 // @dynamic
-export abstract class EntityState<T> {
+export abstract class EntityState<T extends {}> {
   private readonly idKey: string;
   private readonly storePath: string;
   protected readonly idGenerator: IdGenerator<T>;
@@ -79,16 +73,21 @@ export abstract class EntityState<T> {
 
   /**
    * This function is called every time an entity is updated.
-   * It receives the current entity and a partial entity that was either passed directly or generated with a function
+   * It receives the current entity and a partial entity that was either passed directly or generated with a function.
+   * The default implementation uses the spread operator to create a new entity.
+   * You must override this method if your entity type does not support the spread operator.
    * @see Updater
    * @param current The current entity, readonly
    * @param updated The new data as a partial entity
    * @example
-   *onUpdate(current: ToDo, updated: Partial<ToDo>): ToDo {
+   * // default behavior
+   * onUpdate(current: Readonly<T updated: Partial<T>): T {
   return {...current, ...updated};
-}
+ }
    */
-  abstract onUpdate(current: Readonly<T>, updated: Partial<T>): T;
+  onUpdate(current: Readonly<T>, updated: Partial<T>): T {
+    return { ...current, ...updated } as T;
+  }
 
   // ------------------- SELECTORS -------------------
 
@@ -262,7 +261,6 @@ export abstract class EntityState<T> {
    * For certain ID strategies this might fail, if it provides an existing ID.
    * In all cases it will overwrite the ID value in the entity with the calculated ID.
    */
-  @EntityActionHandler
   add(
     { getState, patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntityAddAction<T>
@@ -283,7 +281,6 @@ export abstract class EntityState<T> {
    * If it does the current entity will be replaced.
    * In all cases it will overwrite the ID value in the entity with the calculated ID.
    */
-  @EntityActionHandler
   createOrReplace(
     { getState, patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntityCreateOrReplaceAction<T>
@@ -294,7 +291,6 @@ export abstract class EntityState<T> {
     patchState({ ...updated, lastUpdated: Date.now() });
   }
 
-  @EntityActionHandler
   update(
     { getState, patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntityUpdateAction<T>
@@ -325,7 +321,6 @@ export abstract class EntityState<T> {
     patchState({ entities, lastUpdated: Date.now() });
   }
 
-  @EntityActionHandler
   updateActive(
     { getState, patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntityUpdateActiveAction<T>
@@ -347,7 +342,6 @@ export abstract class EntityState<T> {
     }
   }
 
-  @EntityActionHandler
   removeActive({ getState, patchState }: StateContext<EntityStateModel<T>>) {
     const { entities, ids, active } = getState();
     delete entities[active];
@@ -359,7 +353,6 @@ export abstract class EntityState<T> {
     });
   }
 
-  @EntityActionHandler
   remove(
     { getState, patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntityRemoveAction<T>
@@ -392,12 +385,10 @@ export abstract class EntityState<T> {
     }
   }
 
-  @EntityActionHandler
   reset({ setState }: StateContext<EntityStateModel<T>>) {
     setState(defaultEntityState());
   }
 
-  @EntityActionHandler
   setLoading(
     { patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntitySetLoadingAction
@@ -405,7 +396,6 @@ export abstract class EntityState<T> {
     patchState({ loading: payload });
   }
 
-  @EntityActionHandler
   setActive(
     { patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntitySetActiveAction
@@ -413,12 +403,10 @@ export abstract class EntityState<T> {
     patchState({ active: payload });
   }
 
-  @EntityActionHandler
   clearActive({ patchState }: StateContext<EntityStateModel<T>>) {
     patchState({ active: undefined });
   }
 
-  @EntityActionHandler
   setError(
     { patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntitySetErrorAction
@@ -426,7 +414,6 @@ export abstract class EntityState<T> {
     patchState({ error: payload });
   }
 
-  @EntityActionHandler
   goToPage(
     { getState, patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntityGoToPageAction
@@ -453,7 +440,6 @@ export abstract class EntityState<T> {
     }
   }
 
-  @EntityActionHandler
   setPageSize(
     { patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntitySetPageSizeAction
@@ -518,14 +504,7 @@ export abstract class EntityState<T> {
   }
 
   private setup(storeClass: Type<EntityState<T>>, actions: string[]) {
-    const baseProto = Reflect.getPrototypeOf(storeClass.prototype);
-
-    // throw error if any action from enum does not have matching handler function
-    const notPresent = actions.find(action => !(action in baseProto));
-    if (notPresent !== undefined) {
-      throw new NoMatchingActionHandlerError(notPresent);
-    }
-
+    // validation if a matching action handler exists has moved to reflection-validation tests
     actions.forEach(fn => {
       const actionName = `[${this.storePath}] ${fn}`;
       storeClass[NGXS_META_KEY].actions[actionName] = [
@@ -538,8 +517,13 @@ export abstract class EntityState<T> {
     });
   }
 
-  protected idOf(data: Partial<T>): string {
-    // TODO: assertValidId here every time?
+  /**
+   * Returns the id of the given entity, based on the defined idKey.
+   * This methods allows Partial entities and thus might return undefined.
+   * Other methods calling this one have to handle this case themselves.
+   * @param data a partial entity
+   */
+  protected idOf(data: Partial<T>): string | undefined {
     return data[this.idKey];
   }
 }
