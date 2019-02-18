@@ -1,7 +1,7 @@
 import { generateActionObject } from '../internal';
 import { EntityState } from '../entity-state';
 import { Type } from '@angular/core';
-import { EntityActionType } from '@ngxs-labs/entity-state';
+import { EntityActionType } from './type-alias';
 
 export class Reset {
   /**
