@@ -2,7 +2,8 @@ import { State } from '@ngxs/store';
 import { defaultEntityState, EntityState } from '../../lib/entity-state';
 import { EntityStateModel } from '../../lib/models';
 import { IdStrategy } from '../../lib/id-strategy';
-import { EntityActionType, NGXS_META_KEY } from '../../lib/internal';
+import { NGXS_META_KEY } from '../../lib/internal';
+import { EntityActionType } from '@ngxs-labs/entity-state';
 
 interface ToDo {
   title: string;

@@ -5,9 +5,10 @@ import {
   ofActionErrored,
   ofActionSuccessful
 } from '@ngxs/store';
-import { EntityActionType, NGXS_META_KEY } from './internal';
+import { NGXS_META_KEY } from './internal';
 import { EntityState } from './entity-state';
 import { Type } from '@angular/core';
+import { EntityActionType } from '@ngxs-labs/entity-state';
 
 export const ofEntityAction = (
   state: Type<EntityState<any>>,

@@ -22,3 +22,22 @@ export type Updater<T> = Partial<T> | ((entity: Readonly<T>) => Partial<T>);
 export interface Payload<T> {
   payload: T;
 }
+
+/**
+ * Enum that contains all existing Actions for the Entity State adapter.
+ */
+export enum EntityActionType {
+  Add = 'add',
+  CreateOrReplace = 'createOrReplace',
+  Update = 'update',
+  UpdateActive = 'updateActive',
+  Remove = 'remove',
+  RemoveActive = 'removeActive',
+  SetLoading = 'setLoading',
+  SetError = 'setError',
+  SetActive = 'setActive',
+  ClearActive = 'clearActive',
+  Reset = 'reset',
+  GoToPage = 'goToPage',
+  SetPageSize = 'setPageSize'
+}

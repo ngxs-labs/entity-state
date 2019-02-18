@@ -1,6 +1,7 @@
 import { Type } from '@angular/core';
 import { StateContext } from '@ngxs/store';
 import {
+  EntityActionType,
   EntityAddAction,
   EntityCreateOrReplaceAction,
   EntityGoToPageAction,
@@ -17,7 +18,6 @@ import { IdStrategy } from './id-strategy';
 import {
   asArray,
   elvis,
-  EntityActionType,
   getActive,
   HashMap,
   mustGetActive,
