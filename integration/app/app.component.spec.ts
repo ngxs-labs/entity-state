@@ -5,10 +5,19 @@ import {
   TestBed
 } from '@angular/core/testing';
 import { Store } from '@ngxs/store';
-import { defaultEntityState, NoActiveEntityError } from '@ngxs-labs/entity-state';
+import {
+  defaultEntityState,
+  EntityActionType,
+  NoActiveEntityError,
+  ofEntityAction,
+  ofEntityActionDispatched,
+  ofEntityActionErrored,
+  ofEntityActionSuccessful
+} from '@ngxs-labs/entity-state';
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
 import { map } from 'rxjs/operators';
+import { TodoState } from './store/todo';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -424,5 +433,55 @@ describe('AppComponent', () => {
       const toDo = component.getNthEntity(i);
       expect(toDo.title).toEqual('NGXS Entity Store ' + (i + 1));
     }
+  });
+
+  describe('action handlers', () => {
+    it('should work with ofEntityAction', done => {
+      component.actions
+        .pipe(ofEntityAction(TodoState, EntityActionType.Add))
+        .subscribe(action => {
+          const { type } = Reflect.getPrototypeOf(action).constructor as any;
+          expect(type).toBe('[todo] add');
+          done();
+        });
+
+      component.addToDo();
+    });
+
+    it('should work with ofEntityActionDispatched', done => {
+      component.actions
+        .pipe(ofEntityActionDispatched(TodoState, EntityActionType.Add))
+        .subscribe(action => {
+          const { type } = Reflect.getPrototypeOf(action).constructor as any;
+          expect(type).toBe('[todo] add');
+          done();
+        });
+
+      component.addToDo();
+    });
+
+    it('should work with ofEntityActionSuccessful', done => {
+      component.actions
+        .pipe(ofEntityActionSuccessful(TodoState, EntityActionType.Add))
+        .subscribe(action => {
+          const { type } = Reflect.getPrototypeOf(action).constructor as any;
+          expect(type).toBe('[todo] add');
+          done();
+        });
+
+      component.addToDo();
+    });
+
+    it('should work with ofEntityActionErrored', done => {
+      component.actions
+        .pipe(ofEntityActionErrored(TodoState, EntityActionType.Add))
+        .subscribe(action => {
+          const { type } = Reflect.getPrototypeOf(action).constructor as any;
+          expect(type).toBe('[todo] add');
+          done();
+        });
+
+      component.addWithError();
+    });
   });
 });

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Select, Store } from '@ngxs/store';
+import { Actions, Select, Store } from '@ngxs/store';
 import {
   Add,
   ClearActive,
@@ -39,7 +39,7 @@ export class AppComponent {
   private loading = false;
   private error = false;
 
-  constructor(private store: Store) {}
+  constructor(private store: Store, public actions: Actions) {}
 
   toggleLoading() {
     this.loading = !this.loading;
@@ -200,5 +200,22 @@ export class AppComponent {
 
   getNthEntity(index: number): ToDo {
     return this.store.selectSnapshot(TodoState.nthEntity(index));
+  }
+
+  addWithError() {
+    this.store.dispatch(
+      new Add(TodoState, [
+        {
+          title: 'NGXS Entity Store 1',
+          description: 'Some Descr 1',
+          done: false
+        },
+        {
+          title: 'NGXS Entity Store 1',
+          description: 'Some Descr 1',
+          done: false
+        }
+      ])
+    );
   }
 }

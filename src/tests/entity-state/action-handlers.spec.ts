@@ -404,7 +404,13 @@ describe('EntityState action handlers', () => {
   describe('reset', () => {
     it('should reset the state to default', () => {
       const context = mockStateContext(undefined, val => {
-        expect(val).toEqual(defaultEntityState());
+        const _val = { ...val };
+        delete _val.lastUpdated;
+
+        const _default = { ...defaultEntityState() } as any;
+        delete _default.lastUpdated;
+
+        expect(_val).toEqual(_default);
       });
       stateInstance.reset(context);
     });

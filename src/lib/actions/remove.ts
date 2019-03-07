@@ -1,5 +1,5 @@
-import { EntityActionType, generateActionObject } from '../internal';
-import { EntitySelector, Payload } from './type-alias';
+import { generateActionObject } from '../internal';
+import { EntityActionType, EntitySelector, Payload } from './type-alias';
 import { EntityState } from '../entity-state';
 import { Type } from '@angular/core';
 

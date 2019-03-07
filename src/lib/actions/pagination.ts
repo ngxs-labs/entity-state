@@ -1,7 +1,7 @@
-import { Payload } from './type-alias';
+import { EntityActionType, Payload } from './type-alias';
 import { Type } from '@angular/core';
 import { EntityState } from '../entity-state';
-import { EntityActionType, generateActionObject } from '../internal';
+import { generateActionObject } from '../internal';
 
 export type GoToPagePayload =
   | { page: number }

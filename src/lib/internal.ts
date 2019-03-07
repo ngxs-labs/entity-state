@@ -41,25 +41,6 @@ export function getActive<T>(state: EntityStateModel<T>): T {
 }
 
 /**
- * Enum that contains all existing Actions for the Entity State adapter.
- */
-export enum EntityActionType {
-  Add = 'add',
-  CreateOrReplace = 'createOrReplace',
-  Update = 'update',
-  UpdateActive = 'updateActive',
-  Remove = 'remove',
-  RemoveActive = 'removeActive',
-  SetLoading = 'setLoading',
-  SetError = 'setError',
-  SetActive = 'setActive',
-  ClearActive = 'clearActive',
-  Reset = 'reset',
-  GoToPage = 'goToPage',
-  SetPageSize = 'setPageSize'
-}
-
-/**
  * Returns the active entity. If none is present an error will be thrown.
  * @param state The state to act on
  */

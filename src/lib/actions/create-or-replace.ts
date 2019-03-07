@@ -1,7 +1,7 @@
 import { Type } from '@angular/core';
 import { EntityState } from '../entity-state';
-import { EntityActionType, generateActionObject } from '../internal';
-import { Payload } from './type-alias';
+import { generateActionObject } from '../internal';
+import { EntityActionType, Payload } from './type-alias';
 
 export type EntityCreateOrReplaceAction<T> = Payload<T | T[]>;
 
