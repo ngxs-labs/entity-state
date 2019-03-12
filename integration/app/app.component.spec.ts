@@ -12,7 +12,8 @@ import {
   ofEntityAction,
   ofEntityActionDispatched,
   ofEntityActionErrored,
-  ofEntityActionSuccessful
+  ofEntityActionSuccessful,
+  ofEntityActionCompleted
 } from '@ngxs-labs/entity-state';
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
@@ -441,6 +442,19 @@ describe('AppComponent', () => {
         .pipe(ofEntityAction(TodoState, EntityActionType.Add))
         .subscribe(action => {
           const { type } = Reflect.getPrototypeOf(action).constructor as any;
+          expect(type).toBe('[todo] add');
+          done();
+        });
+
+      component.addToDo();
+    });
+
+    it('should work with ofEntityActionCompleted', done => {
+      component.actions
+        .pipe(ofEntityActionCompleted(TodoState, EntityActionType.Add))
+        .subscribe(action => {
+          console.log('action:', action);
+          const { type } = Reflect.getPrototypeOf(action.action).constructor as any;
           expect(type).toBe('[todo] add');
           done();
         });
