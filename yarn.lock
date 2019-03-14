@@ -465,10 +465,10 @@
     tree-kill "1.2.1"
     webpack-sources "1.3.0"
 
-"@ngxs/logger-plugin@3.4.0":
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/@ngxs/logger-plugin/-/logger-plugin-3.4.0.tgz#9f2a07f804859c843b51bf070e3e62ad934234f6"
-  integrity sha512-G6HtIwmtQOBfRwslrNZkBQl381DrPnPzyp74f0zxMLJe4zT6BCIpMx2x1jCucTWXs1aYt2cT4R4xXPQPQSCVCw==
+"@ngxs/logger-plugin@3.4.3":
+  version "3.4.3"
+  resolved "https://registry.yarnpkg.com/@ngxs/logger-plugin/-/logger-plugin-3.4.3.tgz#1b001c563ddc5879a9d523f1b3c456dbdd6996ac"
+  integrity sha512-csPen2ckapQifklrQfdKhDoklM2CNAY7nWWRWxeR/a/DZxMwaESt4HSkt3oab13dQ5kad4AP7mJCuPn51mAsPA==
   dependencies:
     tslib "^1.9.0"
 

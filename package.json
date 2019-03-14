@@ -51,7 +51,7 @@
     "@angular/platform-browser": "7.2.7",
     "@angular/platform-browser-dynamic": "7.2.7",
     "@angular/router": "7.2.7",
-    "@ngxs/logger-plugin": "3.4.0",
+    "@ngxs/logger-plugin": "3.4.3",
     "@ngxs/store": "3.4.0",
     "core-js": "2.6.3",
     "rxjs": "6.4.0",
