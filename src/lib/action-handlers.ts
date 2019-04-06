@@ -1,5 +1,6 @@
 import {
   ofAction,
+  ofActionCompleted,
   ofActionDispatched,
   ofActionErrored,
   ofActionSuccessful
@@ -49,6 +50,17 @@ export const ofEntityActionErrored = (
   const statePath = state[NGXS_META_KEY].path;
   const type = `[${statePath}] ${actionType}`;
   return ofActionErrored({
+    type: type
+  });
+};
+
+export const ofEntityActionCompleted = (
+  state: Type<EntityState<any>>,
+  actionType: EntityActionType
+) => {
+  const statePath = state[NGXS_META_KEY].path;
+  const type = `[${statePath}] ${actionType}`;
+  return ofActionCompleted({
     type: type
   });
 };
