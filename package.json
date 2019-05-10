@@ -54,7 +54,7 @@
     "@ngxs/logger-plugin": "3.4.0",
     "@ngxs/store": "3.4.3",
     "core-js": "2.6.3",
-    "rxjs": "6.4.0",
+    "rxjs": "6.5.2",
     "zone.js": "0.8.29"
   },
   "devDependencies": {
