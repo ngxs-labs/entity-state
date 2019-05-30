@@ -158,6 +158,6 @@ describe('EntityState selectors', () => {
     state.todo.lastUpdated = now - 10_000;
     const selector = TestState.age as any;
     const age = selector(state);
-    expect(age).toBe(10_000);
+    expect(age).toBeCloseTo(now, -100); // within 100ms
   });
 });
