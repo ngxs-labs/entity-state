@@ -26,6 +26,7 @@ import {
 } from './internal';
 import { EntityStateModel, StateSelector } from './models';
 import IdGenerator = IdStrategy.IdGenerator;
+import { removeAllEntities, removeEntities } from '@ngxs-labs/entity-state';
 
 /**
  * Returns a new object which serves as the default state.
@@ -342,9 +343,10 @@ export abstract class EntityState<T extends {}> {
     }
   }
 
-  removeActive({ getState, patchState }: StateContext<EntityStateModel<T>>) {
+  removeActive({ getState, setState, patchState }: StateContext<EntityStateModel<T>>) {
     const { active, ids } = getState();
-    const entities = { ...getState().entities };
+    setState(removeEntities([active]));
+    /*const entities = { ...getState().entities };
 
     delete entities[active];
     patchState({
@@ -352,39 +354,24 @@ export abstract class EntityState<T extends {}> {
       ids: ids.filter(id => id !== active),
       active: undefined,
       lastUpdated: Date.now()
-    });
+    });*/
   }
 
   remove(
-    { getState, patchState }: StateContext<EntityStateModel<T>>,
+    { getState, setState, patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntityRemoveAction<T>
   ) {
-    const { active, ids } = getState();
-    const entities = { ...getState().entities };
-
     if (payload === null) {
-      patchState({
-        entities: {},
-        ids: [],
-        active: undefined,
-        lastUpdated: Date.now()
-      });
+      setState(removeAllEntities());
     } else {
       const deleteIds: string[] =
         typeof payload === 'function'
-          ? Object.values(entities)
+          ? Object.values(getState().entities)
               .filter(e => payload(e))
               .map(e => this.idOf(e))
           : asArray(payload);
-
-      const wasActive = deleteIds.includes(active);
-      deleteIds.forEach(id => delete entities[id]);
-      patchState({
-        entities: { ...entities },
-        ids: ids.filter(id => !deleteIds.includes(id)),
-        active: wasActive ? undefined : active,
-        lastUpdated: Date.now()
-      });
+      // can't pass in predicate as you need IDs and thus EntityState#idOf
+      setState(removeEntities(deleteIds));
     }
   }
 

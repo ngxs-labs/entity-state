@@ -326,7 +326,8 @@ describe('EntityState action handlers', () => {
   describe('removeActive', () => {
     it('should remove the active entity', () => {
       expect(state.todo.active).toBe('a'); // verify test data
-      const context = mockStateContext(val => {
+      const context = mockStateContext(undefined, (op: any) => {
+        const val = op(state.todo);
         expect(val.active).toBeUndefined();
         expect(val.entities).toEqual({
           b: { title: 'b' },
@@ -338,7 +339,8 @@ describe('EntityState action handlers', () => {
     });
 
     it('should update lastUpdated', () => {
-      const context = mockStateContext(val => {
+      const context = mockStateContext(undefined, (op: any) => {
+        const val = op(state.todo);
         expect(val.lastUpdated).toBeCloseTo(Date.now(), -100); // within 100ms
       });
 
@@ -350,7 +352,8 @@ describe('EntityState action handlers', () => {
     // remove works with EntitySelector<T> = string | string[] | ((T) => boolean) | null;
 
     it('should remove by single ID', () => {
-      const context = mockStateContext(val => {
+      const context = mockStateContext(undefined, (op: any) => {
+        const val = op(state.todo);
         expect(val.active).toBeUndefined();
         expect(val.entities).toEqual({
           b: { title: 'b' },
@@ -362,7 +365,8 @@ describe('EntityState action handlers', () => {
     });
 
     it('should remove by multiple IDs', () => {
-      const context = mockStateContext(val => {
+      const context = mockStateContext(undefined, (op: any) => {
+        const val = op(state.todo);
         expect(val.active).toBeUndefined();
         expect(val.entities).toEqual({
           b: { title: 'b' }
@@ -373,7 +377,8 @@ describe('EntityState action handlers', () => {
     });
 
     it('should remove by predicate', () => {
-      const context = mockStateContext(val => {
+      const context = mockStateContext(undefined, (op: any) => {
+        const val = op(state.todo);
         expect(val.active).toBeUndefined();
         expect(val.entities).toEqual({
           b: { title: 'b' }
@@ -384,7 +389,8 @@ describe('EntityState action handlers', () => {
     });
 
     it('should remove all with null', () => {
-      const context = mockStateContext(val => {
+      const context = mockStateContext(undefined, (op: any) => {
+        const val = op(state.todo);
         expect(val.active).toBeUndefined();
         expect(val.entities).toEqual({});
         expect(val.ids).toEqual([]);
@@ -393,7 +399,8 @@ describe('EntityState action handlers', () => {
     });
 
     it('should update lastUpdated', () => {
-      const context = mockStateContext(val => {
+      const context = mockStateContext(undefined, (op: any) => {
+        const val = op(state.todo);
         expect(val.lastUpdated).toBeCloseTo(Date.now(), -100); // within 100ms
       });
 
