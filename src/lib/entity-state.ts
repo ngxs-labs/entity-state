@@ -343,7 +343,9 @@ export abstract class EntityState<T extends {}> {
   }
 
   removeActive({ getState, patchState }: StateContext<EntityStateModel<T>>) {
-    const { entities, ids, active } = getState();
+    const { active, ids } = getState();
+    const entities = { ...getState().entities };
+
     delete entities[active];
     patchState({
       entities: { ...entities },
@@ -357,7 +359,8 @@ export abstract class EntityState<T extends {}> {
     { getState, patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntityRemoveAction<T>
   ) {
-    const { entities, ids, active } = getState();
+    const { active, ids } = getState();
+    const entities = { ...getState().entities };
 
     if (payload === null) {
       patchState({
@@ -464,7 +467,9 @@ export abstract class EntityState<T extends {}> {
     payload: T | T[],
     generateId: (payload: Partial<T>, state: EntityStateModel<T>) => string
   ): { entities: HashMap<T>; ids: string[] } {
-    const { entities, ids } = state;
+    const entities = { ...state.entities };
+    const ids = [...state.ids];
+
     asArray(payload).forEach(entity => {
       const id = generateId(entity, state);
       entity[this.idKey] = id;
@@ -472,6 +477,11 @@ export abstract class EntityState<T extends {}> {
       if (!ids.includes(id)) {
         ids.push(id);
       }
+      state = {
+        ...state,
+        entities,
+        ids
+      };
     });
 
     return {
@@ -499,8 +509,8 @@ export abstract class EntityState<T extends {}> {
     if (current === undefined) {
       throw new UpdateFailedError(new NoSuchEntityError(id));
     }
-    entities[id] = this.onUpdate(current, entity);
-    return entities;
+    const updated = this.onUpdate(current, entity);
+    return { ...entities, [id]: updated };
   }
 
   private setup(storeClass: Type<EntityState<T>>, actions: string[]) {

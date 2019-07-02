@@ -6,7 +6,10 @@ import { NgxsLoggerPluginModule } from '@ngxs/logger-plugin';
 const states = [TodoState];
 
 @NgModule({
-  imports: [NgxsModule.forRoot(states), NgxsLoggerPluginModule.forRoot()],
+  imports: [
+    NgxsModule.forRoot(states, { developmentMode: true }),
+    NgxsLoggerPluginModule.forRoot()
+  ],
   exports: [NgxsModule],
   declarations: [],
   providers: []
