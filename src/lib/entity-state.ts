@@ -26,7 +26,7 @@ import {
 } from './internal';
 import { EntityStateModel, StateSelector } from './models';
 import IdGenerator = IdStrategy.IdGenerator;
-import { removeAllEntities, removeEntities } from '@ngxs-labs/entity-state';
+import { removeAllEntities, removeEntities } from './state-operators';
 
 /**
  * Returns a new object which serves as the default state.
