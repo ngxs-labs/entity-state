@@ -26,7 +26,7 @@ import {
 } from './internal';
 import { EntityStateModel, StateSelector } from './models';
 import IdGenerator = IdStrategy.IdGenerator;
-import { removeAllEntities, removeEntities } from './state-operators';
+import { removeAllEntities, removeEntities } from './state-operators/removal';
 
 /**
  * Returns a new object which serves as the default state.
