@@ -502,10 +502,10 @@
   dependencies:
     tslib "^1.9.0"
 
-"@ngxs/store@3.4.3":
-  version "3.4.3"
-  resolved "https://registry.yarnpkg.com/@ngxs/store/-/store-3.4.3.tgz#cf2f3b95e6be814742754c7f24e53b2b6392bb47"
-  integrity sha512-pVwxFxCxr09+zL37ot1hf6EhgpftNLSAseBZwHUlx40x2qAT+jat8XJlj4j0p+BoVEjlaVZn8zE6qMm2oSPlZw==
+"@ngxs/store@3.5.0":
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/@ngxs/store/-/store-3.5.0.tgz#d498a5b05e3a31f851adcbf379707564026ed0c6"
+  integrity sha512-Ra/+HuAInGDmz2ne/Isz+2OoubYYTem5f+gJcUqu4S973ndls0l/1mXw5y68OoIQNb44wno5hQ+I7mtNvuIoSg==
   dependencies:
     tslib "^1.9.0"
 
