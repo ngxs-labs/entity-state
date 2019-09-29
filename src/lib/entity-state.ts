@@ -19,7 +19,7 @@ import {
   asArray,
   elvis,
   getActive,
-  HashMap,
+  Dictionary,
   mustGetActive,
   NGXS_META_KEY,
   wrapOrClamp
@@ -167,7 +167,7 @@ export abstract class EntityState<T extends {}> {
   /**
    * Returns a selector for the map of entities
    */
-  static get entitiesMap(): StateSelector<HashMap<any>> {
+  static get entitiesMap(): StateSelector<Dictionary<any>> {
     const that = this;
     return state => {
       const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
@@ -453,7 +453,7 @@ export abstract class EntityState<T extends {}> {
     state: EntityStateModel<T>,
     payload: T | T[],
     generateId: (payload: Partial<T>, state: EntityStateModel<T>) => string
-  ): { entities: HashMap<T>; ids: string[] } {
+  ): { entities: Dictionary<T>; ids: string[] } {
     const entities = { ...state.entities };
     const ids = [...state.ids];
 
@@ -485,10 +485,10 @@ export abstract class EntityState<T extends {}> {
    * @param id The ID to find the current entity in the map
    */
   private _update(
-    entities: HashMap<T>,
+    entities: Dictionary<T>,
     entity: Partial<T>,
     id: string = this.idOf(entity)
-  ): HashMap<T> {
+  ): Dictionary<T> {
     if (id === undefined) {
       throw new UpdateFailedError(new InvalidIdError(id));
     }

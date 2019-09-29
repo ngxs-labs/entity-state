@@ -1,11 +1,11 @@
-import { HashMap } from './internal';
+import { Dictionary } from './internal';
 
 /**
  * Interface for an EntityState.
  * Includes the entities in an object literal, the loading and error state and the ID of the active selected entity.
  */
 export interface EntityStateModel<T> {
-  entities: HashMap<T>;
+  entities: Dictionary<T>;
   loading: boolean;
   error: Error | undefined;
   active: string | undefined;

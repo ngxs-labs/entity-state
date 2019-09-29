@@ -1,6 +1,6 @@
 import { EntityStateModel } from '../models';
 import { compose, patch } from '@ngxs/store/operators';
-import { HashMap } from '../internal';
+import { Dictionary } from '../internal';
 import { StateOperator } from '@ngxs/store';
 import { Predicate } from '@ngxs/store/operators/internals';
 import { updateTimestamp } from '@ngxs-labs/entity-state';
@@ -28,7 +28,7 @@ export function removeAllEntities<T>(): StateOperator<EntityStateModel<T>> {
  */
 export function removeEntities<T>(ids: string[]): StateOperator<EntityStateModel<T>> {
   const entityRemoval = patch<EntityStateModel<any>>({
-    entities: removeEntitiesFromMap(ids),
+    entities: removeEntitiesFromDictionary(ids),
     ids: removeEntitiesFromArray(ids)
   });
   return compose(
@@ -77,11 +77,13 @@ export function removeEntitiesByPredicate<T>(
 }
 
 /**
- * Removes items from the map, based on the given keys.
+ * Removes items from the dictionary, based on the given keys.
  * @param keysForRemoval the keys to be removed
  */
-export function removeEntitiesFromMap<T>(keysForRemoval: string[]): StateOperator<HashMap<T>> {
-  return (existing: Readonly<HashMap<T>>): HashMap<T> => {
+export function removeEntitiesFromDictionary<T>(
+  keysForRemoval: string[]
+): StateOperator<Dictionary<T>> {
+  return (existing: Readonly<Dictionary<T>>): Dictionary<T> => {
     const clone = { ...existing };
     keysForRemoval.forEach(s => delete clone[s]);
     return clone;
