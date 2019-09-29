@@ -63,7 +63,8 @@ describe('EntityState action handlers', () => {
 
   describe('add', () => {
     it('should add an entity', () => {
-      const context = mockStateContext(val => {
+      const context = mockStateContext(undefined, (op: any) => {
+        const val = op(state.todo);
         expect(val.entities).toEqual({
           a: { title: 'a' },
           b: { title: 'b' },
@@ -76,9 +77,12 @@ describe('EntityState action handlers', () => {
     });
 
     it('should throw an error for existing IDs', () => {
-      const context = mockStateContext();
+      const context = mockStateContext(undefined, (op: any) => {
+        const val = op(state.todo);
+      });
       try {
         stateInstance.add(context, { payload: { title: 'a' } });
+        fail('Action should throw an error');
       } catch (e) {
         expect(e.message).toBe(
           new UnableToGenerateIdError('The provided ID already exists: a').message
@@ -87,7 +91,8 @@ describe('EntityState action handlers', () => {
     });
 
     it('should update lastUpdated', () => {
-      const context = mockStateContext(val => {
+      const context = mockStateContext(undefined, (op: any) => {
+        const val = op(state.todo);
         expect(val.lastUpdated).toBeCloseTo(Date.now(), -100); // within 100ms
       });
       stateInstance.add(context, { payload: { title: 'd' } });
@@ -96,7 +101,8 @@ describe('EntityState action handlers', () => {
 
   describe('createOrReplace', () => {
     it('should add a new entity for a new ID', () => {
-      const context = mockStateContext(val => {
+      const context = mockStateContext(undefined, (op: any) => {
+        const val = op(state.todo);
         expect(val.entities).toEqual({
           a: { title: 'a' },
           b: { title: 'b' },
@@ -109,7 +115,8 @@ describe('EntityState action handlers', () => {
     });
 
     it('should replace an entity for an existing ID', () => {
-      const context = mockStateContext(val => {
+      const context = mockStateContext(undefined, (op: any) => {
+        const val = op(state.todo);
         expect(val.entities).toEqual({
           a: { title: 'a' },
           b: { title: 'b' },
@@ -122,7 +129,8 @@ describe('EntityState action handlers', () => {
     });
 
     it('should update lastUpdated', () => {
-      const context = mockStateContext(val => {
+      const context = mockStateContext(undefined, (op: any) => {
+        const val = op(state.todo);
         expect(val.lastUpdated).toBeCloseTo(Date.now(), -100); // within 100ms
       });
       stateInstance.createOrReplace(context, { payload: { title: 'd' } });

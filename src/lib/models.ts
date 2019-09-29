@@ -29,3 +29,8 @@ export type DeepReadonly<T> = T extends (infer R)[]
 export interface DeepReadonlyArray<T> extends Array<DeepReadonly<T>> {}
 
 export type DeepReadonlyObject<T> = { readonly [P in keyof T]: DeepReadonly<T[P]> };
+
+/**
+ * Function that provides an ID for the given entity
+ */
+export type IdProvider<T> = (entity: Partial<T>, state: EntityStateModel<T>) => string;

@@ -25,6 +25,7 @@ import {
   wrapOrClamp
 } from './internal';
 import { EntityStateModel, StateSelector } from './models';
+import { addOrReplace } from './state-operators/adding';
 import IdGenerator = IdStrategy.IdGenerator;
 import { removeAllEntities, removeEntities } from './state-operators/removal';
 
@@ -262,18 +263,10 @@ export abstract class EntityState<T extends {}> {
    * For certain ID strategies this might fail, if it provides an existing ID.
    * In all cases it will overwrite the ID value in the entity with the calculated ID.
    */
-  add(
-    { getState, patchState }: StateContext<EntityStateModel<T>>,
-    { payload }: EntityAddAction<T>
-  ) {
-    const updated = this._addOrReplace(
-      getState(),
-      payload,
-      // for automated ID strategies this mostly shouldn't throw an UnableToGenerateIdError error
-      // for EntityIdGenerator it will throw an error if no ID is present
-      (p, state) => this.idGenerator.generateId(p, state)
+  add({ setState }: StateContext<EntityStateModel<T>>, { payload }: EntityAddAction<T>) {
+    setState(
+      addOrReplace(payload, this.idKey, (p, state) => this.idGenerator.generateId(p, state))
     );
-    patchState({ ...updated, lastUpdated: Date.now() });
   }
 
   /**
@@ -283,13 +276,14 @@ export abstract class EntityState<T extends {}> {
    * In all cases it will overwrite the ID value in the entity with the calculated ID.
    */
   createOrReplace(
-    { getState, patchState }: StateContext<EntityStateModel<T>>,
+    { setState }: StateContext<EntityStateModel<T>>,
     { payload }: EntityCreateOrReplaceAction<T>
   ) {
-    const updated = this._addOrReplace(getState(), payload, (p, state) =>
-      this.idGenerator.getPresentIdOrGenerate(p, state)
+    setState(
+      addOrReplace(payload, this.idKey, (p, state) =>
+        this.idGenerator.getPresentIdOrGenerate(p, state)
+      )
     );
-    patchState({ ...updated, lastUpdated: Date.now() });
   }
 
   update(
@@ -438,44 +432,6 @@ export abstract class EntityState<T extends {}> {
   }
 
   // ------------------- UTILITY -------------------
-
-  /**
-   * A utility function to update the given state with the given entities.
-   * It returns a state model with the new entities map and IDs.
-   * For each given entity an ID will be generated. The generated ID will overwrite the current value:
-   * <code>entity[this.idKey] = generatedId(entity, state);</code>
-   * If the ID wasn't present, it will be added to the state's IDs array.
-   * @param state The current state to act on
-   * @param payload One or multiple partial entities
-   * @param generateId A function to generate an ID for each given entity
-   */
-  private _addOrReplace(
-    state: EntityStateModel<T>,
-    payload: T | T[],
-    generateId: (payload: Partial<T>, state: EntityStateModel<T>) => string
-  ): { entities: Dictionary<T>; ids: string[] } {
-    const entities = { ...state.entities };
-    const ids = [...state.ids];
-
-    asArray(payload).forEach(entity => {
-      const id = generateId(entity, state);
-      entity[this.idKey] = id;
-      entities[id] = entity;
-      if (!ids.includes(id)) {
-        ids.push(id);
-      }
-      state = {
-        ...state,
-        entities,
-        ids
-      };
-    });
-
-    return {
-      entities: { ...entities },
-      ids: [...ids]
-    };
-  }
 
   /**
    * A utility function to update the given entities map with the provided partial entity.
