@@ -1,9 +1,9 @@
-import { EntityStateModel } from '../models';
-import { compose, patch } from '@ngxs/store/operators';
-import { Dictionary } from '../internal';
 import { StateOperator } from '@ngxs/store';
+import { compose, patch } from '@ngxs/store/operators';
 import { Predicate } from '@ngxs/store/operators/internals';
-import { updateTimestamp } from '@ngxs-labs/entity-state';
+import { Dictionary } from '../internal';
+import { EntityStateModel } from '../models';
+import { updateTimestamp } from './timestamp';
 
 /**
  * Removes all entities, clears the active entity and updates the `lastUpdated` timestamp.
