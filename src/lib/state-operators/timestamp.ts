@@ -1,5 +1,5 @@
 import { StateOperator } from '@ngxs/store';
-import { EntityStateModel } from '@ngxs-labs/entity-state';
+import { EntityStateModel } from '../models';
 import { compose, patch } from '@ngxs/store/operators';
 
 export function updateTimestamp(): StateOperator<EntityStateModel<any>> {
