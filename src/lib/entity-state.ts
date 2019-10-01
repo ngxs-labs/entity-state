@@ -15,19 +15,15 @@ import {
 } from './actions';
 import { InvalidIdError, NoSuchEntityError, UpdateFailedError } from './errors';
 import { IdStrategy } from './id-strategy';
-import {
-  asArray,
-  Dictionary,
-  elvis,
-  getActive,
-  mustGetActive,
-  NGXS_META_KEY,
-  wrapOrClamp
-} from './internal';
+import { asArray, Dictionary, elvis, getActive, NGXS_META_KEY, wrapOrClamp } from './internal';
 import { EntityStateModel, StateSelector } from './models';
-import { addOrReplace } from './state-operators/adding';
-import { removeAllEntities, removeEntities } from './state-operators/removal';
-import { update, updateActive } from './state-operators/updating';
+import {
+  addOrReplace,
+  removeAllEntities,
+  removeEntities,
+  update,
+  updateActive
+} from './state-operators';
 import IdGenerator = IdStrategy.IdGenerator;
 
 /**
@@ -155,7 +151,6 @@ export abstract class EntityState<T extends {}> {
    * Returns a selector for paginated entities, sorted by insertion order
    */
   static get paginatedEntities(): StateSelector<any[]> {
-    // tslint:disable-line:member-ordering
     const that = this;
     return state => {
       const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
@@ -302,18 +297,9 @@ export abstract class EntityState<T extends {}> {
     );
   }
 
-  removeActive({ getState, setState, patchState }: StateContext<EntityStateModel<T>>) {
-    const { active, ids } = getState();
+  removeActive({ getState, setState }: StateContext<EntityStateModel<T>>) {
+    const { active } = getState();
     setState(removeEntities([active]));
-    /*const entities = { ...getState().entities };
-
-    delete entities[active];
-    patchState({
-      entities: { ...entities },
-      ids: ids.filter(id => id !== active),
-      active: undefined,
-      lastUpdated: Date.now()
-    });*/
   }
 
   remove(
@@ -397,29 +383,6 @@ export abstract class EntityState<T extends {}> {
   }
 
   // ------------------- UTILITY -------------------
-
-  /**
-   * A utility function to update the given entities map with the provided partial entity.
-   * After checking if an entity with the given ID is present, the #onUpdate method is called.
-   * @param entities The current entity map
-   * @param entity The partial entity to update with
-   * @param id The ID to find the current entity in the map
-   */
-  private _update(
-    entities: Dictionary<T>,
-    entity: Partial<T>,
-    id: string = this.idOf(entity)
-  ): Dictionary<T> {
-    if (id === undefined) {
-      throw new UpdateFailedError(new InvalidIdError(id));
-    }
-    const current = entities[id];
-    if (current === undefined) {
-      throw new UpdateFailedError(new NoSuchEntityError(id));
-    }
-    const updated = this.onUpdate(current, entity);
-    return { ...entities, [id]: updated };
-  }
 
   private setup(storeClass: Type<EntityState<T>>, actions: string[]) {
     // validation if a matching action handler exists has moved to reflection-validation tests
