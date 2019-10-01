@@ -17,17 +17,18 @@ import { InvalidIdError, NoSuchEntityError, UpdateFailedError } from './errors';
 import { IdStrategy } from './id-strategy';
 import {
   asArray,
+  Dictionary,
   elvis,
   getActive,
-  Dictionary,
   mustGetActive,
   NGXS_META_KEY,
   wrapOrClamp
 } from './internal';
 import { EntityStateModel, StateSelector } from './models';
 import { addOrReplace } from './state-operators/adding';
-import IdGenerator = IdStrategy.IdGenerator;
 import { removeAllEntities, removeEntities } from './state-operators/removal';
+import { update, updateActive } from './state-operators/updating';
+import IdGenerator = IdStrategy.IdGenerator;
 
 /**
  * Returns a new object which serves as the default state.
@@ -286,55 +287,19 @@ export abstract class EntityState<T extends {}> {
     );
   }
 
-  update(
-    { getState, patchState }: StateContext<EntityStateModel<T>>,
-    { payload }: EntityUpdateAction<T>
-  ) {
-    let entities = { ...getState().entities }; // create copy
-
-    let affected: T[];
-
-    if (payload.id === null) {
-      affected = Object.values(entities);
-    } else if (typeof payload.id === 'function') {
-      affected = Object.values(entities).filter(e => (<Function>payload.id)(e));
-    } else {
-      const ids = asArray(payload.id);
-      affected = Object.values(entities).filter(e => ids.includes(this.idOf(e)));
-    }
-
-    if (typeof payload.data === 'function') {
-      affected.forEach(e => {
-        entities = this._update(entities, (<Function>payload.data)(e), this.idOf(e));
-      });
-    } else {
-      affected.forEach(e => {
-        entities = this._update(entities, payload.data as Partial<T>, this.idOf(e));
-      });
-    }
-
-    patchState({ entities, lastUpdated: Date.now() });
+  update({ setState }: StateContext<EntityStateModel<T>>, { payload }: EntityUpdateAction<T>) {
+    setState(
+      update(payload, this.idKey, (current, updated) => this.onUpdate(current, updated))
+    );
   }
 
   updateActive(
-    { getState, patchState }: StateContext<EntityStateModel<T>>,
+    { setState }: StateContext<EntityStateModel<T>>,
     { payload }: EntityUpdateActiveAction<T>
   ) {
-    const state = getState();
-    const { id, active } = mustGetActive(state);
-    const { entities } = state;
-
-    if (typeof payload === 'function') {
-      patchState({
-        entities: { ...this._update(entities, payload(active), id) },
-        lastUpdated: Date.now()
-      });
-    } else {
-      patchState({
-        entities: { ...this._update(entities, payload, id) },
-        lastUpdated: Date.now()
-      });
-    }
+    setState(
+      updateActive(payload, this.idKey, (current, updated) => this.onUpdate(current, updated))
+    );
   }
 
   removeActive({ getState, setState, patchState }: StateContext<EntityStateModel<T>>) {

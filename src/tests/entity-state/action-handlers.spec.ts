@@ -143,7 +143,8 @@ describe('EntityState action handlers', () => {
 
     describe('partial entity updates', () => {
       it('should update by single ID', () => {
-        const context = mockStateContext(val => {
+        const context = mockStateContext(undefined, (op: any) => {
+          const val = op(state.todo);
           expect(val.entities).toEqual({
             a: { title: 'a', test: 42 },
             b: { title: 'b' },
@@ -160,7 +161,8 @@ describe('EntityState action handlers', () => {
       });
 
       it('should update by multiple IDs', () => {
-        const context = mockStateContext(val => {
+        const context = mockStateContext(undefined, (op: any) => {
+          const val = op(state.todo);
           console.log('val.entities:', val.entities);
           expect(val.entities).toEqual({
             a: { title: 'a', test: 42 },
@@ -178,7 +180,8 @@ describe('EntityState action handlers', () => {
       });
 
       it('should update by predicate', () => {
-        const context = mockStateContext(val => {
+        const context = mockStateContext(undefined, (op: any) => {
+          const val = op(state.todo);
           expect(val.entities).toEqual({
             a: { title: 'a', test: 42 },
             b: { title: 'b', test: 42 },
@@ -195,7 +198,8 @@ describe('EntityState action handlers', () => {
       });
 
       it('should update all with null', () => {
-        const context = mockStateContext(val => {
+        const context = mockStateContext(undefined, (op: any) => {
+          const val = op(state.todo);
           expect(val.entities).toEqual({
             a: { title: 'a', test: 42 },
             b: { title: 'b', test: 42 },
@@ -212,7 +216,8 @@ describe('EntityState action handlers', () => {
       });
 
       it('should update lastUpdated', () => {
-        const context = mockStateContext(val => {
+        const context = mockStateContext(undefined, (op: any) => {
+          const val = op(state.todo);
           expect(val.lastUpdated).toBeCloseTo(Date.now(), -100); // within 100ms
         });
 
@@ -227,7 +232,8 @@ describe('EntityState action handlers', () => {
 
     describe('function updates', () => {
       it('should update by single ID', () => {
-        const context = mockStateContext(val => {
+        const context = mockStateContext(undefined, (op: any) => {
+          const val = op(state.todo);
           expect(val.entities).toEqual({
             a: { title: 'a', test: 42 },
             b: { title: 'b' },
@@ -244,8 +250,8 @@ describe('EntityState action handlers', () => {
       });
 
       it('should update by multiple IDs', () => {
-        const context = mockStateContext(val => {
-          console.log('val.entities:', val.entities);
+        const context = mockStateContext(undefined, (op: any) => {
+          const val = op(state.todo);
           expect(val.entities).toEqual({
             a: { title: 'a', test: 42 },
             b: { title: 'b', test: 42 },
@@ -262,7 +268,8 @@ describe('EntityState action handlers', () => {
       });
 
       it('should update by predicate', () => {
-        const context = mockStateContext(val => {
+        const context = mockStateContext(undefined, (op: any) => {
+          const val = op(state.todo);
           expect(val.entities).toEqual({
             a: { title: 'a', test: 42 },
             b: { title: 'b', test: 42 },
@@ -279,7 +286,8 @@ describe('EntityState action handlers', () => {
       });
 
       it('should update all with null', () => {
-        const context = mockStateContext(val => {
+        const context = mockStateContext(undefined, (op: any) => {
+          const val = op(state.todo);
           expect(val.entities).toEqual({
             a: { title: 'a', test: 42 },
             b: { title: 'b', test: 42 },
@@ -301,7 +309,8 @@ describe('EntityState action handlers', () => {
     // updateActive works with Updater<T> = Partial<T> | ((entity: Readonly<T>) => Partial<T>);
 
     it('should update the active entity by partial entity', () => {
-      const context = mockStateContext(val => {
+      const context = mockStateContext(undefined, (op: any) => {
+        const val = op(state.todo);
         expect(val.entities).toEqual({
           a: { title: 'a', test: 42 },
           b: { title: 'b' },
@@ -312,7 +321,8 @@ describe('EntityState action handlers', () => {
     });
 
     it('should update the active entity by update fn', () => {
-      const context = mockStateContext(val => {
+      const context = mockStateContext(undefined, (op: any) => {
+        const val = op(state.todo);
         expect(val.entities).toEqual({
           a: { title: 'a', test: 42 },
           b: { title: 'b' },
@@ -323,7 +333,8 @@ describe('EntityState action handlers', () => {
     });
 
     it('should update lastUpdated', () => {
-      const context = mockStateContext(val => {
+      const context = mockStateContext(undefined, (op: any) => {
+        const val = op(state.todo);
         expect(val.lastUpdated).toBeCloseTo(Date.now(), -100); // within 100ms
       });
 

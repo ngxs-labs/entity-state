@@ -3,11 +3,13 @@ import { EntityActionType, EntitySelector, Updater } from './type-alias';
 import { EntityState } from '../entity-state';
 import { Type } from '@angular/core';
 
+export interface EntityUpdate<T> {
+  id: EntitySelector<T>;
+  data: Updater<T>;
+}
+
 export interface EntityUpdateAction<T> {
-  payload: {
-    id: EntitySelector<T>;
-    data: Updater<T>;
-  };
+  payload: EntityUpdate<T>;
 }
 
 export class Update<T> {
