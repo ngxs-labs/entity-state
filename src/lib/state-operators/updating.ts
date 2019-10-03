@@ -24,12 +24,22 @@ export function update<T>(
     const affected = getAffectedValues(Object.values(entities), payload.id, idKey);
 
     if (typeof payload.data === 'function') {
-      affected.forEach(e => {
-        entities = updateDictionary(entities, (<Function>payload.data)(e), e[idKey], onUpdate);
+      affected.forEach(entity => {
+        entities = updateDictionary(
+          entities,
+          (<Function>payload.data)(entity),
+          entity[idKey],
+          onUpdate
+        );
       });
     } else {
-      affected.forEach(e => {
-        entities = updateDictionary(entities, payload.data as Partial<T>, e[idKey], onUpdate);
+      affected.forEach(entity => {
+        entities = updateDictionary(
+          entities,
+          payload.data as Partial<T>,
+          entity[idKey],
+          onUpdate
+        );
       });
     }
 
@@ -83,9 +93,9 @@ function getAffectedValues<T>(entities: T[], selector: EntitySelector<T>, idKey:
   if (selector === null) {
     return entities;
   } else if (typeof selector === 'function') {
-    return entities.filter(e => (<Function>selector)(e));
+    return entities.filter(entity => (<Function>selector)(entity));
   } else {
     const ids = asArray(selector);
-    return entities.filter(e => ids.includes(e[idKey]));
+    return entities.filter(entity => ids.includes(entity[idKey]));
   }
 }

@@ -261,7 +261,9 @@ export abstract class EntityState<T extends {}> {
    */
   add({ setState }: StateContext<EntityStateModel<T>>, { payload }: EntityAddAction<T>) {
     setState(
-      addOrReplace(payload, this.idKey, (p, state) => this.idGenerator.generateId(p, state))
+      addOrReplace(payload, this.idKey, (entity, state) =>
+        this.idGenerator.generateId(entity, state)
+      )
     );
   }
 
@@ -276,8 +278,8 @@ export abstract class EntityState<T extends {}> {
     { payload }: EntityCreateOrReplaceAction<T>
   ) {
     setState(
-      addOrReplace(payload, this.idKey, (p, state) =>
-        this.idGenerator.getPresentIdOrGenerate(p, state)
+      addOrReplace(payload, this.idKey, (entity, state) =>
+        this.idGenerator.getPresentIdOrGenerate(entity, state)
       )
     );
   }
@@ -312,8 +314,8 @@ export abstract class EntityState<T extends {}> {
       const deleteIds: string[] =
         typeof payload === 'function'
           ? Object.values(getState().entities)
-              .filter(e => payload(e))
-              .map(e => this.idOf(e))
+              .filter(entity => payload(entity))
+              .map(entity => this.idOf(entity))
           : asArray(payload);
       // can't pass in predicate as you need IDs and thus EntityState#idOf
       setState(removeEntities(deleteIds));

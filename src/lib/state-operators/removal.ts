@@ -60,7 +60,7 @@ export function clearActiveOnRemoval<T>(
  */
 export function removeEntitiesFromArray<T>(forRemoval: T[]): StateOperator<Array<T>> {
   return (existing: ReadonlyArray<T>) => {
-    return existing.filter(v => !forRemoval.includes(v));
+    return existing.filter(value => !forRemoval.includes(value));
   };
 }
 
@@ -72,7 +72,7 @@ export function removeEntitiesByPredicate<T>(
   predicate: Predicate<T>
 ): StateOperator<Array<T>> {
   return (existing: ReadonlyArray<T>) => {
-    return existing.filter(v => predicate(v));
+    return existing.filter(value => predicate(value));
   };
 }
 
@@ -85,7 +85,7 @@ export function removeEntitiesFromDictionary<T>(
 ): StateOperator<Dictionary<T>> {
   return (existing: Readonly<Dictionary<T>>): Dictionary<T> => {
     const clone = { ...existing };
-    keysForRemoval.forEach(s => delete clone[s]);
+    keysForRemoval.forEach(key => delete clone[key]);
     return clone;
   };
 }
