@@ -21,7 +21,7 @@ export function update<T>(
   return (state: EntityStateModel<T>) => {
     let entities = { ...state.entities }; // create copy
 
-    const affected = getAffectedValues(Object.values(entities), payload.id, idKey);
+    const affected = getAffectedValues(Object.values(entities), payload.selector, idKey);
 
     if (typeof payload.data === 'function') {
       affected.forEach(entity => {

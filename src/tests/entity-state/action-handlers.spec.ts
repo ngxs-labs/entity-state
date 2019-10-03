@@ -154,7 +154,7 @@ describe('EntityState action handlers', () => {
 
         stateInstance.update(context, {
           payload: {
-            id: 'a',
+            selector: 'a',
             data: { test: 42 }
           }
         });
@@ -173,7 +173,7 @@ describe('EntityState action handlers', () => {
 
         stateInstance.update(context, {
           payload: {
-            id: ['a', 'b'],
+            selector: ['a', 'b'],
             data: { test: 42 }
           }
         });
@@ -191,7 +191,7 @@ describe('EntityState action handlers', () => {
 
         stateInstance.update(context, {
           payload: {
-            id: entity => entity.title !== 'c',
+            selector: entity => entity.title !== 'c',
             data: { test: 42 }
           }
         });
@@ -209,7 +209,7 @@ describe('EntityState action handlers', () => {
 
         stateInstance.update(context, {
           payload: {
-            id: null,
+            selector: null,
             data: { test: 42 }
           }
         });
@@ -223,7 +223,7 @@ describe('EntityState action handlers', () => {
 
         stateInstance.update(context, {
           payload: {
-            id: null,
+            selector: null,
             data: { test: 42 }
           }
         });
@@ -243,7 +243,7 @@ describe('EntityState action handlers', () => {
 
         stateInstance.update(context, {
           payload: {
-            id: 'a',
+            selector: 'a',
             data: () => ({ test: 42 })
           }
         });
@@ -261,7 +261,7 @@ describe('EntityState action handlers', () => {
 
         stateInstance.update(context, {
           payload: {
-            id: ['a', 'b'],
+            selector: ['a', 'b'],
             data: () => ({ test: 42 })
           }
         });
@@ -279,7 +279,7 @@ describe('EntityState action handlers', () => {
 
         stateInstance.update(context, {
           payload: {
-            id: entity => entity.title !== 'c',
+            selector: entity => entity.title !== 'c',
             data: () => ({ test: 42 })
           }
         });
@@ -297,7 +297,7 @@ describe('EntityState action handlers', () => {
 
         stateInstance.update(context, {
           payload: {
-            id: null,
+            selector: null,
             data: () => ({ test: 42 })
           }
         });
