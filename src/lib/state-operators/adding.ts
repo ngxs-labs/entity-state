@@ -23,8 +23,12 @@ export function addOrReplace<T>(
 
     asArray(entities).forEach(entity => {
       const id = idProvider(entity, nextState);
-      entity[idKey] = id; // ensure ID is in the entity
-      nextEntities[id] = entity;
+      let updatedEntity = entity;
+      if (entity[idKey] !== id) {
+        // ensure ID is in the entity
+        updatedEntity = { ...entity, [idKey]: id };
+      }
+      nextEntities[id] = updatedEntity;
       if (!nextIds.includes(id)) {
         nextIds.push(id);
       }
