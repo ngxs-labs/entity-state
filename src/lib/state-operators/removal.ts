@@ -65,18 +65,6 @@ export function removeEntitiesFromArray<T>(forRemoval: T[]): StateOperator<Array
 }
 
 /**
- * Removes all items from the existing items that match the given predicate.
- * @param predicate predicate to determine if item should be removed
- */
-export function removeEntitiesByPredicate<T>(
-  predicate: Predicate<T>
-): StateOperator<Array<T>> {
-  return (existing: ReadonlyArray<T>) => {
-    return existing.filter(value => predicate(value));
-  };
-}
-
-/**
  * Removes items from the dictionary, based on the given keys.
  * @param keysForRemoval the keys to be removed
  */
