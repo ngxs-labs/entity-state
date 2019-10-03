@@ -11,14 +11,6 @@ export interface Dictionary<T> {
   [key: string]: T;
 }
 
-/**
- * Type alias for an object literal.
- * Only allows strings as keys.
- * @deprecated Use Dictionary type instead
- * @see Dictionary
- */
-export type HashMap<T> = Dictionary<T>;
-
 export const NGXS_META_KEY = 'NGXS_META';
 
 /**

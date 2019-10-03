@@ -33,7 +33,7 @@ export function removeEntities<T>(ids: string[]): StateOperator<EntityStateModel
   });
   return compose(
     entityRemoval,
-    clearActiveOnRemoval(ids),
+    clearActiveIfRemoved(ids),
     updateTimestamp()
   );
 }
@@ -43,7 +43,7 @@ export function removeEntities<T>(ids: string[]): StateOperator<EntityStateModel
  * All other fields will remain untouched in any case.
  * @param idsForRemoval the IDs to be removed
  */
-export function clearActiveOnRemoval<T>(
+export function clearActiveIfRemoved<T>(
   idsForRemoval: string[]
 ): StateOperator<EntityStateModel<T>> {
   return (state: EntityStateModel<any>) => {
