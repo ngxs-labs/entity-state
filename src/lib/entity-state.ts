@@ -15,16 +15,15 @@ import {
 } from './actions';
 import { InvalidIdError, NoSuchEntityError, UpdateFailedError } from './errors';
 import { IdStrategy } from './id-strategy';
-import {
-  asArray,
-  elvis,
-  getActive,
-  HashMap,
-  mustGetActive,
-  NGXS_META_KEY,
-  wrapOrClamp
-} from './internal';
+import { asArray, Dictionary, elvis, getActive, NGXS_META_KEY, wrapOrClamp } from './internal';
 import { EntityStateModel, StateSelector } from './models';
+import {
+  addOrReplace,
+  removeAllEntities,
+  removeEntities,
+  update,
+  updateActive
+} from './state-operators';
 import IdGenerator = IdStrategy.IdGenerator;
 
 /**
@@ -152,7 +151,6 @@ export abstract class EntityState<T extends {}> {
    * Returns a selector for paginated entities, sorted by insertion order
    */
   static get paginatedEntities(): StateSelector<any[]> {
-    // tslint:disable-line:member-ordering
     const that = this;
     return state => {
       const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
@@ -166,7 +164,7 @@ export abstract class EntityState<T extends {}> {
   /**
    * Returns a selector for the map of entities
    */
-  static get entitiesMap(): StateSelector<HashMap<any>> {
+  static get entitiesMap(): StateSelector<Dictionary<any>> {
     const that = this;
     return state => {
       const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
@@ -261,18 +259,12 @@ export abstract class EntityState<T extends {}> {
    * For certain ID strategies this might fail, if it provides an existing ID.
    * In all cases it will overwrite the ID value in the entity with the calculated ID.
    */
-  add(
-    { getState, patchState }: StateContext<EntityStateModel<T>>,
-    { payload }: EntityAddAction<T>
-  ) {
-    const updated = this._addOrReplace(
-      getState(),
-      payload,
-      // for automated ID strategies this mostly shouldn't throw an UnableToGenerateIdError error
-      // for EntityIdGenerator it will throw an error if no ID is present
-      (p, state) => this.idGenerator.generateId(p, state)
+  add({ setState }: StateContext<EntityStateModel<T>>, { payload }: EntityAddAction<T>) {
+    setState(
+      addOrReplace(payload, this.idKey, (entity, state) =>
+        this.idGenerator.generateId(entity, state)
+      )
     );
-    patchState({ ...updated, lastUpdated: Date.now() });
   }
 
   /**
@@ -282,109 +274,51 @@ export abstract class EntityState<T extends {}> {
    * In all cases it will overwrite the ID value in the entity with the calculated ID.
    */
   createOrReplace(
-    { getState, patchState }: StateContext<EntityStateModel<T>>,
+    { setState }: StateContext<EntityStateModel<T>>,
     { payload }: EntityCreateOrReplaceAction<T>
   ) {
-    const updated = this._addOrReplace(getState(), payload, (p, state) =>
-      this.idGenerator.getPresentIdOrGenerate(p, state)
+    setState(
+      addOrReplace(payload, this.idKey, (entity, state) =>
+        this.idGenerator.getPresentIdOrGenerate(entity, state)
+      )
     );
-    patchState({ ...updated, lastUpdated: Date.now() });
   }
 
-  update(
-    { getState, patchState }: StateContext<EntityStateModel<T>>,
-    { payload }: EntityUpdateAction<T>
-  ) {
-    let entities = { ...getState().entities }; // create copy
-
-    let affected: T[];
-
-    if (payload.id === null) {
-      affected = Object.values(entities);
-    } else if (typeof payload.id === 'function') {
-      affected = Object.values(entities).filter(e => (<Function>payload.id)(e));
-    } else {
-      const ids = asArray(payload.id);
-      affected = Object.values(entities).filter(e => ids.includes(this.idOf(e)));
-    }
-
-    if (typeof payload.data === 'function') {
-      affected.forEach(e => {
-        entities = this._update(entities, (<Function>payload.data)(e), this.idOf(e));
-      });
-    } else {
-      affected.forEach(e => {
-        entities = this._update(entities, payload.data as Partial<T>, this.idOf(e));
-      });
-    }
-
-    patchState({ entities, lastUpdated: Date.now() });
+  update({ setState }: StateContext<EntityStateModel<T>>, { payload }: EntityUpdateAction<T>) {
+    setState(
+      update(payload, this.idKey, (current, updated) => this.onUpdate(current, updated))
+    );
   }
 
   updateActive(
-    { getState, patchState }: StateContext<EntityStateModel<T>>,
+    { setState }: StateContext<EntityStateModel<T>>,
     { payload }: EntityUpdateActiveAction<T>
   ) {
-    const state = getState();
-    const { id, active } = mustGetActive(state);
-    const { entities } = state;
-
-    if (typeof payload === 'function') {
-      patchState({
-        entities: { ...this._update(entities, payload(active), id) },
-        lastUpdated: Date.now()
-      });
-    } else {
-      patchState({
-        entities: { ...this._update(entities, payload, id) },
-        lastUpdated: Date.now()
-      });
-    }
+    setState(
+      updateActive(payload, this.idKey, (current, updated) => this.onUpdate(current, updated))
+    );
   }
 
-  removeActive({ getState, patchState }: StateContext<EntityStateModel<T>>) {
-    const { active, ids } = getState();
-    const entities = { ...getState().entities };
-
-    delete entities[active];
-    patchState({
-      entities: { ...entities },
-      ids: ids.filter(id => id !== active),
-      active: undefined,
-      lastUpdated: Date.now()
-    });
+  removeActive({ getState, setState }: StateContext<EntityStateModel<T>>) {
+    const { active } = getState();
+    setState(removeEntities([active]));
   }
 
   remove(
-    { getState, patchState }: StateContext<EntityStateModel<T>>,
+    { getState, setState, patchState }: StateContext<EntityStateModel<T>>,
     { payload }: EntityRemoveAction<T>
   ) {
-    const { active, ids } = getState();
-    const entities = { ...getState().entities };
-
     if (payload === null) {
-      patchState({
-        entities: {},
-        ids: [],
-        active: undefined,
-        lastUpdated: Date.now()
-      });
+      setState(removeAllEntities());
     } else {
       const deleteIds: string[] =
         typeof payload === 'function'
-          ? Object.values(entities)
-              .filter(e => payload(e))
-              .map(e => this.idOf(e))
+          ? Object.values(getState().entities)
+              .filter(entity => payload(entity))
+              .map(entity => this.idOf(entity))
           : asArray(payload);
-
-      const wasActive = deleteIds.includes(active);
-      deleteIds.forEach(id => delete entities[id]);
-      patchState({
-        entities: { ...entities },
-        ids: ids.filter(id => !deleteIds.includes(id)),
-        active: wasActive ? undefined : active,
-        lastUpdated: Date.now()
-      });
+      // can't pass in predicate as you need IDs and thus EntityState#idOf
+      setState(removeEntities(deleteIds));
     }
   }
 
@@ -451,67 +385,6 @@ export abstract class EntityState<T extends {}> {
   }
 
   // ------------------- UTILITY -------------------
-
-  /**
-   * A utility function to update the given state with the given entities.
-   * It returns a state model with the new entities map and IDs.
-   * For each given entity an ID will be generated. The generated ID will overwrite the current value:
-   * <code>entity[this.idKey] = generatedId(entity, state);</code>
-   * If the ID wasn't present, it will be added to the state's IDs array.
-   * @param state The current state to act on
-   * @param payload One or multiple partial entities
-   * @param generateId A function to generate an ID for each given entity
-   */
-  private _addOrReplace(
-    state: EntityStateModel<T>,
-    payload: T | T[],
-    generateId: (payload: Partial<T>, state: EntityStateModel<T>) => string
-  ): { entities: HashMap<T>; ids: string[] } {
-    const entities = { ...state.entities };
-    const ids = [...state.ids];
-
-    asArray(payload).forEach(entity => {
-      const id = generateId(entity, state);
-      entity[this.idKey] = id;
-      entities[id] = entity;
-      if (!ids.includes(id)) {
-        ids.push(id);
-      }
-      state = {
-        ...state,
-        entities,
-        ids
-      };
-    });
-
-    return {
-      entities: { ...entities },
-      ids: [...ids]
-    };
-  }
-
-  /**
-   * A utility function to update the given entities map with the provided partial entity.
-   * After checking if an entity with the given ID is present, the #onUpdate method is called.
-   * @param entities The current entity map
-   * @param entity The partial entity to update with
-   * @param id The ID to find the current entity in the map
-   */
-  private _update(
-    entities: HashMap<T>,
-    entity: Partial<T>,
-    id: string = this.idOf(entity)
-  ): HashMap<T> {
-    if (id === undefined) {
-      throw new UpdateFailedError(new InvalidIdError(id));
-    }
-    const current = entities[id];
-    if (current === undefined) {
-      throw new UpdateFailedError(new NoSuchEntityError(id));
-    }
-    const updated = this.onUpdate(current, entity);
-    return { ...entities, [id]: updated };
-  }
 
   private setup(storeClass: Type<EntityState<T>>, actions: string[]) {
     // validation if a matching action handler exists has moved to reflection-validation tests

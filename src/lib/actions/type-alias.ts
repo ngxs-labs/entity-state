@@ -5,7 +5,7 @@
  * - a function that returns true for entities to be selected
  * - null to select all entities
  */
-export type EntitySelector<T> = string | string[] | ((T) => boolean) | null;
+export type EntitySelector<T> = string | string[] | ((entity: T) => boolean) | null;
 
 /**
  * An Updater will be applied to the current entity, before onUpdate is run with its result.
