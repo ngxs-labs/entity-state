@@ -12,6 +12,11 @@
       "element",
       "entity",
       "kebab-case"
+    ],
+    "import-blacklist": [
+      true,
+      "entity-state",
+      "@ngxs-labs/entity-state"
     ]
   }
 }

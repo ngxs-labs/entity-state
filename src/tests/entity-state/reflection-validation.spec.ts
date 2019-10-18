@@ -2,7 +2,8 @@ import { State } from '@ngxs/store';
 import { defaultEntityState, EntityState } from '../../lib/entity-state';
 import { EntityStateModel } from '../../lib/models';
 import { IdStrategy } from '../../lib/id-strategy';
-import { EntityActionType, NGXS_META_KEY } from '../../lib/internal';
+import { NGXS_META_KEY } from '../../lib/internal';
+import { EntityActionType } from '../../lib/actions/type-alias';
 
 interface ToDo {
   title: string;
@@ -43,7 +44,7 @@ describe('EntityState reflection validation', () => {
     const protoKeys = Object.keys(Reflect.getPrototypeOf(Reflect.getPrototypeOf(instance)));
     // you have to manually exclude certain methods, which are not action handlers
     // TODO: Add Reflect Meta-data with @EntityActionHandler annotation and query it here?
-    const exclude = ['idOf', 'setup', '_update', '_addOrReplace'];
+    const exclude = ['idOf', 'setup', 'onUpdate', '_update', '_addOrReplace'];
     const actionHandlers = protoKeys.filter(key => !exclude.includes(key));
 
     // actual test

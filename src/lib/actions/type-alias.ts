@@ -5,7 +5,7 @@
  * - a function that returns true for entities to be selected
  * - null to select all entities
  */
-export type EntitySelector<T> = string | string[] | ((T) => boolean) | null;
+export type EntitySelector<T> = string | string[] | ((entity: T) => boolean) | null;
 
 /**
  * An Updater will be applied to the current entity, before onUpdate is run with its result.
@@ -21,4 +21,23 @@ export type Updater<T> = Partial<T> | ((entity: Readonly<T>) => Partial<T>);
  */
 export interface Payload<T> {
   payload: T;
+}
+
+/**
+ * Enum that contains all existing Actions for the Entity State adapter.
+ */
+export enum EntityActionType {
+  Add = 'add',
+  CreateOrReplace = 'createOrReplace',
+  Update = 'update',
+  UpdateActive = 'updateActive',
+  Remove = 'remove',
+  RemoveActive = 'removeActive',
+  SetLoading = 'setLoading',
+  SetError = 'setError',
+  SetActive = 'setActive',
+  ClearActive = 'clearActive',
+  Reset = 'reset',
+  GoToPage = 'goToPage',
+  SetPageSize = 'setPageSize'
 }

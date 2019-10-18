@@ -4,10 +4,11 @@ import { NoActiveEntityError } from './errors';
 import { EntityStateModel } from './models';
 
 /**
- * type alias for javascript object literal
+ * Type alias for an object literal.
+ * Only allows strings as keys.
  */
-export interface HashMap<T> {
-  [id: string]: T;
+export interface Dictionary<T> {
+  [key: string]: T;
 }
 
 export const NGXS_META_KEY = 'NGXS_META';
@@ -38,25 +39,6 @@ export function generateActionObject<T>(
  */
 export function getActive<T>(state: EntityStateModel<T>): T {
   return state.entities[state.active];
-}
-
-/**
- * Enum that contains all existing Actions for the Entity State adapter.
- */
-export enum EntityActionType {
-  Add = 'add',
-  CreateOrReplace = 'createOrReplace',
-  Update = 'update',
-  UpdateActive = 'updateActive',
-  Remove = 'remove',
-  RemoveActive = 'removeActive',
-  SetLoading = 'setLoading',
-  SetError = 'setError',
-  SetActive = 'setActive',
-  ClearActive = 'clearActive',
-  Reset = 'reset',
-  GoToPage = 'goToPage',
-  SetPageSize = 'setPageSize'
 }
 
 /**
