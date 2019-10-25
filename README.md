@@ -10,7 +10,7 @@
 [![NPM](https://badge.fury.io/js/%40ngxs-labs%2Fentity-state.svg)](https://www.npmjs.com/package/@ngxs-labs/entity-state)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/ngxs-labs/entity-state/blob/master/LICENSE)
 
-This package is an entity adapter and simplifies CRUD behaviour with just two lines of setup per state class!
+This package is an entity adapter and simplifies CRUD behaviour with just a few lines of setup per state class!
 
 ### Setup
 
@@ -18,7 +18,7 @@ This package is an entity adapter and simplifies CRUD behaviour with just two li
 npm i @ngxs-labs/entity-state
 ```
 
-You do not have import any module, just extend your state class, implemented required methods and you are good to go!
+You do not have import any module, just extend your state class, make a `super` call and you are good to go!
 The first `super` parameter is always the state class itself.
 The second parameter is the key to identify your entities with.
 The third is an implementation of an `IdGenerator` (see [below](#IdStrategy)).
@@ -40,10 +40,6 @@ export class TodoState extends EntityState<ToDo> {
   constructor() {
     super(TodoState, 'title', IdStrategy.EntityIdGenerator);
   }
-
-  onUpdate(current: Readonly<ToDo>, updated: Partial<ToDo>): ToDo {
-    return { ...current, ...updated };
-  }
 }
 ```
 
@@ -62,7 +58,7 @@ this.store.dispatch(new UpdateActive(TodoState, { done: true }));
 >[Example in the integration app](https://github.com/ngxs-labs/entity-state/blob/master/integration/app/app.component.ts#L46)
 
 | Action | Short description |
-|--|--|
+|---|---|
 | `Add` | Adds a new entity and cannot replace existing entities |
 | `CreateOrReplace` | Gets the entity's ID and will replace entities with same id or else add a new one |
 | `Update` | Updates [one or more](#EntitySelector) entities by partial value or function |
@@ -73,14 +69,15 @@ this.store.dispatch(new UpdateActive(TodoState, { done: true }));
 | `UpdateActive` | Updates the currently active entity |
 | `RemoveActive` | Removes the active entity and clears the ID |
 | ---------- | ---------- |
-| `SetError` | Sets the error (`error instance/undefined`)|
-| `SetLoading` | Sets the loading state (`true/false`) |
+| `SetError` | Sets the error (`Error` instance or `undefined`)|
+| `SetLoading` | Sets the loading state (`true` or `false`) |
 | `Reset` | Resets the state to default |
 | ---------- | ---------- |
 | `GoToPage` | Goes to specified page, via index, stepwise or first/last |
 | `SetPageSize` | Sets the page size |
 
-Actions that change the entities will update the internal timestamp `lastUpdated`. You can use one of the existing selectors to see the age of your data.
+Actions that change the entities will update the internal timestamp `lastUpdated`.
+You can use one of the existing selectors to see the age of your data.
 
 ### Selectors
 
@@ -94,7 +91,7 @@ Use predefined Selectors just like you would normally!
 >[Example in the integration app](https://github.com/ngxs-labs/entity-state/blob/master/integration/app/app.component.ts#L28)
 
 | Selector | Short description |
-|--|--|
+|---|---|
 | `entities` | All entities in an array |
 | `keys` | All entity keys in an array |
 | `entitiesMap` | All entities in a map |
@@ -120,6 +117,8 @@ There are 3 different strategies in the `IdStrategy` namespace available:
 
 The latter will cause errors if you try to `add` an entity with the same ID.
 The former two can always generate a new ID.
+
+You can also implement your own strategy by extending `IdGenerator`.
 
 ### `EntitySelector`
 
