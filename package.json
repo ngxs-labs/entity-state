@@ -85,7 +85,7 @@
     "protractor": "5.4.2",
     "sonarjs": "1.0.0",
     "ts-node": "7.0.1",
-    "tsickle": "0.37.1",
+    "tsickle": "0.38.0",
     "tslib": "1.10.0",
     "tslint": "5.20.1",
     "typescript": "3.2.4"
