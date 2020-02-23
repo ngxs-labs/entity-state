@@ -3,7 +3,7 @@ import { defaultEntityState, EntityState } from '../../lib/entity-state';
 import { EntityStateModel } from '../../lib/models';
 import { IdStrategy } from '../../lib/id-strategy';
 import { NGXS_META_KEY } from '../../lib/internal';
-import { UnableToGenerateIdError, InvalidEntitySelectorError } from '../../lib/errors';
+import { UnableToGenerateIdError /* InvalidEntitySelectorError */ } from '../../lib/errors';
 
 interface ToDo {
   title: string;
@@ -224,7 +224,7 @@ describe('EntityState action handlers', () => {
               data: { test: 42 }
             }
           })
-        ).toThrowError(InvalidEntitySelectorError);
+        ).toThrowError(/* InvalidEntitySelectorError */);
       });
 
       it('should update lastUpdated', () => {
@@ -307,7 +307,7 @@ describe('EntityState action handlers', () => {
               data: () => ({ test: 42 })
             }
           })
-        ).toThrowError(InvalidEntitySelectorError);
+        ).toThrowError(/* InvalidEntitySelectorError */);
       });
     });
   });
@@ -428,9 +428,10 @@ describe('EntityState action handlers', () => {
 
     it('should throw an error when called with null', () => {
       const context = mockStateContext(undefined);
-      expect(() => stateInstance.remove(context, { payload: null })).toThrowError(
-        InvalidEntitySelectorError
-      );
+      expect(() => stateInstance.remove(context, { payload: null }))
+        .toThrowError
+        /* InvalidEntitySelectorError */
+        ();
     });
 
     it('should update lastUpdated', () => {
