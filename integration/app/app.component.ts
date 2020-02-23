@@ -13,7 +13,9 @@ import {
   SetLoading,
   SetPageSize,
   Update,
-  UpdateActive
+  UpdateActive,
+  RemoveAll,
+  UpdateAll
 } from '@ngxs-labs/entity-state';
 import { Observable } from 'rxjs';
 import { ToDo, TodoState } from './store/todo';
@@ -117,7 +119,7 @@ export class AppComponent {
   }
 
   clearEntities() {
-    this.store.dispatch(new Remove(TodoState, null));
+    this.store.dispatch(new RemoveAll(TodoState));
   }
 
   addToDo() {
@@ -131,13 +133,7 @@ export class AppComponent {
   }
 
   doneAll() {
-    this.store.dispatch(
-      new Update(
-        TodoState,
-        null, // select all
-        { done: true }
-      )
-    );
+    this.store.dispatch(new UpdateAll(TodoState, { done: true }));
   }
 
   // --------- for tests ---------

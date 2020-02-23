@@ -1,11 +1,11 @@
 /**
  * An EntitySelector determines which entities will be affected.
  * Can be one of the following:
- * - one or multiple IDs in form of a string or an array of strings
- * - a function that returns true for entities to be selected
- * - null to select all entities
+ * - a single ID in form of a string
+ * - multiple IDs in form of an array of strings
+ * - a predicate function that returns `true` for entities to be selected
  */
-export type EntitySelector<T> = string | string[] | ((entity: T) => boolean) | null;
+export type EntitySelector<T> = string | string[] | ((entity: T) => boolean);
 
 /**
  * An Updater will be applied to the current entity, before onUpdate is run with its result.
@@ -30,8 +30,10 @@ export enum EntityActionType {
   Add = 'add',
   CreateOrReplace = 'createOrReplace',
   Update = 'update',
+  UpdateAll = 'updateAll',
   UpdateActive = 'updateActive',
   Remove = 'remove',
+  RemoveAll = 'removeAll',
   RemoveActive = 'removeActive',
   SetLoading = 'setLoading',
   SetError = 'setError',

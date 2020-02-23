@@ -39,3 +39,9 @@ export class UnableToGenerateIdError extends EntityStateError {
     super(`Unable to generate an ID.\n\tCause: ${cause}`);
   }
 }
+
+export class InvalidEntitySelectorError extends EntityStateError {
+  constructor(invalidSelector: any) {
+    super(`Cannot use ${invalidSelector} as EntitySelector`);
+  }
+}
