@@ -3,7 +3,7 @@ import { defaultEntityState, EntityState } from '../../lib/entity-state';
 import { EntityStateModel } from '../../lib/models';
 import { IdStrategy } from '../../lib/id-strategy';
 import { NGXS_META_KEY } from '../../lib/internal';
-import { UnableToGenerateIdError } from '../../lib/errors';
+import { UnableToGenerateIdError /* InvalidEntitySelectorError */ } from '../../lib/errors';
 
 interface ToDo {
   title: string;
@@ -137,8 +137,27 @@ describe('EntityState action handlers', () => {
     });
   });
 
+  describe('updateAll', () => {
+    it('should update all entities', () => {
+      const context = mockStateContext(undefined, (op: any) => {
+        const val = op(state.todo);
+        expect(val.entities).toEqual({
+          a: { title: 'a', test: 42 },
+          b: { title: 'b', test: 42 },
+          c: { title: 'c', test: 42 }
+        });
+      });
+
+      stateInstance.updateAll(context, {
+        payload: {
+          data: { test: 42 }
+        }
+      });
+    });
+  });
+
   describe('update', () => {
-    // update works with EntitySelector<T> = string | string[] | ((T) => boolean) | null;
+    // update works with EntitySelector<T> = string | string[] | ((T) => boolean);
     // update works with Updater<T> = Partial<T> | ((entity: Readonly<T>) => Partial<T>);
 
     describe('partial entity updates', () => {
@@ -163,7 +182,6 @@ describe('EntityState action handlers', () => {
       it('should update by multiple IDs', () => {
         const context = mockStateContext(undefined, (op: any) => {
           const val = op(state.todo);
-          console.log('val.entities:', val.entities);
           expect(val.entities).toEqual({
             a: { title: 'a', test: 42 },
             b: { title: 'b', test: 42 },
@@ -197,22 +215,16 @@ describe('EntityState action handlers', () => {
         });
       });
 
-      it('should update all with null', () => {
-        const context = mockStateContext(undefined, (op: any) => {
-          const val = op(state.todo);
-          expect(val.entities).toEqual({
-            a: { title: 'a', test: 42 },
-            b: { title: 'b', test: 42 },
-            c: { title: 'c', test: 42 }
-          });
-        });
-
-        stateInstance.update(context, {
-          payload: {
-            selector: null,
-            data: { test: 42 }
-          }
-        });
+      it('should throw an error when calling with null', () => {
+        const context = mockStateContext(undefined);
+        expect(() =>
+          stateInstance.update(context, {
+            payload: {
+              selector: null,
+              data: { test: 42 }
+            }
+          })
+        ).toThrowError(/* InvalidEntitySelectorError */);
       });
 
       it('should update lastUpdated', () => {
@@ -223,7 +235,7 @@ describe('EntityState action handlers', () => {
 
         stateInstance.update(context, {
           payload: {
-            selector: null,
+            selector: entity => entity.title !== 'c',
             data: { test: 42 }
           }
         });
@@ -285,22 +297,17 @@ describe('EntityState action handlers', () => {
         });
       });
 
-      it('should update all with null', () => {
-        const context = mockStateContext(undefined, (op: any) => {
-          const val = op(state.todo);
-          expect(val.entities).toEqual({
-            a: { title: 'a', test: 42 },
-            b: { title: 'b', test: 42 },
-            c: { title: 'c', test: 42 }
-          });
-        });
+      it('should throw an error when called with null', () => {
+        const context = mockStateContext(undefined);
 
-        stateInstance.update(context, {
-          payload: {
-            selector: null,
-            data: () => ({ test: 42 })
-          }
-        });
+        expect(() =>
+          stateInstance.update(context, {
+            payload: {
+              selector: null,
+              data: () => ({ test: 42 })
+            }
+          })
+        ).toThrowError(/* InvalidEntitySelectorError */);
       });
     });
   });
@@ -367,8 +374,20 @@ describe('EntityState action handlers', () => {
     });
   });
 
+  describe('removeAll', () => {
+    it('should remove all entities', () => {
+      const context = mockStateContext(undefined, (op: any) => {
+        const val = op(state.todo);
+        expect(val.active).toBeUndefined();
+        expect(val.entities).toEqual({});
+        expect(val.ids).toEqual([]);
+      });
+      stateInstance.removeAll(context);
+    });
+  });
+
   describe('remove', () => {
-    // remove works with EntitySelector<T> = string | string[] | ((T) => boolean) | null;
+    // remove works with EntitySelector<T> = string | string[] | ((T) => boolean);
 
     it('should remove by single ID', () => {
       const context = mockStateContext(undefined, (op: any) => {
@@ -407,14 +426,12 @@ describe('EntityState action handlers', () => {
       stateInstance.remove(context, { payload: entity => entity.title !== 'b' });
     });
 
-    it('should remove all with null', () => {
-      const context = mockStateContext(undefined, (op: any) => {
-        const val = op(state.todo);
-        expect(val.active).toBeUndefined();
-        expect(val.entities).toEqual({});
-        expect(val.ids).toEqual([]);
-      });
-      stateInstance.remove(context, { payload: null });
+    it('should throw an error when called with null', () => {
+      const context = mockStateContext(undefined);
+      expect(() => stateInstance.remove(context, { payload: null }))
+        .toThrowError
+        /* InvalidEntitySelectorError */
+        ();
     });
 
     it('should update lastUpdated', () => {
@@ -423,7 +440,7 @@ describe('EntityState action handlers', () => {
         expect(val.lastUpdated).toBeCloseTo(Date.now(), -100); // within 100ms
       });
 
-      stateInstance.remove(context, { payload: null });
+      stateInstance.remove(context, { payload: ['a', 'c'] });
     });
   });
 

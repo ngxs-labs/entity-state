@@ -13,7 +13,12 @@ import {
   EntityUpdateAction,
   EntityUpdateActiveAction
 } from './actions';
-import { InvalidIdError, NoSuchEntityError, UpdateFailedError } from './errors';
+import {
+  InvalidIdError,
+  NoSuchEntityError,
+  UpdateFailedError,
+  InvalidEntitySelectorError
+} from './errors';
 import { IdStrategy } from './id-strategy';
 import { asArray, Dictionary, elvis, getActive, NGXS_META_KEY, wrapOrClamp } from './internal';
 import { EntityStateModel, StateSelector } from './models';
@@ -285,8 +290,22 @@ export abstract class EntityState<T extends {}> {
   }
 
   update({ setState }: StateContext<EntityStateModel<T>>, { payload }: EntityUpdateAction<T>) {
+    if (payload.selector == null) {
+      throw new InvalidEntitySelectorError(payload);
+    }
     setState(
       update(payload, this.idKey, (current, updated) => this.onUpdate(current, updated))
+    );
+  }
+
+  updateAll(
+    { setState }: StateContext<EntityStateModel<T>>,
+    { payload }: EntityUpdateAction<T>
+  ) {
+    setState(
+      update({ ...payload, selector: null }, this.idKey, (current, updated) =>
+        this.onUpdate(current, updated)
+      )
     );
   }
 
@@ -309,7 +328,7 @@ export abstract class EntityState<T extends {}> {
     { payload }: EntityRemoveAction<T>
   ) {
     if (payload === null) {
-      setState(removeAllEntities());
+      throw new InvalidEntitySelectorError(payload);
     } else {
       const deleteIds: string[] =
         typeof payload === 'function'
@@ -320,6 +339,10 @@ export abstract class EntityState<T extends {}> {
       // can't pass in predicate as you need IDs and thus EntityState#idOf
       setState(removeEntities(deleteIds));
     }
+  }
+
+  removeAll({ setState }: StateContext<EntityStateModel<T>>) {
+    setState(removeAllEntities());
   }
 
   reset({ setState }: StateContext<EntityStateModel<T>>) {
