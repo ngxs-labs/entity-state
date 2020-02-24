@@ -55,14 +55,16 @@ this.store.dispatch(new SetLoading(TodoState, this.loading));
 this.store.dispatch(new UpdateActive(TodoState, { done: true }));
 ```
 
->[Example in the integration app](https://github.com/ngxs-labs/entity-state/blob/master/integration/app/app.component.ts#L46)
+>[Example in the integration app](https://github.com/ngxs-labs/entity-state/blob/master/integration/app/app.component.ts#L101-L107)
 
 | Action | Short description |
 |---|---|
 | `Add` | Adds a new entity and cannot replace existing entities |
 | `CreateOrReplace` | Gets the entity's ID and will replace entities with same id or else add a new one |
 | `Update` | Updates [one or more](#EntitySelector) entities by partial value or function |
+| `UpdateAll` | Update all entities by partial value or function |
 | `Remove` | Removes entities from the state |
+| `RemoveAll` | Removes all entities from the state |
 | ---------- | ---------- |
 | `SetActive` | Takes an ID and sets it as active |
 | `ClearActive` | Clears the active ID |
@@ -88,7 +90,7 @@ Use predefined Selectors just like you would normally!
 @Select(TodoState.active) active$: Observable<ToDo>;
 ```
 
->[Example in the integration app](https://github.com/ngxs-labs/entity-state/blob/master/integration/app/app.component.ts#L28)
+>[Example in the integration app](https://github.com/ngxs-labs/entity-state/blob/master/integration/app/app.component.ts#L30-L38)
 
 | Selector | Short description |
 |---|---|
@@ -112,22 +114,21 @@ Use predefined Selectors just like you would normally!
 There are 3 different strategies in the `IdStrategy` namespace available:
 
 - `IncrementingIdGenerator` -> uses auto-incremeting IDs based on present entities
-- `UUIDGenerator` -> generates `UUID` for new entities
+- `UUIDGenerator` -> generates `UUID`s for new entities
 - `EntityIdGenerator` -> takes the id from the provided entity
 
 The latter will cause errors if you try to `add` an entity with the same ID.
-The former two can always generate a new ID.
+The former two will always generate a new ID.
 
-You can also implement your own strategy by extending `IdGenerator`.
+You can also implement your own strategy by extending `IdGenerator` and then provide it [in the `super` call](https://github.com/ngxs-labs/entity-state/blob/master/integration/app/store/todo/store.ts#L21).
 
 ### `EntitySelector`
 
 The `EntitySelector` type is used in Actions such as `Update` or `Remove`.
 ```typescript
-export type EntitySelector<T> = string | string[] | ((T) => boolean) | null;
+export type EntitySelector<T> = string | string[] | ((entity: T) => boolean);
 ```
 
-- `string` -> one ID, selects one entity
-- `string[]` -> array of IDs, selects matching entities
-- `((T) => boolean)` -> predicate, selects entities that return true for this predicate
-- `null` -> all entities in the state
+- `string` -> one ID; selects one entity
+- `string[]` -> array of IDs; selects matching entities
+- `(entity: T) => boolean` -> predicate; selects entities that return `true` when applied to this function
