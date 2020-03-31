@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { NgxsModule } from '@ngxs/store';
-import { TodoState } from './todo';
+import { TodoState, AnotherState } from './todo';
 import { NgxsLoggerPluginModule } from '@ngxs/logger-plugin';
 
-const states = [TodoState];
+const states = [TodoState, AnotherState];
 
 @NgModule({
   imports: [

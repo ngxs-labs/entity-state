@@ -498,4 +498,13 @@ describe('AppComponent', () => {
       component.addWithError();
     });
   });
+
+  describe('working with other states', () => {
+    it('should emit selects, when the TodoState gets updated', () => {
+      const spy = jasmine.createSpy('callback');
+      component.updateAnother(spy);
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+  })
+
 });
