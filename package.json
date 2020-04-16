@@ -82,7 +82,7 @@
     "ng-packagr": "4.7.0",
     "npm-run-all": "4.1.5",
     "prettier": "1.19.1",
-    "protractor": "5.4.3",
+    "protractor": "5.4.4",
     "sonarjs": "1.0.0",
     "ts-node": "7.0.1",
     "tsickle": "0.38.1",
