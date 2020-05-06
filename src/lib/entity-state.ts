@@ -13,12 +13,7 @@ import {
   EntityUpdateAction,
   EntityUpdateActiveAction
 } from './actions';
-import {
-  InvalidIdError,
-  NoSuchEntityError,
-  UpdateFailedError,
-  InvalidEntitySelectorError
-} from './errors';
+import { InvalidEntitySelectorError } from './errors';
 import { IdStrategy } from './id-strategy';
 import { asArray, Dictionary, elvis, getActive, NGXS_META_KEY, wrapOrClamp } from './internal';
 import { EntityStateModel, StateSelector } from './models';
@@ -51,6 +46,8 @@ export function defaultEntityState<T>(
     ...defaults
   };
 }
+
+// tslint:disable:member-ordering
 
 // @dynamic
 export abstract class EntityState<T extends {}> {

@@ -505,6 +505,5 @@ describe('AppComponent', () => {
       component.updateAnother(spy);
       expect(spy).toHaveBeenCalledTimes(1);
     });
-  })
-
+  });
 });
