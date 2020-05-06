@@ -1,5 +1,5 @@
 import { Type } from '@angular/core';
-import { StateContext } from '@ngxs/store';
+import { StateContext, createSelector } from '@ngxs/store';
 import {
   EntityActionType,
   EntityAddAction,
@@ -70,11 +70,6 @@ export abstract class EntityState<T extends {}> {
     this.setup(storeClass, Object.values(EntityActionType));
   }
 
-  private static get staticStorePath(): string {
-    const that = this;
-    return that[NGXS_META_KEY].path;
-  }
-
   /**
    * This function is called every time an entity is updated.
    * It receives the current entity and a partial entity that was either passed directly or generated with a function.
@@ -99,162 +94,127 @@ export abstract class EntityState<T extends {}> {
    * Returns a selector for the activeId
    */
   static get activeId(): StateSelector<string> {
-    const that = this;
-    return state => {
-      const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
-      return subState.active;
-    };
+    return createSelector([this], state => state.active);
   }
 
   /**
    * Returns a selector for the active entity
    */
   static get active(): StateSelector<any> {
-    const that = this;
-    return state => {
-      const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
-      return getActive(subState);
-    };
+    return createSelector([this], state => getActive(state));
   }
 
   /**
    * Returns a selector for the keys of all entities
    */
   static get keys(): StateSelector<string[]> {
-    const that = this;
-    return state => {
-      const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
-      return Object.keys(subState.entities);
-    };
+    return createSelector([this], state => {
+      return Object.keys(state.entities);
+    });
   }
 
   /**
    * Returns a selector for all entities, sorted by insertion order
    */
   static get entities(): StateSelector<any[]> {
-    const that = this;
-    return state => {
-      const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
-      return subState.ids.map(id => subState.entities[id]);
-    };
+    return createSelector([this], state => {
+      return state.ids.map(id => state.entities[id]);
+    });
   }
 
   /**
    * Returns a selector for the nth entity, sorted by insertion order
    */
   static nthEntity(index: number): StateSelector<any> {
-    // tslint:disable-line:member-ordering
-    const that = this;
-    return state => {
-      const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
-      const id = subState.ids[index];
-      return subState.entities[id];
-    };
+    return createSelector([this], state => {
+      const id = state.ids[index];
+      return state.entities[id];
+    });
   }
 
   /**
    * Returns a selector for paginated entities, sorted by insertion order
    */
   static get paginatedEntities(): StateSelector<any[]> {
-    const that = this;
-    return state => {
-      const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
-      const { ids, pageIndex, pageSize } = subState;
+    return createSelector([this], state => {
+      const { ids, pageIndex, pageSize } = state;
       return ids
         .slice(pageIndex * pageSize, (pageIndex + 1) * pageSize)
-        .map(id => subState.entities[id]);
-    };
+        .map(id => state.entities[id]);
+    });
   }
 
   /**
    * Returns a selector for the map of entities
    */
   static get entitiesMap(): StateSelector<Dictionary<any>> {
-    const that = this;
-    return state => {
-      const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
-      return subState.entities;
-    };
+    return createSelector([this], state => {
+      return state.entities;
+    });
   }
 
   /**
    * Returns a selector for the size of the entity map
    */
   static get size(): StateSelector<number> {
-    const that = this;
-    return state => {
-      const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
-      return Object.keys(subState.entities).length;
-    };
+    return createSelector([this], state => {
+      return Object.keys(state.entities).length;
+    });
   }
 
   /**
    * Returns a selector for the error
    */
   static get error(): StateSelector<Error | undefined> {
-    const that = this;
-    return state => {
-      const name = that.staticStorePath;
-      return elvis(state, name).error;
-    };
+    return createSelector([this], state => {
+      return state.error;
+    });
   }
 
   /**
    * Returns a selector for the loading state
    */
   static get loading(): StateSelector<boolean> {
-    const that = this;
-    return state => {
-      const name = that.staticStorePath;
-      return elvis(state, name).loading;
-    };
+    return createSelector([this], state => {
+      return state.loading;
+    });
   }
 
   /**
    * Returns a selector for the latest added entity
    */
   static get latest(): StateSelector<any> {
-    const that = this;
-    return state => {
-      const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
-      const latestId = subState.ids[subState.ids.length - 1];
-      return subState.entities[latestId];
-    };
+    return createSelector([this], state => {
+      const latestId = state.ids[state.ids.length - 1];
+      return state.entities[latestId];
+    });
   }
 
   /**
    * Returns a selector for the latest added entity id
    */
   static get latestId(): StateSelector<string | undefined> {
-    const that = this;
-    return state => {
-      const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
-      return subState.ids[subState.ids.length - 1];
-    };
+    return createSelector([this], state => {
+      return state.ids[state.ids.length - 1];
+    });
   }
 
   /**
    * Returns a selector for the update timestamp
    */
   static get lastUpdated(): StateSelector<Date> {
-    // tslint:disable-line:member-ordering
-    const that = this;
-    return state => {
-      const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
-      return new Date(subState.lastUpdated);
-    };
+    return createSelector([this], state => {
+      return new Date(state.lastUpdated);
+    });
   }
 
   /**
    * Returns a selector for age, based on the update timestamp
    */
   static get age(): StateSelector<number> {
-    // tslint:disable-line:member-ordering
-    const that = this;
-    return state => {
-      const subState = elvis(state, that.staticStorePath) as EntityStateModel<any>;
-      return Date.now() - subState.lastUpdated;
-    };
+    return createSelector([this], state => {
+      return Date.now() - state.lastUpdated;
+    });
   }
 
   // ------------------- ACTION HANDLERS -------------------
