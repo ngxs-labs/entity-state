@@ -150,7 +150,7 @@ describe('EntityState selectors', () => {
     store.dispatch(new CreateOrReplace(TestState, { title: 'h' }));
     const selector = TestState.lastUpdated as any;
     const lastUpdated: Date = store.selectSnapshot(selector);
-    expect(lastUpdated.getTime()).toBe(now);
+    expect(lastUpdated.getTime()).toBeCloseTo(now, -100); // within 100ms
   });
 
   it('should select age', () => {
