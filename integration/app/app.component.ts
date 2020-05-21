@@ -18,7 +18,7 @@ import {
   UpdateAll
 } from '@ngxs-labs/entity-state';
 import { Observable } from 'rxjs';
-import { ToDo, TodoState } from './store/todo';
+import { ToDo, TodoState, UpdateAnotherState } from './store/todo';
 import { mergeMap } from 'rxjs/operators';
 
 @Component({
@@ -213,5 +213,11 @@ export class AppComponent {
         }
       ])
     );
+  }
+
+  updateAnother(callback: (...args: any[]) => void) {
+    this.store.select(TodoState.entities).subscribe(x => callback(x));
+    this.store.dispatch(new UpdateAnotherState());
+    this.store.dispatch(new UpdateAnotherState());
   }
 }
