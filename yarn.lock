@@ -8570,10 +8570,10 @@ ts-node@7.0.1:
     source-map-support "^0.5.6"
     yn "^2.0.0"
 
-tsickle@0.39.0:
-  version "0.39.0"
-  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.39.0.tgz#9b8da85a4f0664a1e696b85de461dec2c5e15f4b"
-  integrity sha512-mNk+FZXPQeyqbbUYylGbLSRGPZAcUMhG98LfCNnK1mZuXj7XuJeQrqiWXKKRpBK8SFfJWSi7wTMZKGSOb4klJQ==
+tsickle@0.39.1:
+  version "0.39.1"
+  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.39.1.tgz#7ccf672cde5b430f5dd0b281ee49e170ef390ff9"
+  integrity sha512-CCc9cZhZbKoNizVM+K3Uqgit/go8GacjpqTv1cpwG/n2P0gB9GMoWZbxrUULDE9Wz26Lh86CGf6QyIPUVV1lnQ==
 
 tslib@1.12.0:
   version "1.12.0"
