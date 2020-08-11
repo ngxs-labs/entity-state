@@ -441,7 +441,7 @@ describe('AppComponent', () => {
       component.actions
         .pipe(ofEntityAction(TodoState, EntityActionType.Add))
         .subscribe(action => {
-          const { type } = Reflect.getPrototypeOf(action).constructor as any;
+          const { type } = Reflect.getPrototypeOf(action as any).constructor as any;
           expect(type).toBe('[todo] add');
           done();
         });
@@ -453,7 +453,6 @@ describe('AppComponent', () => {
       component.actions
         .pipe(ofEntityActionCompleted(TodoState, EntityActionType.Add))
         .subscribe(action => {
-          console.log('action:', action);
           const { type } = Reflect.getPrototypeOf(action.action).constructor as any;
           expect(type).toBe('[todo] add');
           done();
