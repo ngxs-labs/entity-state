@@ -1,7 +1,8 @@
-import { join } from 'path';
+import { join, resolve } from 'path';
 import { existsSync, createReadStream, createWriteStream, readFileSync } from 'fs';
 
-const { name } = JSON.parse(readFileSync('../package.json', 'utf8'));
+const pkgPath = resolve(__dirname, '..', 'package.json');
+const { name } = JSON.parse(readFileSync(pkgPath, 'utf8'));
 
 function copyReadmeAfterSuccessfulBuild(): void {
   const path = join(__dirname, '../README.md');
