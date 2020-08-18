@@ -1,15 +1,14 @@
 import { ngPackagr } from 'ng-packagr';
 import { join } from 'path';
 
-async function buildPackage(): Promise<void> {
-  try {
-    await ngPackagr()
-      .forProject(join(__dirname, '../src/package.json'))
-      .withTsConfig(join(__dirname, '../src/tsconfig.lib.json'))
-      .build();
-  } catch (e) {
-    console.log(e);
-  }
+function buildPackage(): Promise<void> {
+  return ngPackagr()
+    .forProject(join(__dirname, '../src/package.json'))
+    .withTsConfig(join(__dirname, '../src/tsconfig.lib.json'))
+    .build();
 }
 
-buildPackage();
+buildPackage().catch(e => {
+  console.error(e);
+  process.exit(1);
+});
