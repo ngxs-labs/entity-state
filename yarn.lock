@@ -1244,17 +1244,17 @@
     rxjs "6.5.5"
     webpack-sources "1.4.3"
 
-"@ngxs/logger-plugin@3.6.2":
-  version "3.6.2"
-  resolved "https://registry.yarnpkg.com/@ngxs/logger-plugin/-/logger-plugin-3.6.2.tgz#1a8132a0b1eb95cad79736120fd50a331fe7347b"
-  integrity sha512-qF4ci9Ua7jL7r5EhZBEb0JB0HuGsTgFShK3OVTYSXU9+XfSb+5vrDLtmTshmBqQy6dWCd+2xq4LzBgc8IKMRuQ==
+"@ngxs/logger-plugin@3.7.0":
+  version "3.7.0"
+  resolved "https://registry.yarnpkg.com/@ngxs/logger-plugin/-/logger-plugin-3.7.0.tgz#a27d6bb27360fc2677773c57868740b8cd33cc41"
+  integrity sha512-yr3NXXJEqJnxSuKiHaTbNmoprKKcrIS1PUIlOm9nvKsOmyrGskxu+MYCzUifemXDIyXSP2u0OBNPrVUumcXyhg==
   dependencies:
     tslib "^1.9.0"
 
-"@ngxs/store@3.6.2":
-  version "3.6.2"
-  resolved "https://registry.yarnpkg.com/@ngxs/store/-/store-3.6.2.tgz#cfba63dc1e5bd422e89e54b3332cd69818510624"
-  integrity sha512-al7GU618SAuz2Ul4rFYVDgS1DM0gHReGOGvbnE7LBt4Etz3gsJERNYXPp2bSA7lZGaRPRaFfIHJN+Lm/GikFJw==
+"@ngxs/store@3.7.0":
+  version "3.7.0"
+  resolved "https://registry.yarnpkg.com/@ngxs/store/-/store-3.7.0.tgz#e46387219dae610c685accc119ae42e351afcaa4"
+  integrity sha512-w9fG/DhKBgH1VJMKSoeNW9x9ycD9/Dzy+VkpFD8Jv0JBNX0MRgP+5KQQe3ZKwnJ+7S0UV/99JvJaWgxc/WOvPw==
   dependencies:
     tslib "^1.9.0"
 
