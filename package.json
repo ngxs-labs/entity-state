@@ -54,7 +54,7 @@
     "@ngxs/store": "3.6.2",
     "core-js": "2.6.3",
     "rxjs": "6.6.2",
-    "tslib": "^2.0.0",
+    "tslib": "^2.0.1",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
