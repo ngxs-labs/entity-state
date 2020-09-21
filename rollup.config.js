@@ -10,7 +10,7 @@ const globals = {
   '@ngxs/store': 'ngxs.store'
 };
 
-const input = join(__dirname, 'dist/entity-state/fesm5/ngxs-labs-entity-state.js');
+const input = join(__dirname, 'dist/entity-state/fesm2015/ngxs-labs-entity-state.js');
 const output = {
   file: join(__dirname, 'dist/entity-state/bundles/ngxs-labs-entity-state.umd.js'),
   name: 'ngxs-labs.entity-state',
