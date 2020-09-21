@@ -1,7 +1,10 @@
 {
-  "extends": "../tsconfig.json",
-  "exclude": [
-    "test.ts",
-    "**/*.spec.ts"
+  "extends": "../tsconfig.base.json",
+  "files": [
+    "main.ts",
+    "polyfills.ts"
+  ],
+  "include": [
+    "**/*.d.ts"
   ]
 }

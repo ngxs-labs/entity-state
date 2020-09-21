@@ -41,7 +41,9 @@ describe('EntityState reflection validation', () => {
   it('should match the methods with the action names', () => {
     // replaces @EntityActionHandler validation
     const instance = new TestState();
-    const protoKeys = Object.keys(Reflect.getPrototypeOf(Reflect.getPrototypeOf(instance)));
+    const protoKeys = Object.keys(
+      Reflect.getPrototypeOf(Reflect.getPrototypeOf(instance))
+    ) as EntityActionType[];
     // you have to manually exclude certain methods, which are not action handlers
     // TODO: Add Reflect Meta-data with @EntityActionHandler annotation and query it here?
     const exclude = ['idOf', 'setup', 'onUpdate', '_update', '_addOrReplace'];
