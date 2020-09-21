@@ -1244,17 +1244,17 @@
     rxjs "6.5.5"
     webpack-sources "1.4.3"
 
-"@ngxs/logger-plugin@3.7.0":
-  version "3.7.0"
-  resolved "https://registry.yarnpkg.com/@ngxs/logger-plugin/-/logger-plugin-3.7.0.tgz#a27d6bb27360fc2677773c57868740b8cd33cc41"
-  integrity sha512-yr3NXXJEqJnxSuKiHaTbNmoprKKcrIS1PUIlOm9nvKsOmyrGskxu+MYCzUifemXDIyXSP2u0OBNPrVUumcXyhg==
+"@ngxs/logger-plugin@3.6.2":
+  version "3.6.2"
+  resolved "https://registry.yarnpkg.com/@ngxs/logger-plugin/-/logger-plugin-3.6.2.tgz#1a8132a0b1eb95cad79736120fd50a331fe7347b"
+  integrity sha512-qF4ci9Ua7jL7r5EhZBEb0JB0HuGsTgFShK3OVTYSXU9+XfSb+5vrDLtmTshmBqQy6dWCd+2xq4LzBgc8IKMRuQ==
   dependencies:
     tslib "^1.9.0"
 
-"@ngxs/store@3.7.0":
-  version "3.7.0"
-  resolved "https://registry.yarnpkg.com/@ngxs/store/-/store-3.7.0.tgz#e46387219dae610c685accc119ae42e351afcaa4"
-  integrity sha512-w9fG/DhKBgH1VJMKSoeNW9x9ycD9/Dzy+VkpFD8Jv0JBNX0MRgP+5KQQe3ZKwnJ+7S0UV/99JvJaWgxc/WOvPw==
+"@ngxs/store@3.6.2":
+  version "3.6.2"
+  resolved "https://registry.yarnpkg.com/@ngxs/store/-/store-3.6.2.tgz#cfba63dc1e5bd422e89e54b3332cd69818510624"
+  integrity sha512-al7GU618SAuz2Ul4rFYVDgS1DM0gHReGOGvbnE7LBt4Etz3gsJERNYXPp2bSA7lZGaRPRaFfIHJN+Lm/GikFJw==
   dependencies:
     tslib "^1.9.0"
 
@@ -9418,7 +9418,14 @@ rollup@2.10.9:
   optionalDependencies:
     fsevents "~2.1.2"
 
-rollup@^2.23.1, rollup@^2.8.0:
+rollup@^2.28.1:
+  version "2.28.1"
+  resolved "https://registry.yarnpkg.com/rollup/-/rollup-2.28.1.tgz#ceedca3cdb013c2fa8f22f958a29c203368159ea"
+  integrity sha512-DOtVoqOZt3+FjPJWLU8hDIvBjUylc9s6IZvy76XklxzcLvAQLtVAG/bbhsMhcWnYxC0TKKcf1QQ/tg29zeID0Q==
+  optionalDependencies:
+    fsevents "~2.1.2"
+
+rollup@^2.8.0:
   version "2.23.1"
   resolved "https://registry.yarnpkg.com/rollup/-/rollup-2.23.1.tgz#d458d28386dc7660c2e8a4978bea6f9494046c20"
   integrity sha512-Heyl885+lyN/giQwxA8AYT2GY3U+gOlTqVLrMQYno8Z1X9lAOpfXPiKiZCyPc25e9BLJM3Zlh957dpTlO4pa8A==
