@@ -1,7 +1,7 @@
 {
   "rangeStrategy": "bump",
   "separateMajorMinor": false,
-  "automerge": true,
+  "automerge": false,
   "timezone": "UTC",
   "schedule": [
     "after 10pm every weekday",
