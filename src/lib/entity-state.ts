@@ -287,7 +287,7 @@ export abstract class EntityState<T extends {}> {
     if (payload === null) {
       throw new InvalidEntitySelectorError(payload);
     } else {
-      const deleteIds: string[] =
+      const deleteIds: EntityId[] =
         typeof payload === 'function'
           ? Object.values(getState().entities)
               .filter((entity) => payload(entity))

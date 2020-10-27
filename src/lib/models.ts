@@ -1,4 +1,4 @@
-export type EntityId = string;
+export type EntityId = string | number;
 
 /**
  * Interface for an EntityState.

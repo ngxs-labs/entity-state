@@ -67,7 +67,7 @@ export namespace IdStrategy {
     }
 
     generateId(entity: Partial<T>, state: EntityStateModel<any>): EntityId {
-      const max = Math.max(-1, ...state.ids.map((id) => parseInt(id, 10)));
+      const max = Math.max(-1, ...state.ids.map((id) => parseInt(id.toString(10), 10)));
       return (max + 1).toString(10);
     }
   }
