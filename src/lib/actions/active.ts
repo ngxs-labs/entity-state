@@ -2,6 +2,7 @@ import { generateActionObject } from '../internal';
 import { EntityActionType, Payload, Updater } from './type-alias';
 import { EntityState } from '../entity-state';
 import { Type } from '@angular/core';
+import { EntityId } from '../models';
 
 export type EntitySetActiveAction = Payload<string>;
 export type EntityUpdateActiveAction<T> = Payload<Updater<T>>;
@@ -12,7 +13,7 @@ export class SetActive {
    * @param target The targeted state class
    * @param id The ID that identifies the active entity
    */
-  constructor(target: Type<EntityState<any>>, id: string) {
+  constructor(target: Type<EntityState<any>>, id: EntityId) {
     return generateActionObject(EntityActionType.SetActive, target, id);
   }
 }

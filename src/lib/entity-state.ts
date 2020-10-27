@@ -11,18 +11,18 @@ import {
   EntitySetLoadingAction,
   EntitySetPageSizeAction,
   EntityUpdateAction,
-  EntityUpdateActiveAction
+  EntityUpdateActiveAction,
 } from './actions';
 import { InvalidEntitySelectorError } from './errors';
 import { IdStrategy } from './id-strategy';
 import { asArray, Dictionary, elvis, getActive, NGXS_META_KEY, wrapOrClamp } from './internal';
-import { EntityStateModel, StateSelector } from './models';
+import { EntityId, EntityStateModel, StateSelector } from './models';
 import {
   addOrReplace,
   removeAllEntities,
   removeEntities,
   update,
-  updateActive
+  updateActive,
 } from './state-operators';
 import IdGenerator = IdStrategy.IdGenerator;
 
@@ -43,7 +43,7 @@ export function defaultEntityState<T>(
     pageSize: 10,
     pageIndex: 0,
     lastUpdated: Date.now(),
-    ...defaults
+    ...defaults,
   };
 }
 
@@ -90,22 +90,22 @@ export abstract class EntityState<T extends {}> {
   /**
    * Returns a selector for the activeId
    */
-  static get activeId(): StateSelector<string> {
-    return createSelector([this], state => state.active);
+  static get activeId(): StateSelector<EntityId> {
+    return createSelector([this], (state) => state.active);
   }
 
   /**
    * Returns a selector for the active entity
    */
   static get active(): StateSelector<any> {
-    return createSelector([this], state => getActive(state));
+    return createSelector([this], (state) => getActive(state));
   }
 
   /**
    * Returns a selector for the keys of all entities
    */
   static get keys(): StateSelector<string[]> {
-    return createSelector([this], state => {
+    return createSelector([this], (state) => {
       return Object.keys(state.entities);
     });
   }
@@ -114,8 +114,8 @@ export abstract class EntityState<T extends {}> {
    * Returns a selector for all entities, sorted by insertion order
    */
   static get entities(): StateSelector<any[]> {
-    return createSelector([this], state => {
-      return state.ids.map(id => state.entities[id]);
+    return createSelector([this], (state) => {
+      return state.ids.map((id) => state.entities[id]);
     });
   }
 
@@ -123,7 +123,7 @@ export abstract class EntityState<T extends {}> {
    * Returns a selector for the nth entity, sorted by insertion order
    */
   static nthEntity(index: number): StateSelector<any> {
-    return createSelector([this], state => {
+    return createSelector([this], (state) => {
       const id = state.ids[index];
       return state.entities[id];
     });
@@ -133,19 +133,19 @@ export abstract class EntityState<T extends {}> {
    * Returns a selector for paginated entities, sorted by insertion order
    */
   static get paginatedEntities(): StateSelector<any[]> {
-    return createSelector([this], state => {
+    return createSelector([this], (state) => {
       const { ids, pageIndex, pageSize } = state;
       return ids
         .slice(pageIndex * pageSize, (pageIndex + 1) * pageSize)
-        .map(id => state.entities[id]);
+        .map((id) => state.entities[id]);
     });
   }
 
   /**
    * Returns a selector for the map of entities
    */
-  static get entitiesMap(): StateSelector<Dictionary<any>> {
-    return createSelector([this], state => {
+  static get entitiesMap(): StateSelector<Record<EntityId, any>> {
+    return createSelector([this], (state) => {
       return state.entities;
     });
   }
@@ -154,7 +154,7 @@ export abstract class EntityState<T extends {}> {
    * Returns a selector for the size of the entity map
    */
   static get size(): StateSelector<number> {
-    return createSelector([this], state => {
+    return createSelector([this], (state) => {
       return Object.keys(state.entities).length;
     });
   }
@@ -163,7 +163,7 @@ export abstract class EntityState<T extends {}> {
    * Returns a selector for the error
    */
   static get error(): StateSelector<Error | undefined> {
-    return createSelector([this], state => {
+    return createSelector([this], (state) => {
       return state.error;
     });
   }
@@ -172,7 +172,7 @@ export abstract class EntityState<T extends {}> {
    * Returns a selector for the loading state
    */
   static get loading(): StateSelector<boolean> {
-    return createSelector([this], state => {
+    return createSelector([this], (state) => {
       return state.loading;
     });
   }
@@ -181,7 +181,7 @@ export abstract class EntityState<T extends {}> {
    * Returns a selector for the latest added entity
    */
   static get latest(): StateSelector<any> {
-    return createSelector([this], state => {
+    return createSelector([this], (state) => {
       const latestId = state.ids[state.ids.length - 1];
       return state.entities[latestId];
     });
@@ -190,8 +190,8 @@ export abstract class EntityState<T extends {}> {
   /**
    * Returns a selector for the latest added entity id
    */
-  static get latestId(): StateSelector<string | undefined> {
-    return createSelector([this], state => {
+  static get latestId(): StateSelector<EntityId | undefined> {
+    return createSelector([this], (state) => {
       return state.ids[state.ids.length - 1];
     });
   }
@@ -200,7 +200,7 @@ export abstract class EntityState<T extends {}> {
    * Returns a selector for the update timestamp
    */
   static get lastUpdated(): StateSelector<Date> {
-    return createSelector([this], state => {
+    return createSelector([this], (state) => {
       return new Date(state.lastUpdated);
     });
   }
@@ -209,7 +209,7 @@ export abstract class EntityState<T extends {}> {
    * Returns a selector for age, based on the update timestamp
    */
   static get age(): StateSelector<number> {
-    return createSelector([this], state => {
+    return createSelector([this], (state) => {
       return Date.now() - state.lastUpdated;
     });
   }
@@ -290,8 +290,8 @@ export abstract class EntityState<T extends {}> {
       const deleteIds: string[] =
         typeof payload === 'function'
           ? Object.values(getState().entities)
-              .filter(entity => payload(entity))
-              .map(entity => this.idOf(entity))
+              .filter((entity) => payload(entity))
+              .map((entity) => this.idOf(entity))
           : asArray(payload);
       // can't pass in predicate as you need IDs and thus EntityState#idOf
       setState(removeEntities(deleteIds));
@@ -368,14 +368,14 @@ export abstract class EntityState<T extends {}> {
 
   private setup(storeClass: Type<EntityState<T>>, actions: string[]) {
     // validation if a matching action handler exists has moved to reflection-validation tests
-    actions.forEach(fn => {
+    actions.forEach((fn) => {
       const actionName = `[${this.storePath}] ${fn}`;
       storeClass[NGXS_META_KEY].actions[actionName] = [
         {
           fn: fn,
           options: {},
-          type: actionName
-        }
+          type: actionName,
+        },
       ];
     });
   }
@@ -386,7 +386,7 @@ export abstract class EntityState<T extends {}> {
    * Other methods calling this one have to handle this case themselves.
    * @param data a partial entity
    */
-  protected idOf(data: Partial<T>): string | undefined {
+  protected idOf(data: Partial<T>): EntityId | undefined {
     return data[this.idKey];
   }
 }

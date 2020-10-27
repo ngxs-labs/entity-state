@@ -1,3 +1,5 @@
+import { EntityId } from '../models';
+
 /**
  * An EntitySelector determines which entities will be affected.
  * Can be one of the following:
@@ -5,7 +7,7 @@
  * - multiple IDs in form of an array of strings
  * - a predicate function that returns `true` for entities to be selected
  */
-export type EntitySelector<T> = string | string[] | ((entity: T) => boolean);
+export type EntitySelector<T> = EntityId | EntityId[] | ((entity: T) => boolean);
 
 /**
  * An Updater will be applied to the current entity, before onUpdate is run with its result.
@@ -41,5 +43,5 @@ export enum EntityActionType {
   ClearActive = 'clearActive',
   Reset = 'reset',
   GoToPage = 'goToPage',
-  SetPageSize = 'setPageSize'
+  SetPageSize = 'setPageSize',
 }

@@ -1,15 +1,15 @@
-import { Dictionary } from './internal';
+export type EntityId = string;
 
 /**
  * Interface for an EntityState.
  * Includes the entities in an object literal, the loading and error state and the ID of the active selected entity.
  */
 export interface EntityStateModel<T> {
-  entities: Dictionary<T>;
+  entities: Record<EntityId, T>;
   loading: boolean;
   error: Error | undefined;
   active: string | undefined;
-  ids: string[];
+  ids: EntityId[];
   pageSize: number;
   pageIndex: number;
   lastUpdated: number;
@@ -33,4 +33,4 @@ export type DeepReadonlyObject<T> = { readonly [P in keyof T]: DeepReadonly<T[P]
 /**
  * Function that provides an ID for the given entity
  */
-export type IdProvider<T> = (entity: Partial<T>, state: EntityStateModel<T>) => string;
+export type IdProvider<T> = (entity: Partial<T>, state: EntityStateModel<T>) => EntityId;

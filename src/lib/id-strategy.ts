@@ -1,4 +1,4 @@
-import { EntityStateModel } from './models';
+import { EntityId, EntityStateModel } from './models';
 import { InvalidIdOfError, UnableToGenerateIdError } from './errors';
 
 export namespace IdStrategy {
@@ -14,14 +14,14 @@ export namespace IdStrategy {
      * @see getPresentIdOrGenerate
      * @see UnableToGenerateIdError
      */
-    abstract generateId(entity: Partial<T>, state: EntityStateModel<any>): string;
+    abstract generateId(entity: Partial<T>, state: EntityStateModel<any>): EntityId;
 
     /**
      * Checks if the given id is in the state's ID array
      * @param id the ID to check
      * @param state the current state
      */
-    isIdInState(id: string, state: EntityStateModel<any>): boolean {
+    isIdInState(id: EntityId, state: EntityStateModel<any>): boolean {
       return state.ids.includes(id);
     }
 
@@ -33,7 +33,7 @@ export namespace IdStrategy {
      * @see getIdOf
      * @see generateId
      */
-    getPresentIdOrGenerate(entity: Partial<T>, state: EntityStateModel<any>): string {
+    getPresentIdOrGenerate(entity: Partial<T>, state: EntityStateModel<any>): EntityId {
       const presentId = this.getIdOf(entity);
       return presentId === undefined ? this.generateId(entity, state) : presentId;
     }
@@ -44,7 +44,7 @@ export namespace IdStrategy {
      * @see getIdOf
      * @see InvalidIdOfError
      */
-    mustGetIdOf(entity: any): string {
+    mustGetIdOf(entity: any): EntityId {
       const id = this.getIdOf(entity);
       if (id === undefined) {
         throw new InvalidIdOfError();
@@ -56,7 +56,7 @@ export namespace IdStrategy {
      * Returns the ID for the given entity. Can return undefined.
      * @param entity The entity to get the ID from
      */
-    getIdOf(entity: any): string | undefined {
+    getIdOf(entity: any): EntityId | undefined {
       return entity[this.idKey];
     }
   }
@@ -66,8 +66,8 @@ export namespace IdStrategy {
       super(idKey);
     }
 
-    generateId(entity: Partial<T>, state: EntityStateModel<any>): string {
-      const max = Math.max(-1, ...state.ids.map(id => parseInt(id, 10)));
+    generateId(entity: Partial<T>, state: EntityStateModel<any>): EntityId {
+      const max = Math.max(-1, ...state.ids.map((id) => parseInt(id, 10)));
       return (max + 1).toString(10);
     }
   }
@@ -87,7 +87,7 @@ export namespace IdStrategy {
 
     private uuidv4(): string {
       // https://stackoverflow.com/a/2117523
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         const r = (Math.random() * 16) | 0; // tslint:disable-line
         const v = c === 'x' ? r : (r & 0x3) | 0x8; // tslint:disable-line
         return v.toString(16);
@@ -100,7 +100,7 @@ export namespace IdStrategy {
       super(idKey);
     }
 
-    generateId(entity: Partial<T>, state: EntityStateModel<any>): string {
+    generateId(entity: Partial<T>, state: EntityStateModel<any>): EntityId {
       const id = this.mustGetIdOf(entity);
       if (this.isIdInState(id, state)) {
         throw new UnableToGenerateIdError(`The provided ID already exists: ${id}`);

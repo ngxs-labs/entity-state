@@ -1,3 +1,5 @@
+import { EntityId } from './models';
+
 export class EntityStateError extends Error {
   constructor(message: string) {
     super(message);
@@ -11,13 +13,13 @@ export class NoActiveEntityError extends EntityStateError {
 }
 
 export class NoSuchEntityError extends EntityStateError {
-  constructor(id: string) {
+  constructor(id: EntityId) {
     super(`No entity for ID ${id}`);
   }
 }
 
 export class InvalidIdError extends EntityStateError {
-  constructor(id: string | undefined) {
+  constructor(id: EntityId | undefined) {
     super(`Invalid ID: ${id}`);
   }
 }

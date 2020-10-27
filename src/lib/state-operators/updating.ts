@@ -1,6 +1,6 @@
 import { StateOperator } from '@ngxs/store';
 import { asArray, Dictionary, mustGetActive } from '../internal';
-import { EntityStateModel } from '../models';
+import { EntityId, EntityStateModel } from '../models';
 import { EntitySelector, EntityUpdate, Updater } from '../actions';
 import { InvalidIdError, NoSuchEntityError, UpdateFailedError } from '../errors';
 
@@ -24,7 +24,7 @@ export function update<T>(
     const affected = getAffectedValues(Object.values(entities), payload.selector, idKey);
 
     if (typeof payload.data === 'function') {
-      affected.forEach(entity => {
+      affected.forEach((entity) => {
         entities = updateDictionary(
           entities,
           (<Function>payload.data)(entity),
@@ -33,7 +33,7 @@ export function update<T>(
         );
       });
     } else {
-      affected.forEach(entity => {
+      affected.forEach((entity) => {
         entities = updateDictionary(
           entities,
           payload.data as Partial<T>,
@@ -46,7 +46,7 @@ export function update<T>(
     return {
       ...state,
       entities,
-      lastUpdated: Date.now()
+      lastUpdated: Date.now(),
     };
   };
 }
@@ -60,24 +60,24 @@ export function updateActive<T>(payload: Updater<T>, idKey: string, onUpdate: On
       return {
         ...state,
         entities: updateDictionary(entities, payload(active), activeId, onUpdate),
-        lastUpdated: Date.now()
+        lastUpdated: Date.now(),
       };
     } else {
       return {
         ...state,
         entities: updateDictionary(entities, payload, activeId, onUpdate),
-        lastUpdated: Date.now()
+        lastUpdated: Date.now(),
       };
     }
   };
 }
 
 export function updateDictionary<T>(
-  entities: Dictionary<T>,
+  entities: Record<EntityId, T>,
   entity: Partial<T>,
-  id: string,
+  id: EntityId,
   onUpdate: OnUpdate<T>
-): Dictionary<T> {
+): Record<EntityId, T> {
   if (id === undefined) {
     throw new UpdateFailedError(new InvalidIdError(id));
   }
@@ -93,9 +93,9 @@ function getAffectedValues<T>(entities: T[], selector: EntitySelector<T>, idKey:
   if (selector === null) {
     return entities;
   } else if (typeof selector === 'function') {
-    return entities.filter(entity => (<Function>selector)(entity));
+    return entities.filter((entity) => (<Function>selector)(entity));
   } else {
     const ids = asArray(selector);
-    return entities.filter(entity => ids.includes(entity[idKey]));
+    return entities.filter((entity) => ids.includes(entity[idKey]));
   }
 }

@@ -2,7 +2,7 @@ import { StateOperator } from '@ngxs/store';
 import { compose, patch } from '@ngxs/store/operators';
 import { Predicate } from '@ngxs/store/operators/internals';
 import { Dictionary } from '../internal';
-import { EntityStateModel } from '../models';
+import { EntityId, EntityStateModel } from '../models';
 import { updateTimestamp } from './timestamp';
 
 /**
@@ -15,7 +15,7 @@ export function removeAllEntities<T>(): StateOperator<EntityStateModel<T>> {
       entities: {},
       ids: [],
       active: undefined,
-      lastUpdated: Date.now()
+      lastUpdated: Date.now(),
     };
   };
 }
@@ -26,16 +26,12 @@ export function removeAllEntities<T>(): StateOperator<EntityStateModel<T>> {
  * Updates the `lastUpdated` timestamp.
  * @param ids IDs to remove
  */
-export function removeEntities<T>(ids: string[]): StateOperator<EntityStateModel<T>> {
+export function removeEntities<T>(ids: EntityId[]): StateOperator<EntityStateModel<T>> {
   const entityRemoval = patch<EntityStateModel<any>>({
     entities: removeEntitiesFromDictionary(ids),
-    ids: removeEntitiesFromArray(ids)
+    ids: removeEntitiesFromArray(ids),
   });
-  return compose(
-    entityRemoval,
-    clearActiveIfRemoved(ids),
-    updateTimestamp()
-  );
+  return compose(entityRemoval, clearActiveIfRemoved(ids), updateTimestamp());
 }
 
 /**
@@ -44,12 +40,12 @@ export function removeEntities<T>(ids: string[]): StateOperator<EntityStateModel
  * @param idsForRemoval the IDs to be removed
  */
 export function clearActiveIfRemoved<T>(
-  idsForRemoval: string[]
+  idsForRemoval: EntityId[]
 ): StateOperator<EntityStateModel<T>> {
   return (state: EntityStateModel<any>) => {
     return {
       ...state,
-      active: idsForRemoval.includes(state.active) ? undefined : state.active
+      active: idsForRemoval.includes(state.active) ? undefined : state.active,
     };
   };
 }
@@ -60,7 +56,7 @@ export function clearActiveIfRemoved<T>(
  */
 export function removeEntitiesFromArray<T>(forRemoval: T[]): StateOperator<Array<T>> {
   return (existing: ReadonlyArray<T>) => {
-    return existing.filter(value => !forRemoval.includes(value));
+    return existing.filter((value) => !forRemoval.includes(value));
   };
 }
 
@@ -69,11 +65,11 @@ export function removeEntitiesFromArray<T>(forRemoval: T[]): StateOperator<Array
  * @param keysForRemoval the keys to be removed
  */
 export function removeEntitiesFromDictionary<T>(
-  keysForRemoval: string[]
-): StateOperator<Dictionary<T>> {
-  return (existing: Readonly<Dictionary<T>>): Dictionary<T> => {
+  keysForRemoval: EntityId[]
+): StateOperator<Record<EntityId, T>> {
+  return (existing: Readonly<Record<EntityId, T>>): Record<EntityId, T> => {
     const clone = { ...existing };
-    keysForRemoval.forEach(key => delete clone[key]);
+    keysForRemoval.forEach((key) => delete clone[key]);
     return clone;
   };
 }

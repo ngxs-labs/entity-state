@@ -1,11 +1,12 @@
 import { EntityState } from './entity-state';
 import { Type } from '@angular/core';
 import { NoActiveEntityError } from './errors';
-import { EntityStateModel } from './models';
+import { EntityId, EntityStateModel } from './models';
 
 /**
  * Type alias for an object literal.
  * Only allows strings as keys.
+ * @deprecated
  */
 export interface Dictionary<T> {
   [key: string]: T;
@@ -25,7 +26,7 @@ export function generateActionObject<T>(
   payload?: any
 ) {
   const name = store[NGXS_META_KEY].path;
-  const ReflectedAction = function(data: T) {
+  const ReflectedAction = function (data: T) {
     this.payload = data;
   };
   const obj = new ReflectedAction(payload);
@@ -45,7 +46,7 @@ export function getActive<T>(state: EntityStateModel<T>): T {
  * Returns the active entity. If none is present an error will be thrown.
  * @param state The state to act on
  */
-export function mustGetActive<T>(state: EntityStateModel<T>): { id: string; active: T } {
+export function mustGetActive<T>(state: EntityStateModel<T>): { id: EntityId; active: T } {
   const active = getActive(state);
   if (active === undefined) {
     throw new NoActiveEntityError();
