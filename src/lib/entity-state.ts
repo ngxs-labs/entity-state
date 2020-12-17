@@ -111,6 +111,16 @@ export abstract class EntityState<T extends {}> {
   }
 
   /**
+   * Returns a selector for the IDs of all entities, sorted by insertion order
+   */
+  static get ids(): StateSelector<EntityId[]> {
+    // cannot infer type for each EntityState because selector is static
+    return createSelector([this], (state) => {
+      return state.ids;
+    });
+  }
+
+  /**
    * Returns a selector for all entities, sorted by insertion order
    */
   static get entities(): StateSelector<any[]> {
