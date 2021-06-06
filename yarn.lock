@@ -1269,10 +1269,10 @@
     enhanced-resolve "4.3.0"
     webpack-sources "1.4.3"
 
-"@ngxs/logger-plugin@3.7.0":
-  version "3.7.0"
-  resolved "https://registry.yarnpkg.com/@ngxs/logger-plugin/-/logger-plugin-3.7.0.tgz#a27d6bb27360fc2677773c57868740b8cd33cc41"
-  integrity sha512-yr3NXXJEqJnxSuKiHaTbNmoprKKcrIS1PUIlOm9nvKsOmyrGskxu+MYCzUifemXDIyXSP2u0OBNPrVUumcXyhg==
+"@ngxs/logger-plugin@3.7.2":
+  version "3.7.2"
+  resolved "https://registry.yarnpkg.com/@ngxs/logger-plugin/-/logger-plugin-3.7.2.tgz#32dc7b0c1feddc41dab159f015bc73381cc249c6"
+  integrity sha512-JGqgBUX+r/1uV0IkHMJtGyAFDrbjbUZWgmmlXCaJ4t1r+cY/TPJm5BeLtiIqdewf2ELfzOfA682mbk3EOlRymw==
   dependencies:
     tslib "^1.9.0"
 
