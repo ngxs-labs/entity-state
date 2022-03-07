@@ -1276,10 +1276,10 @@
   dependencies:
     tslib "^1.9.0"
 
-"@ngxs/store@3.7.0":
-  version "3.7.0"
-  resolved "https://registry.yarnpkg.com/@ngxs/store/-/store-3.7.0.tgz#e46387219dae610c685accc119ae42e351afcaa4"
-  integrity sha512-w9fG/DhKBgH1VJMKSoeNW9x9ycD9/Dzy+VkpFD8Jv0JBNX0MRgP+5KQQe3ZKwnJ+7S0UV/99JvJaWgxc/WOvPw==
+"@ngxs/store@3.7.3":
+  version "3.7.3"
+  resolved "https://registry.yarnpkg.com/@ngxs/store/-/store-3.7.3.tgz#74e2878d527fc12dace343ce43fd79fa1a2645af"
+  integrity sha512-JjATXC7FsxxQu2SaayP/iLe4O+5/RkRov3/J7WkaQmV6/JWFNkkdOwbEa6pDbh/po0JO7DHHMk3huIUNpDu67g==
   dependencies:
     tslib "^1.9.0"
 
